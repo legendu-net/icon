@@ -11,7 +11,7 @@ func RunCmd(cmd string) {
 	var command *exec.Cmd
     switch runtime.GOOS {
 		case "windows":
-			command = exec.Command("pwsh", cmd)
+			command = exec.Command("pwsh", "-Command", cmd)
 		default:
 			command = exec.Command("bash", "-c", cmd)
 	}
