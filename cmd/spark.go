@@ -118,7 +118,14 @@ func spark(cmd *cobra.Command, args []string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	prefix := "sudo"
+	sudo, err := cmd.Flags().GetBool("sudo")
+	if err != nil {
+		log.Fatal(err)
+	}
+	prefix := ""
+    if sudo {
+        prefix = "sudo"
+    }
     if install {
 		spark_tgz := download("https://archive.apache.org/dist/spark/spark-3.3.0/spark-3.3.0-bin-hadoop3.tgz")
 		log.Printf("Installing Spark into the directory %s ...\n", spark_home)

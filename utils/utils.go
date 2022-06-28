@@ -17,7 +17,7 @@ func RunCmd(cmd string) {
 	}
 	err := command.Run()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal(err, " when running the command: ", cmd)
 	}
 }
 
