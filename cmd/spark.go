@@ -1,9 +1,11 @@
 package cmd
 
 import (
+	"embed"
 	"fmt"
-	"io"
+	"github.com/spf13/cobra"
 	"io/ioutil"
+	"legendu.net/icon/utils"
 	"log"
 	"net/http"
 	"os"
@@ -11,17 +13,14 @@ import (
 	"regexp"
 	"runtime"
 	"strings"
-	"embed"
-	"legendu.net/icon/utils"
-	"github.com/spf13/cobra"
 )
 
 //go:embed data/spark/spark-defaults.conf
-var spark_defaults embed.FS
+var sparkDefaults embed.FS
 
 // Get the latest version of Spark.
-func get_version() string {
-    log.Printf("Parsing the latest version of Spark...")
+func getVersion() string {
+	log.Printf("Parsing the latest version of Spark ...")
 	resp, err := http.Get("https://spark.apache.org/downloads.html")
 	if err != nil {
 		log.Fatal(err)
@@ -31,8 +30,11 @@ func get_version() string {
 	if err != nil {
 		log.Fatal(err)
 	}
+	if resp.StatusCode > 399 {
+		log.Fatal("HTTP request got an error response with the status code ", resp.StatusCode)
+	}
 	html := string(body)
-    re := regexp.MustCompile(`Latest Release \(Spark (\d.\d.\d)\)`)
+	re := regexp.MustCompile(`Latest Release \(Spark (\d.\d.\d)\)`)
 	for _, line := range strings.Split(html, "\n") {
 		match := re.FindString(line)
 		if match != "" {
@@ -42,8 +44,8 @@ func get_version() string {
 	return ""
 }
 
-// Get the recommended downloading URL for Spark. 
-func get_download_url(spark_version string, hadoop_version string) string {
+// Get the recommended downloading URL for Spark.
+func getSparkDownloadUrl(sparkVersion string, hadoopVersion string) string {
 	// TODO: substitute Spark/Hadoop versions
 	resp, err := http.Get("https://www.apache.org/dyn/closer.lua/spark/spark-3.3.0/spark-3.3.0-bin-hadoop3.tgz")
 	if err != nil {
@@ -55,64 +57,41 @@ func get_download_url(spark_version string, hadoop_version string) string {
 		log.Fatal(err)
 	}
 	if resp.StatusCode > 399 {
-		log.Fatal("...")
+		log.Fatal("HTTP request got an error response with the status code ", resp.StatusCode)
 	}
 	html := string(body)
 	html = html[strings.Index(html, "<strong>")+8:]
 	return html[:strings.Index(html, "</strong>")]
 }
 
-// Download Spark.
-func download(url string) *os.File {
-	// You can get the download URL from: https://archive.apache.org/dist/spark/spark-3.3.0/
-	// url = "https://archive.apache.org/dist/spark/spark-3.3.0/spark-3.3.0-bin-hadoop3.tgz"
-	log.Printf("Downloading Spark from: %s", url)
-	resp, err := http.Get(url)
-	if err != nil {
-		log.Fatal(err)
-	}
-	// create a temp file to receive the download
-	out, err := os.CreateTemp(os.TempDir(), "spark_*.tgz")
-	if err != nil {
-		log.Fatal(err)
-	}
-	_, err = io.Copy(out, resp.Body)
-	resp.Body.Close()
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Printf("Spark has been downloaded to %s", out.Name())
-	return out
-}
-
 // Install and configure Spark.
 func spark(cmd *cobra.Command, args []string) {
 	// get Spark version
-	spark_version, err := cmd.Flags().GetString("spark-version")
+	sparkVersion, err := cmd.Flags().GetString("spark-version")
 	if err != nil {
 		log.Fatal(err)
 	}
-    if spark_version == "" {
-        spark_version = get_version()
+	if sparkVersion == "" {
+		sparkVersion = getVersion()
 	}
 	// get Hadoop version
-	hadoop_version := "3"
+	hadoopVersion := "3"
 	/*
-	hadoop_version, err := cmd.Flags().GetString("hadoop-version")
-	if err != nil {
-		log.Fatal(err)
-	}
-    if hadoop_version == "" {
-        hadoop_version = get_version()
-	}
+		hadoopVersion, err := cmd.Flags().GetString("hadoop-version")
+		if err != nil {
+			log.Fatal(err)
+		}
+	    if hadoopVersion == "" {
+	        hadoopVersion = getVersion()
+		}
 	*/
-    // installation location
+	// installation location
 	dir, err := cmd.Flags().GetString("directory")
 	if err != nil {
 		log.Fatal(err)
 	}
-    spark_hdp := fmt.Sprintf("spark-%s-bin-hadoop%s", spark_version, hadoop_version)
-    spark_home := filepath.Join(dir, spark_hdp)
+	sparkHdp := fmt.Sprintf("spark-%s-bin-hadoop%s", sparkVersion, hadoopVersion)
+	sparkHome := filepath.Join(dir, sparkHdp)
 	// install Spark
 	install, err := cmd.Flags().GetBool("install")
 	if err != nil {
@@ -123,115 +102,115 @@ func spark(cmd *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 	prefix := ""
-    if sudo {
-        prefix = "sudo"
-    }
-    if install {
-		spark_tgz := download("https://archive.apache.org/dist/spark/spark-3.3.0/spark-3.3.0-bin-hadoop3.tgz")
-		log.Printf("Installing Spark into the directory %s ...\n", spark_home)
+	if sudo {
+		prefix = "sudo"
+	}
+	if install {
+		sparkTgz := utils.DownloadFile("https://archive.apache.org/dist/spark/spark-3.3.0/spark-3.3.0-bin-hadoop3.tgz", "spark_*.tgz").Name()
+		log.Printf("Installing Spark into the directory %s ...\n", sparkHome)
 		switch runtime.GOOS {
-			case "windows":
-			default:
-				cmd := utils.Format("{prefix} mkdir -p {dir} && {prefix} tar -zxf {spark_tgz} -C {dir} && rm {spark_tgz}", map[string]string {
-					"prefix": prefix, 
-					"dir": dir, 
-					"spark_tgz": spark_tgz.Name(), 
-				})
-				utils.RunCmd(cmd)
+		case "windows":
+		default:
+			cmd := utils.Format("{prefix} mkdir -p {dir} && {prefix} tar -zxf {sparkTgz} -C {dir} && rm {sparkTgz}", map[string]string{
+				"prefix":   prefix,
+				"dir":      dir,
+				"sparkTgz": sparkTgz,
+			})
+			utils.RunCmd(cmd)
 		}
 	}
 	config, err := cmd.Flags().GetBool("config")
 	if err != nil {
 		log.Fatal(err)
 	}
-    if config {
-        metastore_db := filepath.Join(spark_home, "metastore_db")
-        warehouse := filepath.Join(spark_home, "warehouse")
+	if config {
+		metastoreDb := filepath.Join(sparkHome, "metastoreDb")
+		warehouse := filepath.Join(sparkHome, "warehouse")
 		switch runtime.GOOS {
-			case "windows":
-				os.MkdirAll(metastore_db, 0750)
-				os.MkdirAll(warehouse, 0750)
-			default:
-				cmd := utils.Format(
-					`{prefix} mkdir -p {metastore_db} && 
-					{prefix} chmod -R 777 {metastore_db} &&
+		case "windows":
+			os.MkdirAll(metastoreDb, 0750)
+			os.MkdirAll(warehouse, 0750)
+		default:
+			cmd := utils.Format(
+				`{prefix} mkdir -p {metastoreDb} && 
+					{prefix} chmod -R 777 {metastoreDb} &&
 					{prefix} mkdir -p {warehouse} &&
 					{prefix} chmod -R 777 {warehouse}
 					`,
-					map[string]string {
-						"prefix": prefix,
-						"metastore_db": metastore_db,
-						"warehouse": warehouse,
+				map[string]string{
+					"prefix":      prefix,
+					"metastoreDb": metastoreDb,
+					"warehouse":   warehouse,
 				})
-				utils.RunCmd(cmd)
-				// spark-defaults.conf
-				bytes, err := spark_defaults.ReadFile("data/spark/spark-defaults.conf")
-				if err != nil {
-					log.Fatal(err)
-				}
-				cmd = utils.Format("echo '{conf}' | {prefix} tee {spark_defaults} > /dev/null",
-					map[string]string {
-						"prefix": prefix,
-						"conf": strings.ReplaceAll(string(bytes), "$SPARK_HOME", spark_home),
-						"spark_defaults": filepath.Join(spark_home, "conf/spark-defaults.conf"),
-					},
-				)
-				utils.RunCmd(cmd)
+			utils.RunCmd(cmd)
+			// spark-defaults.conf
+			bytes, err := sparkDefaults.ReadFile("data/spark/spark-defaults.conf")
+			if err != nil {
+				log.Fatal(err)
+			}
+			cmd = utils.Format("echo '{conf}' | {prefix} tee {sparkDefaults} > /dev/null",
+				map[string]string{
+					"prefix":        prefix,
+					"conf":          strings.ReplaceAll(string(bytes), "$SPARK_HOME", sparkHome),
+					"sparkDefaults": filepath.Join(sparkHome, "conf/spark-defaults.conf"),
+				},
+			)
+			utils.RunCmd(cmd)
 		}
-        log.Printf(
-            "Spark is configured to use %s as the metastore database and %s as the Hive warehouse.",
-            metastore_db, warehouse,
-        )
-        // create databases and tables
+		log.Printf(
+			"Spark is configured to use %s as the metastore database and %s as the Hive warehouse.",
+			metastoreDb, warehouse,
+		)
+		// create databases and tables
 		/*
-        if args.schema_dir:
-            create_dbs(spark_home, args.schema_dir)
-        if not is_win():
-            run_cmd(f"{args.prefix} chmod -R 777 {metastore_db}")
+		   if schemaDir:
+		       createDbs(sparkHome, schemaDir)
+		   if not isWin():
+		       runCmd(f"{args.prefix} chmod -R 777 {metastoreDb}")
 		*/
 	}
 	/*
-    if args.uninstall:
-        cmd = f"{args.prefix} rm -rf {spark_home}"
-        run_cmd(cmd)
-		*/
+	   if args.uninstall:
+	       cmd = f"{args.prefix} rm -rf {sparkHome}"
+	       runCmd(cmd)
+	*/
 }
 
 var sparkCmd = &cobra.Command{
-    Use:   "spark",
-    Aliases: []string{},
-    Short:  "Install and configure Spark.",
-    //Args:  cobra.ExactArgs(1),
-    Run: spark,
+	Use:     "spark",
+	Aliases: []string{},
+	Short:   "Install and configure Spark.",
+	//Args:  cobra.ExactArgs(1),
+	Run: spark,
 }
 
 func init() {
 	/*
-    subparser.add_argument(
-        "--loc",
-        "--location",
-        dest="location",
-        type=Path,
-        default=Path(),
-        help="The location (current work directory, by default) to install Spark to."
-    )
-    subparser.add_argument(
-        "-s",
-        "--schema",
-        "--schema-dir",
-        dest="schema_dir",
-        type=Path,
-        default=None,
-        help="The path to a directory containing schema information." \
-            "The directory contains subdirs whose names are databases to create." \
-            "Each of those subdirs (database) contain SQL files of the format db.table.sql" \
-            "which containing SQL code for creating tables."
-    )
+	   subparser.add_argument(
+	       "--loc",
+	       "--location",
+	       dest="location",
+	       type=Path,
+	       default=Path(),
+	       help="The location (current work directory, by default) to install Spark to."
+	   )
+	   subparser.add_argument(
+	       "-s",
+	       "--schema",
+	       "--schema-dir",
+	       dest="schema_dir",
+	       type=Path,
+	       default=None,
+	       help="The path to a directory containing schema information." \
+	           "The directory contains subdirs whose names are databases to create." \
+	           "Each of those subdirs (database) contain SQL files of the format db.table.sql" \
+	           "which containing SQL code for creating tables."
+	   )
 	*/
 	sparkCmd.Flags().String("spark-version", "3.3.0", "The version of Spark version to install.")
 	sparkCmd.Flags().String("hadoop-version", "3.2", "The version of Spark version to install.")
 	sparkCmd.Flags().StringP("directory", "d", "/opt", "The directory to install Spark.")
 	sparkCmd.Flags().BoolP("install", "i", false, "If specified, install Spark.")
 	sparkCmd.Flags().BoolP("config", "c", false, "If specified, configure Spark.")
-    rootCmd.AddCommand(sparkCmd)
+	rootCmd.AddCommand(sparkCmd)
 }

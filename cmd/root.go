@@ -5,8 +5,8 @@ Copyright © 2022 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"os"
 	"github.com/spf13/cobra"
+	"os"
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -19,10 +19,10 @@ examples and usage of using your application. For example:
 Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
-    TraverseChildren: true,
+	TraverseChildren: true,
 	/*
-	Run: func(cmd *cobra.Command, args []string) { 
-	},
+		Run: func(cmd *cobra.Command, args []string) {
+		},
 	*/
 }
 
@@ -38,5 +38,3 @@ func Execute() {
 func init() {
 	rootCmd.PersistentFlags().Bool("sudo", false, "Run commands using sudo.")
 }
-
-
