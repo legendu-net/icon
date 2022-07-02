@@ -77,13 +77,13 @@ func spark(cmd *cobra.Command, args []string) {
 	// get Hadoop version
 	hadoopVersion := "3"
 	/*
-		hadoopVersion, err := cmd.Flags().GetString("hadoop-version")
-		if err != nil {
-			log.Fatal(err)
-		}
-	    if hadoopVersion == "" {
-	        hadoopVersion = getVersion()
-		}
+			hadoopVersion, err := cmd.Flags().GetString("hadoop-version")
+			if err != nil {
+				log.Fatal(err)
+			}
+		    if hadoopVersion == "" {
+		        hadoopVersion = getVersion()
+			}
 	*/
 	// installation location
 	dir, err := cmd.Flags().GetString("directory")
@@ -186,14 +186,6 @@ var sparkCmd = &cobra.Command{
 
 func init() {
 	/*
-	   subparser.add_argument(
-	       "--loc",
-	       "--location",
-	       dest="location",
-	       type=Path,
-	       default=Path(),
-	       help="The location (current work directory, by default) to install Spark to."
-	   )
 	   subparser.add_argument(
 	       "-s",
 	       "--schema",
