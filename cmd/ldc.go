@@ -52,8 +52,10 @@ func ldc(cmd *cobra.Command, args []string) {
     command := []string {
         "docker",
         "run",
-		"-it",
+	"-it",
         "--init",
+	"--platform", 
+	"linux/amd64",
         "--log-opt",
         "max-size=50m",
         "-e",
