@@ -1,15 +1,16 @@
 package cmd
 
 import (
-	"io/ioutil"
 	"log"
-	"net/http"
 	"os"
-	"regexp"
+	"os/user"
+	"path/filepath"
 	"runtime"
 	"strings"
-
+	"strconv"
 	"github.com/spf13/cobra"
+	"github.com/shirou/gopsutil/mem"
+	"github.com/shirou/gopsutil/cpu"
 	"legendu.net/icon/utils"
 )
 
@@ -41,14 +42,14 @@ func getDockerImageHostname(imageName string) string {
 
 // Launch a Docker container.
 func ldc(cmd *cobra.Command, args []string) {
-	CURRENT_USER, err := user.Current()
+	currentUser, err := user.Current()
 	if err != nil {
 		log.Fatal(err)
 	}
-    USER := currentUser.Username
-    USER_ID := currentUser.Uid
-    GROUP_ID := currentUser.Gid
-    cmd := []string {
+    userName := currentUser.Username
+    userId := currentUser.Uid
+    groupId := currentUser.Gid
+    command := []string {
         "docker",
         "run",
 		"-it",
@@ -56,70 +57,86 @@ func ldc(cmd *cobra.Command, args []string) {
         "--log-opt",
         "max-size=50m",
         "-e",
-        "DOCKER_USER=" + USER,
+        "DOCKER_USER=" + userName,
         "-e",
-        "DOCKER_USER_ID=" + USER_ID,
+        "DOCKER_USER_ID=" + userId,
         "-e",
-        "DOCKER_PASSWORD=" + USER,
+        "DOCKER_PASSWORD=" + userName,
         "-e",
-        "DOCKER_GROUP_ID=" + GROUP_ID,
+        "DOCKER_GROUP_ID=" + groupId,
         "-e",
-        "DOCKER_ADMIN_USER=" + USER,
-        "-v",
-        os.Getwd() + ":/workdir",
-        "-v",
-        os.UserHomeDir().parent + ":/home_host",
+        "DOCKER_ADMIN_USER=" + userName,
         "--hostname",
-        _get_hostname(args.image_name[0]),
+        getDockerImageHostname(args[0]),
     }
-	if detach {
-		cmd[2] = "-d" 
+	cwd, err := os.Getwd()
+	if err != nil {
+		log.Fatal(err)
 	}
-    if sys.platform == "linux":
-        memory = os.sysconf("SC_PAGE_SIZE") * os.sysconf("SC_PHYS_PAGES")
-        memory = int(memory * 0.8)
-        cmd.append(f"--memory={memory}b")
-        cpus = max(os.cpu_count() - 1, 1)
-        cmd.append(f"--cpus={cpus}")
-    port = _get_port(args.image_name[0])
-    if port:
-        cmd.append(f"--publish={args.port if args.port else port}:{port}")
-    if args.extra_port_mappings:
-        cmd.extend("-p " + mapping for mapping in args.extra_port_mappings)
-    cmd.extend(args.image_name)
-    if len(args.image_name) == 1 and args.image_name[0].startswith("dclong/"):
-        cmd.append("/scripts/sys/init.sh")
-    logger.debug(
-        "Launching Docker container using the following command:\n{}", " ".join(cmd)
-    )
-    sp.run(cmd, check=True)
+	command = append(command, "-v", cwd + ":/workdir")
+	home, err := os.UserHomeDir()
+	if err != nil {
+		log.Fatal(err)
+	}
+	command = append(command, "-v", filepath.Dir(home) + ":/home_host")
+	detach, err := cmd.Flags().GetBool("detach")
+	if detach {
+		command[2] = "-d" 
+	}
+    if runtime.GOOS == "linux" {
+		memStat, err := mem.VirtualMemory()
+		if err != nil {
+			log.Fatal(err)
+		}
+        memory := int(0.8 * float64(memStat.Total))
+        command = append(command, "--memory=" + strconv.Itoa(memory) + "b")
+		cpuInfo, err := cpu.Info()
+		if err != nil {
+			log.Fatal(err)
+		}
+		cpus := utils.Max(len(cpuInfo) - 1, 1)
+        command = append(command, "--cpus=" + strconv.Itoa(cpus))
+	}
+    port := getDockerImagePort(args[0])
+    if port > 0 {
+		portHost, err := cmd.Flags().GetInt("port")
+		if err != nil {
+			log.Fatal(err)
+		}
+		if portHost == 0 {
+			portHost = port
+		}
+        command = append(command, "--publish=" + strconv.Itoa(portHost) + ":" + strconv.Itoa(port))
+	}
+	extraPortMappings, err := cmd.Flags().GetStringSlice("extra-port-mappings")
+	if err != nil {
+		log.Fatal(err)
+	}
+    if len(extraPortMappings) > 0 {
+		for _, m := range extraPortMappings {
+			command = append(command, "--publish=" + m)
+		}
+	}
+    command = append(command, args...)
+    if len(args) == 1 && strings.HasPrefix(args[0], "dclong/") {
+        command = append(command, "/scripts/sys/init.sh")
+	}
+	command_s := strings.Join(command, " ")
+    log.Printf("Launching Docker container using the following command:\n\n%s\n\n", command_s)
+	utils.RunCmd(command_s)
 }
 
 var ldcCmd = &cobra.Command{
 	Use:     "ldc",
 	Aliases: []string{},
 	Short:   "Launch a container of a Docker image.",
-	//Args:  cobra.ExactArgs(1),
+	Args:  cobra.MinimumNArgs(1),
 	Run: ldc,
 }
 
 func init() {
-	/*
-    parser.add_argument(
-        "image_name",
-        nargs="+",
-        help="The name (including tag) of the Docker image to launch."
-    )
-    parser.add_argument(
-        "--extra-publish",
-        "--extra-port-mappings",
-        dest="extra_port_mappings",
-        nargs="*",
-        default=(),
-        help="Extra port mappings."
-    )
-	*/
 	ldcCmd.Flags().BoolP("detach", "d", false, "If specified, run container in background and print container ID.")
 	ldcCmd.Flags().IntP("port", "p", 0, "The port on the Docker host to forward to the port inside the Docker container.")
+	ldcCmd.Flags().StringSlice("extra-port-mappings", []string{}, "Extra port mappings.")
 	rootCmd.AddCommand(ldcCmd)
 }

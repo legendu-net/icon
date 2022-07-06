@@ -1,6 +1,8 @@
 package utils
 
 import (
+	"bytes"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -20,9 +22,13 @@ func RunCmd(cmd string) {
 	default:
 		log.Fatal("The OS ", runtime.GOOS, " is not supported!")
 	}
+	var out bytes.Buffer
+	var stderr bytes.Buffer
+	command.Stdout = &out
+	command.Stderr = &stderr
 	err := command.Run()
 	if err != nil {
-		log.Fatal(err, " when running the command: ", cmd)
+		log.Fatal(fmt.Sprint(err) + ": " + stderr.String() + " when running the command:\n", cmd)
 	}
 }
 
@@ -52,4 +58,11 @@ func DownloadFile(url string, name string) *os.File {
 	}
 	log.Printf("Spark has been downloaded to %s", out.Name())
 	return out
+}
+
+func Max(x int, y int) int {
+	if x >= y {
+		return x
+	}
+	return y
 }
