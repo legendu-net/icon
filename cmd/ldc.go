@@ -127,7 +127,7 @@ func ldc(cmd *cobra.Command, args []string) {
 }
 
 var ldcCmd = &cobra.Command{
-	Use:     "ldc",
+	Use:     "ldc [flags] image_name[:tag] [image_command]",
 	Aliases: []string{},
 	Short:   "Launch a container of a Docker image.",
 	Args:  cobra.MinimumNArgs(1),
