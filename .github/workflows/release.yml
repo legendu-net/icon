@@ -1,7 +1,9 @@
 name: release
 on:
-  push:
-    tags: ["v*"]
+  release:
+    types: ["created"]
+  #push:
+  #  tags: ["v*"]
 jobs:
   release-linux-amd64:
     name: release linux/amd64
