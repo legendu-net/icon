@@ -1,13 +1,17 @@
 name: release
 on:
   release:
-    types: [created, published]
+    types: [published]
   #push:
   #  tags: ["v*"]
 jobs:
   release-linux-amd64:
     name: release linux/amd64
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        goos: [linux, windows, darwin]
+        goarch: [amd64, arm64]
     permissions:
       issues: write
       pull-requests: write
@@ -17,5 +21,5 @@ jobs:
     - uses: wangyoucao577/go-release-action@v1.29
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        goos: linux
-        goarch: amd64
+        goos: ${{ matrix.goos }}
+        goarch: ${{ matrix.goarch }}
