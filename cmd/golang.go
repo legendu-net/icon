@@ -1,16 +1,16 @@
 package cmd
 
 import (
+	"github.com/spf13/cobra"
 	"io/ioutil"
+	"legendu.net/icon/utils"
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 	"regexp"
 	"runtime"
 	"strings"
-
-	"github.com/spf13/cobra"
-	"legendu.net/icon/utils"
 )
 
 func getGolangVersion() string {
@@ -76,17 +76,19 @@ func golang(cmd *cobra.Command, args []string) {
 		case "darwin":
 		case "linux":
 			usr_local_bin := "/usr/local/bin/"
-			files, err := os.ReadDir("/usr/local/go/bin/")
+			go_bin := "/usr/local/go/bin/"
+			entries, err := os.ReadDir(go_bin)
 			if err != nil {
 				log.Fatal(err)
 			}
-			for _, file := range files {
+			for _, entry := range entries {
+				file := filepath.Join(go_bin, entry.Name())
 				log.Printf(
 					"Creating a symbolic link of %s into %s/ ...", file, usr_local_bin,
 				)
 				cmd := utils.Format("{prefix} ln -svf {file} {usr_local_bin}/", map[string]string{
 					"prefix":        prefix,
-					"file":          file.Name(),
+					"file":        file,
 					"usr_local_bin": usr_local_bin,
 				})
 				utils.RunCmd(cmd)

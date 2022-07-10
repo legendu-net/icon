@@ -25,5 +25,5 @@ func Execute() {
 }
 
 func init() {
-	rootCmd.PersistentFlags().Bool("sudo", false, "Run commands using sudo.")
+	//rootCmd.PersistentFlags().Bool("sudo", false, "Run commands using sudo.")
 }
