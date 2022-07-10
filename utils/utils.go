@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"os/user"
 	"runtime"
 	"strings"
 )
@@ -65,4 +66,12 @@ func Max(x int, y int) int {
 		return x
 	}
 	return y
+}
+
+func GetCurrentUser() *user.User {
+	currentUser, err := user.Current()
+	if err != nil {
+		log.Fatal(err)
+	}
+	return currentUser
 }

@@ -7,7 +7,6 @@ import (
 	"legendu.net/icon/utils"
 	"log"
 	"os"
-	"os/user"
 	"path/filepath"
 	"runtime"
 	"strconv"
@@ -41,10 +40,7 @@ func getDockerImageHostname(imageName string) string {
 
 // Launch a Docker container.
 func ldc(cmd *cobra.Command, args []string) {
-	currentUser, err := user.Current()
-	if err != nil {
-		log.Fatal(err)
-	}
+	currentUser := utils.GetCurrentUser()
 	userName := currentUser.Username
 	userId := currentUser.Uid
 	groupId := currentUser.Gid
