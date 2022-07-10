@@ -88,6 +88,7 @@ func golang(cmd *cobra.Command, args []string) {
 				)
 				cmd := utils.Format("{prefix} ln -svf {file} {usr_local_bin}/", map[string]string{
 					"prefix":        prefix,
+					"file":        file,
 					"usr_local_bin": usr_local_bin,
 				})
 				utils.RunCmd(cmd)
