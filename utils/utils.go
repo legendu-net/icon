@@ -9,8 +9,11 @@ import (
 	"os"
 	"os/exec"
 	"os/user"
+	"path/filepath"
 	"runtime"
 	"strings"
+
+	"golang.org/x/sys/unix"
 )
 
 func RunCmd(cmd string) {
@@ -74,4 +77,33 @@ func GetCurrentUser() *user.User {
 		log.Fatal(err)
 	}
 	return currentUser
+}
+
+func GetCommandPrefix(pathPerms map[string]uint32, runWithSudo string) string {
+	runWithSudo = strings.TrimSpace(runWithSudo)
+	switch runtime.GOOS {
+	case "darwin", "linux":
+		if GetCurrentUser().Uid != "0" {
+			for path, perm := range pathPerms {
+				for !ExistsPath(path) {
+					path = filepath.Dir(path)
+				}
+				if unix.Access(path, perm) != nil {
+					if runWithSudo != "" {
+						RunCmd("sudo " + runWithSudo)
+					}
+					return "sudo"
+				}
+			}
+		}
+	}
+	return ""
+}
+
+func ExistsPath(path string) bool {
+	_, err := os.Stat(path)
+	if os.IsNotExist(err) {
+		return false
+	}
+	return true
 }

@@ -4,6 +4,7 @@ import (
 	"embed"
 	"fmt"
 	"github.com/spf13/cobra"
+	"golang.org/x/sys/unix"
 	"io/ioutil"
 	"legendu.net/icon/utils"
 	"log"
@@ -97,14 +98,9 @@ func spark(cmd *cobra.Command, args []string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	sudo, err := cmd.Flags().GetBool("sudo")
-	if err != nil {
-		log.Fatal(err)
-	}
-	prefix := ""
-	if sudo {
-		prefix = "sudo"
-	}
+	prefix := utils.GetCommandPrefix(map[string]uint32{
+		dir: unix.W_OK | unix.R_OK,
+	}, "ls")
 	if install {
 		sparkTgz := utils.DownloadFile("https://archive.apache.org/dist/spark/spark-3.3.0/spark-3.3.0-bin-hadoop3.tgz", "spark_*.tgz").Name()
 		log.Printf("Installing Spark into the directory %s ...\n", sparkHome)
