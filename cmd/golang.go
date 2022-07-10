@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
+	"golang.org/x/sys/unix"
 	"io/ioutil"
 	"legendu.net/icon/utils"
 	"log"
@@ -37,14 +38,11 @@ func golang(cmd *cobra.Command, args []string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	sudo, err := cmd.Flags().GetBool("sudo")
-	if err != nil {
-		log.Fatal(err)
-	}
-	prefix := ""
-	if sudo {
-		prefix = "sudo"
-	}
+	prefix := utils.GetCommandPrefix(map[string]uint32{
+		"/usr/local/go":  unix.W_OK | unix.R_OK,
+		"/usr/local":     unix.W_OK | unix.R_OK,
+		"/usr/local/bin": unix.W_OK | unix.R_OK,
+	}, "ls")
 	if install {
 		switch runtime.GOOS {
 		case "windows":
@@ -75,8 +73,8 @@ func golang(cmd *cobra.Command, args []string) {
 		case "windows":
 		case "darwin":
 		case "linux":
-			usr_local_bin := "/usr/local/bin/"
-			go_bin := "/usr/local/go/bin/"
+			usr_local_bin := "/usr/local/bin"
+			go_bin := "/usr/local/go/bin"
 			entries, err := os.ReadDir(go_bin)
 			if err != nil {
 				log.Fatal(err)
@@ -88,7 +86,7 @@ func golang(cmd *cobra.Command, args []string) {
 				)
 				cmd := utils.Format("{prefix} ln -svf {file} {usr_local_bin}/", map[string]string{
 					"prefix":        prefix,
-					"file":        file,
+					"file":          file,
 					"usr_local_bin": usr_local_bin,
 				})
 				utils.RunCmd(cmd)
