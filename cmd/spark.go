@@ -97,13 +97,8 @@ func spark(cmd *cobra.Command, args []string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	sudo, err := cmd.Flags().GetBool("sudo")
 	if err != nil {
 		log.Fatal(err)
-	}
-	prefix := ""
-	if sudo {
-		prefix = "sudo"
 	}
 	if install {
 		sparkTgz := utils.DownloadFile("https://archive.apache.org/dist/spark/spark-3.3.0/spark-3.3.0-bin-hadoop3.tgz", "spark_*.tgz").Name()
@@ -111,8 +106,7 @@ func spark(cmd *cobra.Command, args []string) {
 		switch runtime.GOOS {
 		case "windows":
 		default:
-			cmd := utils.Format("{prefix} mkdir -p {dir} && {prefix} tar -zxf {sparkTgz} -C {dir} && rm {sparkTgz}", map[string]string{
-				"prefix":   prefix,
+			cmd := utils.Format("mkdir -p {dir} && tar -zxf {sparkTgz} -C {dir} && rm {sparkTgz}", map[string]string{
 				"dir":      dir,
 				"sparkTgz": sparkTgz,
 			})
@@ -132,13 +126,10 @@ func spark(cmd *cobra.Command, args []string) {
 			os.MkdirAll(warehouse, 0750)
 		default:
 			cmd := utils.Format(
-				`{prefix} mkdir -p {metastoreDb} && 
-					{prefix} chmod -R 777 {metastoreDb} &&
-					{prefix} mkdir -p {warehouse} &&
-					{prefix} chmod -R 777 {warehouse}
+				`mkdir -p {metastoreDb} && chmod -R 777 {metastoreDb} &&
+					mkdir -p {warehouse} && chmod -R 777 {warehouse}
 					`,
 				map[string]string{
-					"prefix":      prefix,
 					"metastoreDb": metastoreDb,
 					"warehouse":   warehouse,
 				})
@@ -148,9 +139,8 @@ func spark(cmd *cobra.Command, args []string) {
 			if err != nil {
 				log.Fatal(err)
 			}
-			cmd = utils.Format("echo '{conf}' | {prefix} tee {sparkDefaults} > /dev/null",
+			cmd = utils.Format("echo '{conf}' | tee {sparkDefaults} > /dev/null",
 				map[string]string{
-					"prefix":        prefix,
 					"conf":          strings.ReplaceAll(string(bytes), "$SPARK_HOME", sparkHome),
 					"sparkDefaults": filepath.Join(sparkHome, "conf/spark-defaults.conf"),
 				},
@@ -166,12 +156,12 @@ func spark(cmd *cobra.Command, args []string) {
 		   if schemaDir:
 		       createDbs(sparkHome, schemaDir)
 		   if not isWin():
-		       runCmd(f"{args.prefix} chmod -R 777 {metastoreDb}")
+		       runCmd(f"chmod -R 777 {metastoreDb}")
 		*/
 	}
 	/*
 	   if args.uninstall:
-	       cmd = f"{args.prefix} rm -rf {sparkHome}"
+	       cmd = f"rm -rf {sparkHome}"
 	       runCmd(cmd)
 	*/
 }

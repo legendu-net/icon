@@ -56,7 +56,7 @@ func DownloadFile(url string, name string) *os.File {
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Printf("Spark has been downloaded to %s", out.Name())
+	log.Printf("%s has been downloaded to %s", name, out.Name())
 	return out
 }
 

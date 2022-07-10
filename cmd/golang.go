@@ -5,10 +5,10 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 	"regexp"
 	"runtime"
 	"strings"
-
 	"github.com/spf13/cobra"
 	"legendu.net/icon/utils"
 )
@@ -37,13 +37,8 @@ func golang(cmd *cobra.Command, args []string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	sudo, err := cmd.Flags().GetBool("sudo")
 	if err != nil {
 		log.Fatal(err)
-	}
-	prefix := ""
-	if sudo {
-		prefix = "sudo"
 	}
 	if install {
 		switch runtime.GOOS {
@@ -54,10 +49,9 @@ func golang(cmd *cobra.Command, args []string) {
 			ver := getGolangVersion()
 			url := strings.ReplaceAll("https://go.dev/dl/go{ver}.linux-amd64.tar.gz", "{ver}", ver)
 			goTgz := utils.DownloadFile(url, "go_*.tar.gz").Name()
-			cmd := utils.Format(`{prefix} rm -rf /usr/local/go \
-						&& {prefix} tar -C /usr/local/ -xzf {goTgz}`,
+			cmd := utils.Format(`rm -rf /usr/local/go \
+						&& tar -C /usr/local/ -xzf {goTgz}`,
 				map[string]string{
-					"prefix": prefix,
 					"goTgz":  goTgz,
 				},
 			)
@@ -75,18 +69,19 @@ func golang(cmd *cobra.Command, args []string) {
 		case "windows":
 		case "darwin":
 		case "linux":
-			usr_local_bin := "/usr/local/bin/"
-			files, err := os.ReadDir("/usr/local/go/bin/")
+			usr_local_bin := "/usr/local/bin"
+			go_bin := "/usr/local/go/bin"
+			entries, err := os.ReadDir(go_bin)
 			if err != nil {
 				log.Fatal(err)
 			}
-			for _, file := range files {
+			for _, entry := range entries {
+				file := filepath.Join(go_bin, entry.Name())
 				log.Printf(
 					"Creating a symbolic link of %s into %s/ ...", file, usr_local_bin,
 				)
-				cmd := utils.Format("{prefix} ln -svf {file} {usr_local_bin}/", map[string]string{
-					"prefix":        prefix,
-					"file":          file.Name(),
+				cmd := utils.Format("ln -svf {file} {usr_local_bin}/", map[string]string{
+					"file":          file,
 					"usr_local_bin": usr_local_bin,
 				})
 				utils.RunCmd(cmd)
