@@ -1,12 +1,9 @@
 package cmd
 
 import (
-	"github.com/shirou/gopsutil/cpu"
-	"github.com/shirou/gopsutil/mem"
 	"github.com/spf13/cobra"
 	"legendu.net/icon/utils"
 	"log"
-	"os"
 	"path/filepath"
 	"runtime"
 	"strconv"
@@ -66,49 +63,31 @@ func ldc(cmd *cobra.Command, args []string) {
 		"--hostname",
 		getDockerImageHostname(args[0]),
 	}
-	cwd, err := os.Getwd()
-	if err != nil {
-		log.Fatal(err)
-	}
+	cwd := utils.Getwd()
 	command = append(command, "-v", cwd+":/workdir")
-	home, err := os.UserHomeDir()
-	if err != nil {
-		log.Fatal(err)
-	}
+	home := utils.UserHomeDir()
 	command = append(command, "-v", filepath.Dir(home)+":/home_host")
-	detach, err := cmd.Flags().GetBool("detach")
+	detach := utils.GetBoolFlag(cmd, "detach")
 	if detach {
 		command[2] = "-d"
 	}
 	if runtime.GOOS == "linux" {
-		memStat, err := mem.VirtualMemory()
-		if err != nil {
-			log.Fatal(err)
-		}
+		memStat := utils.VirtualMemory()
 		memory := int(0.8 * float64(memStat.Total))
 		command = append(command, "--memory="+strconv.Itoa(memory)+"b")
-		cpuInfo, err := cpu.Info()
-		if err != nil {
-			log.Fatal(err)
-		}
+		cpuInfo := utils.CpuInfo()
 		cpus := utils.Max(len(cpuInfo)-1, 1)
 		command = append(command, "--cpus="+strconv.Itoa(cpus))
 	}
 	port := getDockerImagePort(args[0])
 	if port > 0 {
-		portHost, err := cmd.Flags().GetInt("port")
-		if err != nil {
-			log.Fatal(err)
-		}
+		portHost := utils.GetIntFlag(cmd, "port")
 		if portHost == 0 {
 			portHost = port
 		}
 		command = append(command, "--publish="+strconv.Itoa(portHost)+":"+strconv.Itoa(port))
 	}
-	extraPortMappings, err := cmd.Flags().GetStringSlice("extra-port-mappings")
-	if err != nil {
-		log.Fatal(err)
-	}
+	extraPortMappings := utils.GetStringSliceFlag(cmd, "extra-port-mappings")
 	if len(extraPortMappings) > 0 {
 		for _, m := range extraPortMappings {
 			command = append(command, "--publish="+m)
