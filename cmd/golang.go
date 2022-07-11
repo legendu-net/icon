@@ -1,16 +1,15 @@
 package cmd
 
 import (
-	"io/ioutil"
+	"github.com/spf13/cobra"
+	"golang.org/x/sys/unix"
+	"legendu.net/icon/utils"
 	"log"
 	"net/http"
-	"os"
+	"path/filepath"
 	"regexp"
 	"runtime"
 	"strings"
-
-	"github.com/spf13/cobra"
-	"legendu.net/icon/utils"
 )
 
 func getGolangVersion() string {
@@ -18,34 +17,22 @@ func getGolangVersion() string {
 	if err != nil {
 		log.Fatal(err)
 	}
-	body, err := ioutil.ReadAll(resp.Body)
-	resp.Body.Close()
-	if err != nil {
-		log.Fatal(err)
-	}
+	html := utils.ReadAllText(resp.Body)
 	if resp.StatusCode > 399 {
 		log.Fatal("...")
 	}
-	html := string(body)
 	re := regexp.MustCompile(`tag/go(\d+\.\d+\.\d+)`)
 	return re.FindStringSubmatch(html)[1]
 }
 
 // Install and configure Golang.
 func golang(cmd *cobra.Command, args []string) {
-	install, err := cmd.Flags().GetBool("install")
-	if err != nil {
-		log.Fatal(err)
-	}
-	sudo, err := cmd.Flags().GetBool("sudo")
-	if err != nil {
-		log.Fatal(err)
-	}
-	prefix := ""
-	if sudo {
-		prefix = "sudo"
-	}
-	if install {
+	prefix := utils.GetCommandPrefix(false, map[string]uint32{
+		"/usr/local/go":  unix.W_OK | unix.R_OK,
+		"/usr/local":     unix.W_OK | unix.R_OK,
+		"/usr/local/bin": unix.W_OK | unix.R_OK,
+	}, "ls")
+	if utils.GetBoolFlag(cmd, "install") {
 		switch runtime.GOOS {
 		case "windows":
 		case "darwin":
@@ -66,27 +53,22 @@ func golang(cmd *cobra.Command, args []string) {
 			log.Fatal("The OS ", runtime.GOOS, " is not supported!")
 		}
 	}
-	config, err := cmd.Flags().GetBool("config")
-	if err != nil {
-		log.Fatal(err)
-	}
-	if config {
+	if utils.GetBoolFlag(cmd, "config") {
 		switch runtime.GOOS {
 		case "windows":
 		case "darwin":
 		case "linux":
-			usr_local_bin := "/usr/local/bin/"
-			files, err := os.ReadDir("/usr/local/go/bin/")
-			if err != nil {
-				log.Fatal(err)
-			}
-			for _, file := range files {
+			usr_local_bin := "/usr/local/bin"
+			go_bin := "/usr/local/go/bin"
+			entries := utils.ReadDir(go_bin)
+			for _, entry := range entries {
+				file := filepath.Join(go_bin, entry.Name())
 				log.Printf(
 					"Creating a symbolic link of %s into %s/ ...", file, usr_local_bin,
 				)
 				cmd := utils.Format("{prefix} ln -svf {file} {usr_local_bin}/", map[string]string{
 					"prefix":        prefix,
-					"file":          file.Name(),
+					"file":          file,
 					"usr_local_bin": usr_local_bin,
 				})
 				utils.RunCmd(cmd)

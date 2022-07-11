@@ -1,9 +1,10 @@
 package cmd
 
 import (
-	"embed"
+	//"embed"
 	"fmt"
 	"github.com/spf13/cobra"
+	"golang.org/x/sys/unix"
 	"io/ioutil"
 	"legendu.net/icon/utils"
 	"log"
@@ -14,9 +15,6 @@ import (
 	"runtime"
 	"strings"
 )
-
-//go:embed data/spark/spark-defaults.conf
-var sparkDefaults embed.FS
 
 // Get the latest version of Spark.
 func getVersion() string {
@@ -97,14 +95,9 @@ func spark(cmd *cobra.Command, args []string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	sudo, err := cmd.Flags().GetBool("sudo")
-	if err != nil {
-		log.Fatal(err)
-	}
-	prefix := ""
-	if sudo {
-		prefix = "sudo"
-	}
+	prefix := utils.GetCommandPrefix(false, map[string]uint32{
+		dir: unix.W_OK | unix.R_OK,
+	}, "ls")
 	if install {
 		sparkTgz := utils.DownloadFile("https://archive.apache.org/dist/spark/spark-3.3.0/spark-3.3.0-bin-hadoop3.tgz", "spark_*.tgz").Name()
 		log.Printf("Installing Spark into the directory %s ...\n", sparkHome)
@@ -144,7 +137,7 @@ func spark(cmd *cobra.Command, args []string) {
 				})
 			utils.RunCmd(cmd)
 			// spark-defaults.conf
-			bytes, err := sparkDefaults.ReadFile("data/spark/spark-defaults.conf")
+			bytes, err := utils.Data.ReadFile("data/spark/spark-defaults.conf")
 			if err != nil {
 				log.Fatal(err)
 			}
