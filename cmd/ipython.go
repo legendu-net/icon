@@ -3,12 +3,10 @@ package cmd
 import (
 	"github.com/spf13/cobra"
 	"legendu.net/icon/utils"
-	//"log"
 	"path/filepath"
-	//"runtime"
 )
 
-// Install IPython.
+// Install and configure IPython.
 func ipython(cmd *cobra.Command, args []string) {
 	if utils.GetBoolFlag(cmd, "install") {
 		command := utils.Format("{prefix} {pip_install} ipython", map[string]string{
