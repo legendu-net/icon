@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"embed"
+	//"embed"
 	"fmt"
 	"github.com/spf13/cobra"
 	"golang.org/x/sys/unix"
@@ -15,9 +15,6 @@ import (
 	"runtime"
 	"strings"
 )
-
-//go:embed data/spark/spark-defaults.conf
-var sparkDefaults embed.FS
 
 // Get the latest version of Spark.
 func getVersion() string {
@@ -98,7 +95,7 @@ func spark(cmd *cobra.Command, args []string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	prefix := utils.GetCommandPrefix(map[string]uint32{
+	prefix := utils.GetCommandPrefix(false, map[string]uint32{
 		dir: unix.W_OK | unix.R_OK,
 	}, "ls")
 	if install {
@@ -140,7 +137,7 @@ func spark(cmd *cobra.Command, args []string) {
 				})
 			utils.RunCmd(cmd)
 			// spark-defaults.conf
-			bytes, err := sparkDefaults.ReadFile("data/spark/spark-defaults.conf")
+			bytes, err := utils.Data.ReadFile("data/spark/spark-defaults.conf")
 			if err != nil {
 				log.Fatal(err)
 			}

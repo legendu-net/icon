@@ -2,6 +2,7 @@ package utils
 
 import (
 	"bytes"
+	"embed"
 	"fmt"
 	"github.com/shirou/gopsutil/cpu"
 	"github.com/shirou/gopsutil/mem"
@@ -18,6 +19,37 @@ import (
 	"runtime"
 	"strings"
 )
+
+//go:embed data
+var Data embed.FS
+
+func ReadEmbedFile(name string) []byte {
+	bytes, err := Data.ReadFile(name)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return bytes
+}
+
+func ReadEmbedFileAsString(name string) string {
+	return string(ReadEmbedFile(name))
+}
+
+func CopyEmbedFile(src string, dst string) {
+	bytes := ReadEmbedFile(src)
+	dir := filepath.Dir(dst)
+	if !ExistsPath(dir) {
+		err := os.MkdirAll(dir, 0755)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+	err := ioutil.WriteFile(dst, bytes, 0644)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("%s is copied to %s.\n", src, dst)
+}
 
 func RunCmd(cmd string) {
 	var command *exec.Cmd
@@ -82,7 +114,13 @@ func GetCurrentUser() *user.User {
 	return currentUser
 }
 
-func GetCommandPrefix(pathPerms map[string]uint32, runWithSudo string) string {
+func GetCommandPrefix(forceSudo bool, pathPerms map[string]uint32, runWithSudo string) string {
+	if forceSudo {
+		if runWithSudo != "" {
+			RunCmd("sudo " + runWithSudo)
+		}
+		return "sudo"
+	}
 	runWithSudo = strings.TrimSpace(runWithSudo)
 	switch runtime.GOOS {
 	case "darwin", "linux":
@@ -109,6 +147,22 @@ func ExistsPath(path string) bool {
 		return false
 	}
 	return true
+}
+
+func ExistsDir(path string) bool {
+	stat, err := os.Stat(path)
+	if os.IsNotExist(err) {
+		return false
+	}
+	return stat.IsDir()
+}
+
+func ExistsFile(path string) bool {
+	stat, err := os.Stat(path)
+	if os.IsNotExist(err) {
+		return false
+	}
+	return !stat.IsDir()
 }
 
 func Getwd() string {
@@ -148,6 +202,14 @@ func GetIntFlag(cmd *cobra.Command, flag string) int {
 		log.Fatal(err)
 	}
 	return i
+}
+
+func GetStringFlag(cmd *cobra.Command, flag string) string {
+	s, err := cmd.Flags().GetString(flag)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return s
 }
 
 func GetStringSliceFlag(cmd *cobra.Command, flag string) []string {
@@ -243,4 +305,22 @@ func CpuInfo() []cpu.InfoStat {
 		log.Fatal(err)
 	}
 	return cpuInfo
+}
+
+func BuildPipInstall(cmd *cobra.Command) string {
+	python := GetStringFlag(cmd, "python")
+	user := ""
+	if GetBoolFlag(cmd, "user") {
+		user = "--user"
+	}
+	extraPipOptions := GetStringSliceFlag(cmd, "extra-pip-options")
+	options := ""
+	for _, option := range extraPipOptions {
+		options += "--" + option
+	}
+	return Format("{python} -m pip install {user} {options}", map[string]string{
+		"python":  python,
+		"user":    user,
+		"options": options,
+	})
 }

@@ -27,7 +27,7 @@ func getGolangVersion() string {
 
 // Install and configure Golang.
 func golang(cmd *cobra.Command, args []string) {
-	prefix := utils.GetCommandPrefix(map[string]uint32{
+	prefix := utils.GetCommandPrefix(false, map[string]uint32{
 		"/usr/local/go":  unix.W_OK | unix.R_OK,
 		"/usr/local":     unix.W_OK | unix.R_OK,
 		"/usr/local/bin": unix.W_OK | unix.R_OK,
