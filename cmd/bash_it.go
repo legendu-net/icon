@@ -55,6 +55,7 @@ var bashItCmd = &cobra.Command{
 
 func init() {
 	bashItCmd.Flags().BoolP("install", "i", false, "If specified, install bash-it.")
+	bashItCmd.Flags().Bool("uninstall", false, "If specified, uninstall bash-it.")
 	bashItCmd.Flags().BoolP("config", "c", false, "If specified, configure bash-it.")
 	rootCmd.AddCommand(bashItCmd)
 }
