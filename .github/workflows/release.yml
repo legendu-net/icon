@@ -5,8 +5,8 @@ on:
   #push:
   #  tags: ["v*"]
 jobs:
-  release-linux-amd64:
-    name: release linux/amd64
+  release-icon:
+    name: Release icon
     runs-on: ubuntu-latest
     strategy:
       matrix:
