@@ -43,8 +43,6 @@ func init() {
 	ipythonCmd.Flags().BoolP("config", "c", false, "If specified, configure IPython.")
 	ipythonCmd.Flags().Bool("sudo", false, "If specified, force using sudo.")
 	ipythonCmd.Flags().String("profile-dir", filepath.Join(utils.UserHomeDir(), ".ipython"), "The directory for storing IPython configuration files.")
-	ipythonCmd.Flags().String("python", "python3", "Path to the python3 command.")
-	ipythonCmd.Flags().Bool("user", false, "Install Python packages to user's local directory.")
-	ipythonCmd.Flags().StringSlice("extra-pip-options", []string{}, "Extra options (separated by comma) to pass to pip.")
+	utils.AddPythonFlags(ipythonCmd)
 	rootCmd.AddCommand(ipythonCmd)
 }

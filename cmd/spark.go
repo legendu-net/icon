@@ -9,7 +9,6 @@ import (
 	"legendu.net/icon/utils"
 	"log"
 	"net/http"
-	"os"
 	"path/filepath"
 	"regexp"
 	"runtime"
@@ -121,8 +120,8 @@ func spark(cmd *cobra.Command, args []string) {
 		warehouse := filepath.Join(sparkHome, "warehouse")
 		switch runtime.GOOS {
 		case "windows":
-			os.MkdirAll(metastoreDb, 0750)
-			os.MkdirAll(warehouse, 0750)
+			utils.MkdirAll(metastoreDb, 0777)
+			utils.MkdirAll(warehouse, 0777)
 		default:
 			cmd := utils.Format(
 				`{prefix} mkdir -p {metastoreDb} && 

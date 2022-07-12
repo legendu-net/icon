@@ -17,7 +17,7 @@ func getGolangVersion() string {
 	if err != nil {
 		log.Fatal(err)
 	}
-	html := utils.ReadAllText(resp.Body)
+	html := utils.ReadAllAsText(resp.Body)
 	if resp.StatusCode > 399 {
 		log.Fatal("...")
 	}
