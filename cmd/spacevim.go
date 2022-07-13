@@ -88,12 +88,12 @@ func spaceVim(cmd *cobra.Command, args []string) {
 		// configure .SpaceVim
 		desDir := filepath.Join(home, ".SpaceVim")
 		utils.MkdirAll(desDir, 0700)
-		utils.CopyEmbedFile("data/SpaceVim/SpaceVim/init.vim", filepath.Join(desDir, "init.vim"))
+		utils.CopyEmbedFileToDir("data/SpaceVim/SpaceVim/init.vim", desDir)
 		// configure .SpaceVim.d
 		desDir = filepath.Join(home, ".SpaceVim.d")
 		utils.MkdirAll(desDir, 0700)
-		utils.CopyEmbedFile("data/SpaceVim/SpaceVim.d/init.toml", filepath.Join(desDir, "init.toml"))
-		utils.CopyEmbedFile("data/SpaceVim/SpaceVim.d/vimrc", filepath.Join(desDir, "vimrc"))
+		utils.CopyEmbedFileToDir("data/SpaceVim/SpaceVim.d/init.toml", desDir)
+		utils.CopyEmbedFileToDir("data/SpaceVim/SpaceVim.d/vimrc", desDir)
 		// -----------------------------------------------------------
 		if utils.GetBoolFlag(cmd, "enable-true-color") {
 			configureSpaceVimTrueColor(true)

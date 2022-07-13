@@ -62,6 +62,11 @@ func CopyEmbedFile(sourceFile string, destinationFile string) {
 	log.Printf("%s is copied to %s.\n", sourceFile, destinationFile)
 }
 
+func CopyEmbedFileToDir(sourceFile string, destinationDir string) {
+	destinationFile := filepath.Join(destinationDir, filepath.Base(sourceFile))
+	CopyEmbedFile(sourceFile, destinationFile)
+}
+
 func RunCmd(cmd string) {
 	var command *exec.Cmd
 	switch runtime.GOOS {

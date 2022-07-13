@@ -23,7 +23,7 @@ func ipython(cmd *cobra.Command, args []string) {
 		profile_dir := utils.GetStringFlag(cmd, "profile-dir")
 		profile_default := filepath.Join(profile_dir, "profile_default")
 		utils.CopyEmbedFile("data/ipython/startup.ipy", filepath.Join(profile_default, "startup/startup.ipy"))
-		utils.CopyEmbedFile("data/ipython/ipython_config.py", filepath.Join(profile_default, "ipython_config.py"))
+		utils.CopyEmbedFileToDir("data/ipython/ipython_config.py", profile_default)
 	}
 	if utils.GetBoolFlag(cmd, "config") {
 	}
