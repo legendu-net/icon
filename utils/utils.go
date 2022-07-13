@@ -34,6 +34,7 @@ func ReadEmbedFileAsString(name string) string {
 	return string(ReadEmbedFile(name))
 }
 
+/*
 func CopyFile(sourceFile string, destinationFile string) {
 	input, err := ioutil.ReadFile(sourceFile)
 	if err != nil {
@@ -45,6 +46,7 @@ func CopyFile(sourceFile string, destinationFile string) {
 	}
 	log.Printf("%s is copied to %s.\n", sourceFile, destinationFile)
 }
+*/
 
 func CopyEmbedFile(sourceFile string, destinationFile string) {
 	bytes := ReadEmbedFile(sourceFile)
@@ -56,6 +58,14 @@ func CopyEmbedFile(sourceFile string, destinationFile string) {
 		}
 	}
 	err := ioutil.WriteFile(destinationFile, bytes, 0600)
+	if err != nil {
+		log.Fatal("ERROR - ", err)
+	}
+	fileInfo, err := os.Stat(sourceFile)
+	if err != nil {
+		log.Fatal("ERROR - ", err)
+	}
+	err = os.Chmod(destinationFile, fileInfo.Mode())
 	if err != nil {
 		log.Fatal("ERROR - ", err)
 	}
