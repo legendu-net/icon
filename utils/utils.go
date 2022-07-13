@@ -3,7 +3,6 @@ package utils
 import (
 	"bytes"
 	"embed"
-	"fmt"
 	"github.com/shirou/gopsutil/cpu"
 	"github.com/shirou/gopsutil/mem"
 	"github.com/spf13/cobra"
@@ -26,7 +25,7 @@ var Data embed.FS
 func ReadEmbedFile(name string) []byte {
 	bytes, err := Data.ReadFile(name)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("ERROR - ", err)
 	}
 	return bytes
 }
@@ -35,20 +34,47 @@ func ReadEmbedFileAsString(name string) string {
 	return string(ReadEmbedFile(name))
 }
 
-func CopyEmbedFile(src string, dst string) {
-	bytes := ReadEmbedFile(src)
-	dir := filepath.Dir(dst)
+/*
+func CopyFile(sourceFile string, destinationFile string) {
+	input, err := ioutil.ReadFile(sourceFile)
+	if err != nil {
+		log.Fatal("ERROR - ", err)
+	}
+	err = ioutil.WriteFile(destinationFile, input, 0600)
+	if err != nil {
+		log.Fatal("ERROR - ", err)
+	}
+	log.Printf("%s is copied to %s.\n", sourceFile, destinationFile)
+}
+*/
+
+func CopyEmbedFile(sourceFile string, destinationFile string) {
+	bytes := ReadEmbedFile(sourceFile)
+	dir := filepath.Dir(destinationFile)
 	if !ExistsPath(dir) {
-		err := os.MkdirAll(dir, 0755)
+		err := os.MkdirAll(dir, 0700)
 		if err != nil {
-			log.Fatal(err)
+			log.Fatal("ERROR - ", err)
 		}
 	}
-	err := ioutil.WriteFile(dst, bytes, 0644)
+	err := ioutil.WriteFile(destinationFile, bytes, 0600)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("ERROR - ", err)
 	}
-	log.Printf("%s is copied to %s.\n", src, dst)
+	fileInfo, err := os.Stat(sourceFile)
+	if err != nil {
+		log.Fatal("ERROR - ", err)
+	}
+	err = os.Chmod(destinationFile, fileInfo.Mode())
+	if err != nil {
+		log.Fatal("ERROR - ", err)
+	}
+	log.Printf("%s is copied to %s.\n", sourceFile, destinationFile)
+}
+
+func CopyEmbedFileToDir(sourceFile string, destinationDir string) {
+	destinationFile := filepath.Join(destinationDir, filepath.Base(sourceFile))
+	CopyEmbedFile(sourceFile, destinationFile)
 }
 
 func RunCmd(cmd string) {
@@ -59,7 +85,7 @@ func RunCmd(cmd string) {
 	case "linux", "darwin":
 		command = exec.Command("bash", "-c", cmd)
 	default:
-		log.Fatal("The OS ", runtime.GOOS, " is not supported!")
+		log.Fatal("ERROR - The OS ", runtime.GOOS, " is not supported!")
 	}
 	var out bytes.Buffer
 	var stderr bytes.Buffer
@@ -67,7 +93,7 @@ func RunCmd(cmd string) {
 	command.Stderr = &stderr
 	err := command.Run()
 	if err != nil {
-		log.Fatal(fmt.Sprint(err)+": "+stderr.String()+" when running the command:\n", cmd)
+		log.Fatal("ERROR - ", err, ": ", stderr, " when running the command:\n", cmd)
 	}
 }
 
@@ -83,17 +109,17 @@ func DownloadFile(url string, name string) *os.File {
 	log.Printf("Downloading %s from: %s\n", name, url)
 	resp, err := http.Get(url)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("ERROR - ", err)
 	}
 	// create a temp file to receive the download
 	out, err := os.CreateTemp(os.TempDir(), name)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("ERROR - ", err)
 	}
 	_, err = io.Copy(out, resp.Body)
 	resp.Body.Close()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("ERROR - ", err)
 	}
 	log.Printf("%s has been downloaded to %s", name, out.Name())
 	return out
@@ -109,7 +135,7 @@ func Max(x int, y int) int {
 func GetCurrentUser() *user.User {
 	currentUser, err := user.Current()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("ERROR - ", err)
 	}
 	return currentUser
 }
@@ -168,7 +194,7 @@ func ExistsFile(path string) bool {
 func Getwd() string {
 	cwd, err := os.Getwd()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("ERROR - ", err)
 	}
 	return cwd
 }
@@ -176,7 +202,7 @@ func Getwd() string {
 func UserHomeDir() string {
 	home, err := os.UserHomeDir()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("ERROR - ", err)
 	}
 	return home
 }
@@ -184,14 +210,14 @@ func UserHomeDir() string {
 func RemoveAll(path string) {
 	err := os.RemoveAll(path)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("ERROR - ", err)
 	}
 }
 
 func GetBoolFlag(cmd *cobra.Command, flag string) bool {
 	b, err := cmd.Flags().GetBool(flag)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("ERROR - ", err)
 	}
 	return b
 }
@@ -199,7 +225,7 @@ func GetBoolFlag(cmd *cobra.Command, flag string) bool {
 func GetIntFlag(cmd *cobra.Command, flag string) int {
 	i, err := cmd.Flags().GetInt(flag)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("ERROR - ", err)
 	}
 	return i
 }
@@ -207,7 +233,7 @@ func GetIntFlag(cmd *cobra.Command, flag string) int {
 func GetStringFlag(cmd *cobra.Command, flag string) string {
 	s, err := cmd.Flags().GetString(flag)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("ERROR - ", err)
 	}
 	return s
 }
@@ -215,7 +241,7 @@ func GetStringFlag(cmd *cobra.Command, flag string) string {
 func GetStringSliceFlag(cmd *cobra.Command, flag string) []string {
 	ss, err := cmd.Flags().GetStringSlice(flag)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("ERROR - ", err)
 	}
 	return ss
 }
@@ -223,16 +249,16 @@ func GetStringSliceFlag(cmd *cobra.Command, flag string) []string {
 func ReadDir(dir string) []os.DirEntry {
 	entries, err := os.ReadDir(dir)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("ERROR - ", err)
 	}
 	return entries
 }
 
-func ReadAllText(readCloser io.ReadCloser) string {
+func ReadAllAsText(readCloser io.ReadCloser) string {
 	bytes, err := ioutil.ReadAll(readCloser)
 	readCloser.Close()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("ERROR - ", err)
 	}
 	return string(bytes)
 }
@@ -240,20 +266,31 @@ func ReadAllText(readCloser io.ReadCloser) string {
 func ReadTextFile(path string) string {
 	bytes, err := ioutil.ReadFile(path)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("ERROR - ", err)
 	}
 	return string(bytes)
+}
+
+func WriteTextFile(path string, text string) {
+	f, err := os.OpenFile(path, os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		log.Fatal("ERROR - ", err)
+	}
+	_, err = f.WriteString(text)
+	if err != nil {
+		log.Fatal("ERROR - ", err)
+	}
 }
 
 func AppendToTextFile(path string, text string) {
 	f, err := os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("ERROR - ", err)
 	}
 	_, err = f.WriteString(text)
 	f.Close()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("ERROR - ", err)
 	}
 }
 
@@ -294,7 +331,7 @@ done
 func VirtualMemory() *mem.VirtualMemoryStat {
 	memStat, err := mem.VirtualMemory()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("ERROR - ", err)
 	}
 	return memStat
 }
@@ -302,7 +339,7 @@ func VirtualMemory() *mem.VirtualMemoryStat {
 func CpuInfo() []cpu.InfoStat {
 	cpuInfo, err := cpu.Info()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("ERROR - ", err)
 	}
 	return cpuInfo
 }
@@ -323,4 +360,22 @@ func BuildPipInstall(cmd *cobra.Command) string {
 		"user":    user,
 		"options": options,
 	})
+}
+
+func ExistsCommand(cmd string) bool {
+	_, err := exec.LookPath(cmd)
+	return err == nil
+}
+
+func MkdirAll(path string, perm os.FileMode) {
+	err := os.MkdirAll(path, perm)
+	if err != nil {
+		log.Fatal("ERROR - ", err)
+	}
+}
+
+func AddPythonFlags(cmd *cobra.Command) {
+	cmd.Flags().String("python", "python3", "Path to the python3 command.")
+	cmd.Flags().Bool("user", false, "Install Python packages to user's local directory.")
+	cmd.Flags().StringSlice("extra-pip-options", []string{}, "Extra options (separated by comma) to pass to pip.")
 }
