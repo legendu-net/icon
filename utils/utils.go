@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"bytes"
 	"embed"
 	"github.com/shirou/gopsutil/cpu"
 	"github.com/shirou/gopsutil/mem"
@@ -87,13 +86,12 @@ func RunCmd(cmd string) {
 	default:
 		log.Fatal("ERROR - The OS ", runtime.GOOS, " is not supported!")
 	}
-	var out bytes.Buffer
-	var stderr bytes.Buffer
-	command.Stdout = &out
-	command.Stderr = &stderr
+	command.Stdin = os.Stdin
+	command.Stdout = os.Stdout
+	command.Stderr = os.Stderr
 	err := command.Run()
 	if err != nil {
-		log.Fatal("ERROR - ", err, ": ", stderr.String(), " when running the command:\n", cmd)
+		log.Fatal("ERROR - ", err, ": when running the command:\n", cmd)
 	}
 }
 
