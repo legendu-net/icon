@@ -14,6 +14,7 @@ import (
 	"os/exec"
 	"os/user"
 	"path/filepath"
+	"periph.io/x/host/v3/distro"
 	"runtime"
 	"strings"
 )
@@ -138,26 +139,27 @@ func GetCurrentUser() *user.User {
 	return currentUser
 }
 
-func GetCommandPrefix(forceSudo bool, pathPerms map[string]uint32, runWithSudo string) string {
-	if forceSudo {
-		if runWithSudo != "" {
-			RunCmd("sudo " + runWithSudo)
-		}
-		return "sudo"
-	}
+func sudo(runWithSudo string) string {
 	runWithSudo = strings.TrimSpace(runWithSudo)
+	if runWithSudo != "" {
+		RunCmd("sudo " + runWithSudo)
+	}
+	return "sudo"
+}
+
+func GetCommandPrefix(forceSudo bool, pathPerms map[string]uint32, runWithSudo string) string {
 	switch runtime.GOOS {
 	case "darwin", "linux":
 		if GetCurrentUser().Uid != "0" {
+			if forceSudo {
+				return sudo(runWithSudo)
+			}
 			for path, perm := range pathPerms {
 				for !ExistsPath(path) {
 					path = filepath.Dir(path)
 				}
 				if unix.Access(path, perm) != nil {
-					if runWithSudo != "" {
-						RunCmd("sudo " + runWithSudo)
-					}
-					return "sudo"
+					return sudo(runWithSudo)
 				}
 			}
 		}
@@ -342,6 +344,10 @@ func CpuInfo() []cpu.InfoStat {
 	return cpuInfo
 }
 
+func BuildYesFlag(cmd *cobra.Command) string {
+	return IfElseString(GetBoolFlag(cmd, "yes"), "-y", "")
+}
+
 func BuildPipInstall(cmd *cobra.Command) string {
 	python := GetStringFlag(cmd, "python")
 	user := ""
@@ -376,4 +382,72 @@ func AddPythonFlags(cmd *cobra.Command) {
 	cmd.Flags().String("python", "python3", "Path to the python3 command.")
 	cmd.Flags().Bool("user", false, "Install Python packages to user's local directory.")
 	cmd.Flags().StringSlice("extra-pip-options", []string{}, "Extra options (separated by comma) to pass to pip.")
+}
+
+func GetLinuxDistId() string {
+	m := distro.OSRelease()
+	distId, found := m["ID"]
+	if found {
+		return distId
+	} else {
+		return ""
+	}
+}
+
+func IsUbuntu() bool {
+	return GetLinuxDistId() == "ubuntu"
+}
+
+func IsDebian() bool {
+	return GetLinuxDistId() == "debian"
+}
+
+func IsDebianSeries() bool {
+	ids := []string{
+		"debian",
+		"antix",
+		"lmde",
+		"ubuntu", "linuxmint", "pop",
+	}
+	distId := GetLinuxDistId()
+	for _, id := range ids {
+		if distId == id {
+			return true
+		}
+	}
+	return false
+}
+
+func IsUbuntuSeries() bool {
+	ids := []string{
+		"ubuntu", "linuxmint", "pop",
+	}
+	distId := GetLinuxDistId()
+	for _, id := range ids {
+		if distId == id {
+			return true
+		}
+	}
+	return false
+}
+
+func IsFedoraSeries() bool {
+	ids := []string{
+		"fedora", "centos", "rhel",
+	}
+	distId := GetLinuxDistId()
+	for _, id := range ids {
+		if distId == id {
+			return true
+		}
+	}
+	return false
+}
+
+func IfElseString(b bool, t string, f string) string {
+	if b {
+		return t
+	} else {
+		return f
+	}
 }

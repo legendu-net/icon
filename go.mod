@@ -13,4 +13,5 @@ require (
 	github.com/tklauser/numcpus v0.4.0 // indirect
 	github.com/yusufpapurcu/wmi v1.2.2 // indirect
 	golang.org/x/sys v0.0.0-20220708085239-5a0f0661e09d // indirect
+	periph.io/x/host/v3 v3.7.2 // indirect
 )
