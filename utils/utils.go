@@ -93,7 +93,7 @@ func RunCmd(cmd string) {
 	command.Stderr = &stderr
 	err := command.Run()
 	if err != nil {
-		log.Fatal("ERROR - ", err, ": ", stderr, " when running the command:\n", cmd)
+		log.Fatal("ERROR - ", err, ": ", stderr.String(), " when running the command:\n", cmd)
 	}
 }
 
