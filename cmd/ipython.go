@@ -38,10 +38,10 @@ var ipythonCmd = &cobra.Command{
 }
 
 func init() {
-	ipythonCmd.Flags().BoolP("install", "i", false, "If specified, install IPython.")
-	ipythonCmd.Flags().Bool("uninstall", false, "If specified, uninstall IPython.")
-	ipythonCmd.Flags().BoolP("config", "c", false, "If specified, configure IPython.")
-	ipythonCmd.Flags().Bool("sudo", false, "If specified, force using sudo.")
+	ipythonCmd.Flags().BoolP("install", "i", false, "Install IPython.")
+	ipythonCmd.Flags().Bool("uninstall", false, "Uninstall IPython.")
+	ipythonCmd.Flags().BoolP("config", "c", false, "Configure IPython.")
+	ipythonCmd.Flags().Bool("sudo", false, "Force using sudo.")
 	ipythonCmd.Flags().String("profile-dir", filepath.Join(utils.UserHomeDir(), ".ipython"), "The directory for storing IPython configuration files.")
 	utils.AddPythonFlags(ipythonCmd)
 	rootCmd.AddCommand(ipythonCmd)
