@@ -38,7 +38,10 @@ func getDockerImageHostname(imageName string) string {
 // Launch a Docker container.
 func ldc(cmd *cobra.Command, args []string) {
 	currentUser := utils.GetCurrentUser()
-	userName := currentUser.Username
+	userName := utils.GetStringFlag(cmd, "user")
+	if userName == "" {
+		userName = currentUser.Username
+	}
 	userId := currentUser.Uid
 	groupId := currentUser.Gid
 	command := []string{
@@ -113,6 +116,7 @@ var ldcCmd = &cobra.Command{
 func init() {
 	ldcCmd.Flags().BoolP("detach", "d", false, "If specified, run container in background and print container ID.")
 	ldcCmd.Flags().IntP("port", "p", 0, "The port on the Docker host to forward to the port inside the Docker container.")
+	ldcCmd.Flags().StringP("user", "u", "", "The user to create in the Docker container.")
 	ldcCmd.Flags().StringSlice("extra-port-mappings", []string{}, "Extra port mappings.")
 	rootCmd.AddCommand(ldcCmd)
 }
