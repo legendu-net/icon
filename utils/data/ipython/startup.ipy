@@ -10,6 +10,7 @@ import getpass
 import socket
 from IPython.terminal.prompts import Prompts, Token
 from IPython.core.magic import (register_line_magic, register_cell_magic, register_line_cell_magic)
+from IPython.core.magic.osm import OSMagics
 from xinstall.utils import is_linux, is_macos
 try:
     import dockeree
@@ -100,6 +101,13 @@ class MyPrompt(Prompts):
         ]
 
 
+@register_line_magic
+def cdls(line: str):
+    magic = OSMagics()
+    magic.cd(line)
+    os.system("ls")
+
+    
 @register_line_magic
 def trash(line: str):
     """Define a trash magic as a better alternative to rm.
