@@ -107,7 +107,7 @@ def cdls(line: str):
     magic.cd(line)
     os.system("ls")
 
-    
+
 @register_line_magic
 def trash(line: str):
     """Define a trash magic as a better alternative to rm.
