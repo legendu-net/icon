@@ -20,15 +20,16 @@ function install_icon() {
     fi
     local URL=https://github.com/legendu-net/icon/releases
     local VERSION=$(basename $(curl -sL -o /dev/null -w %{url_effective} $URL/latest))
-    case $(uname -m) in
-        x84_64 )
-            local ARCH=amd64
+    local ARCH="$(uname -m)"
+    case "$ARCH" in
+        x86_64 )
+            ARCH=amd64
             ;;
         arm64 )
-            local ARCH=arm64
+            ARCH=arm64
             ;;
         *)
-            echo "The architecture is not supported!"
+            echo "The architecture $ARCH is not supported!"
             return 2
             ;;
     esac
@@ -37,7 +38,6 @@ function install_icon() {
     chmod +x /usr/local/bin/icon
 }
 
-if [[ "$0" == ${BASH_SOURCE[0]} ]]; then
+if [[ "${BASH_SOURCE[0]}" == "" || "${BASH_SOURCE[0]}" == "$0" ]]; then
     install_icon $@
 fi
-
