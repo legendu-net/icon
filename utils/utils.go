@@ -2,10 +2,6 @@ package utils
 
 import (
 	"embed"
-	"github.com/shirou/gopsutil/cpu"
-	"github.com/shirou/gopsutil/mem"
-	"github.com/spf13/cobra"
-	"golang.org/x/sys/unix"
 	"io"
 	"io/ioutil"
 	"log"
@@ -14,16 +10,21 @@ import (
 	"os/exec"
 	"os/user"
 	"path/filepath"
-	"periph.io/x/host/v3/distro"
 	"runtime"
 	"strings"
+
+	"github.com/shirou/gopsutil/cpu"
+	"github.com/shirou/gopsutil/mem"
+	"github.com/spf13/cobra"
+	"golang.org/x/sys/unix"
+	"periph.io/x/host/v3/distro"
 )
 
 //go:embed data
-var Data embed.FS
+var data embed.FS
 
-func ReadEmbedFile(name string) []byte {
-	bytes, err := Data.ReadFile(name)
+func ReadEmbedFile(path string) []byte {
+	bytes, err := data.ReadFile(path)
 	if err != nil {
 		log.Fatal("ERROR - ", err)
 	}
@@ -48,7 +49,7 @@ func CopyFile(sourceFile string, destinationFile string) {
 }
 */
 
-func CopyEmbedFile(sourceFile string, destinationFile string) {
+func CopyEmbedFile(sourceFile string, destinationFile string, mode os.FileMode) {
 	bytes := ReadEmbedFile(sourceFile)
 	dir := filepath.Dir(destinationFile)
 	if !ExistsPath(dir) {
@@ -61,20 +62,16 @@ func CopyEmbedFile(sourceFile string, destinationFile string) {
 	if err != nil {
 		log.Fatal("ERROR - ", err)
 	}
-	fileInfo, err := os.Stat(sourceFile)
-	if err != nil {
-		log.Fatal("ERROR - ", err)
-	}
-	err = os.Chmod(destinationFile, fileInfo.Mode())
+	err = os.Chmod(destinationFile, mode)
 	if err != nil {
 		log.Fatal("ERROR - ", err)
 	}
 	log.Printf("%s is copied to %s.\n", sourceFile, destinationFile)
 }
 
-func CopyEmbedFileToDir(sourceFile string, destinationDir string) {
+func CopyEmbedFileToDir(sourceFile string, destinationDir string, mode os.FileMode) {
 	destinationFile := filepath.Join(destinationDir, filepath.Base(sourceFile))
-	CopyEmbedFile(sourceFile, destinationFile)
+	CopyEmbedFile(sourceFile, destinationFile, mode)
 }
 
 func RunCmd(cmd string) {

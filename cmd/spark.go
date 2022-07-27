@@ -136,14 +136,11 @@ func spark(cmd *cobra.Command, args []string) {
 				})
 			utils.RunCmd(cmd)
 			// spark-defaults.conf
-			bytes, err := utils.Data.ReadFile("data/spark/spark-defaults.conf")
-			if err != nil {
-				log.Fatal(err)
-			}
+			text := utils.ReadEmbedFileAsString("data/spark/spark-defaults.conf")
 			cmd = utils.Format("echo '{conf}' | {prefix} tee {sparkDefaults} > /dev/null",
 				map[string]string{
 					"prefix":        prefix,
-					"conf":          strings.ReplaceAll(string(bytes), "$SPARK_HOME", sparkHome),
+					"conf":          strings.ReplaceAll(text, "$SPARK_HOME", sparkHome),
 					"sparkDefaults": filepath.Join(sparkHome, "conf/spark-defaults.conf"),
 				},
 			)
