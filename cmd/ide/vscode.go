@@ -100,5 +100,6 @@ func init() {
 	VscodeCmd.Flags().Bool("uninstall", false, "Uninstall Visual Studio Code.")
 	VscodeCmd.Flags().BoolP("config", "c", false, "Configure Visual Studio Code.")
 	VscodeCmd.Flags().StringP("user-dir", "d", "", "The configuration directory for Visual Studio Code.")
+	VscodeCmd.Flags().BoolP("yes", "y", false, "Automatically yes to prompt questions.")
 	// rootCmd.AddCommand(vscodeCmd)
 }
