@@ -1,15 +1,11 @@
-package cmd
+package ide
 
 import (
-	"log"
-	"strings"
-
 	"github.com/spf13/cobra"
 	"legendu.net/icon/utils"
-
-	//"log"
+	"log"
 	"path/filepath"
-	//"runtime"
+	"strings"
 )
 
 func configureSpaceVimForFirenvim() {
@@ -108,7 +104,7 @@ func spaceVim(cmd *cobra.Command, args []string) {
 	}
 }
 
-var spaceVimCmd = &cobra.Command{
+var SpaceVimCmd = &cobra.Command{
 	Use:     "spacevim",
 	Aliases: []string{"svim"},
 	Short:   "Install and configure SpaceVim.",
@@ -117,12 +113,12 @@ var spaceVimCmd = &cobra.Command{
 }
 
 func init() {
-	spaceVimCmd.Flags().BoolP("install", "i", false, "Install SpaceVim.")
-	spaceVimCmd.Flags().Bool("uninstall", false, "Uninstall SpaceVim.")
-	spaceVimCmd.Flags().BoolP("config", "c", false, "Configure SpaceVim.")
-	spaceVimCmd.Flags().Bool("enable-true-color", false, "Enable true color support in SpaceVim.")
-	spaceVimCmd.Flags().Bool("disable-true-color", false, "Disable true color support in SpaceVim.")
-	spaceVimCmd.Flags().Bool("strip", false, "Strip unnecessary files from '~/.SpaceVim/'.")
-	utils.AddPythonFlags(spaceVimCmd)
-	rootCmd.AddCommand(spaceVimCmd)
+	SpaceVimCmd.Flags().BoolP("install", "i", false, "Install SpaceVim.")
+	SpaceVimCmd.Flags().Bool("uninstall", false, "Uninstall SpaceVim.")
+	SpaceVimCmd.Flags().BoolP("config", "c", false, "Configure SpaceVim.")
+	SpaceVimCmd.Flags().Bool("enable-true-color", false, "Enable true color support in SpaceVim.")
+	SpaceVimCmd.Flags().Bool("disable-true-color", false, "Disable true color support in SpaceVim.")
+	SpaceVimCmd.Flags().Bool("strip", false, "Strip unnecessary files from '~/.SpaceVim/'.")
+	utils.AddPythonFlags(SpaceVimCmd)
+	// rootCmd.AddCommand(spaceVimCmd)
 }

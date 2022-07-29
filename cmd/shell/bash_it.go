@@ -1,4 +1,4 @@
-package cmd
+package shell
 
 import (
 	"github.com/spf13/cobra"
@@ -45,7 +45,7 @@ fi
 	}
 }
 
-var bashItCmd = &cobra.Command{
+var BashItCmd = &cobra.Command{
 	Use:     "bash_it",
 	Aliases: []string{"bashit", "bit"},
 	Short:   "Install and configure bash-it.",
@@ -54,8 +54,8 @@ var bashItCmd = &cobra.Command{
 }
 
 func init() {
-	bashItCmd.Flags().BoolP("install", "i", false, "If specified, install bash-it.")
-	bashItCmd.Flags().Bool("uninstall", false, "If specified, uninstall bash-it.")
-	bashItCmd.Flags().BoolP("config", "c", false, "If specified, configure bash-it.")
-	rootCmd.AddCommand(bashItCmd)
+	BashItCmd.Flags().BoolP("install", "i", false, "If specified, install bash-it.")
+	BashItCmd.Flags().Bool("uninstall", false, "If specified, uninstall bash-it.")
+	BashItCmd.Flags().BoolP("config", "c", false, "If specified, configure bash-it.")
+	// rootCmd.AddCommand(bashItCmd)
 }

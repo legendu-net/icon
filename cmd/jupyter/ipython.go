@@ -1,4 +1,4 @@
-package cmd
+package jupyter
 
 import (
 	"github.com/spf13/cobra"
@@ -25,11 +25,11 @@ func ipython(cmd *cobra.Command, args []string) {
 		utils.CopyEmbedFile("data/ipython/startup.ipy", filepath.Join(profile_default, "startup/startup.ipy"), 0600)
 		utils.CopyEmbedFileToDir("data/ipython/ipython_config.py", profile_default, 0600)
 	}
-	if utils.GetBoolFlag(cmd, "config") {
+	if utils.GetBoolFlag(cmd, "uninstall") {
 	}
 }
 
-var ipythonCmd = &cobra.Command{
+var IpythonCmd = &cobra.Command{
 	Use:     "ipython",
 	Aliases: []string{"ipy"},
 	Short:   "Install and configure IPython.",
@@ -38,11 +38,11 @@ var ipythonCmd = &cobra.Command{
 }
 
 func init() {
-	ipythonCmd.Flags().BoolP("install", "i", false, "Install IPython.")
-	ipythonCmd.Flags().Bool("uninstall", false, "Uninstall IPython.")
-	ipythonCmd.Flags().BoolP("config", "c", false, "Configure IPython.")
-	ipythonCmd.Flags().Bool("sudo", false, "Force using sudo.")
-	ipythonCmd.Flags().String("profile-dir", filepath.Join(utils.UserHomeDir(), ".ipython"), "The directory for storing IPython configuration files.")
-	utils.AddPythonFlags(ipythonCmd)
-	rootCmd.AddCommand(ipythonCmd)
+	IpythonCmd.Flags().BoolP("install", "i", false, "Install IPython.")
+	IpythonCmd.Flags().Bool("uninstall", false, "Uninstall IPython.")
+	IpythonCmd.Flags().BoolP("config", "c", false, "Configure IPython.")
+	IpythonCmd.Flags().Bool("sudo", false, "Force using sudo.")
+	IpythonCmd.Flags().String("profile-dir", filepath.Join(utils.UserHomeDir(), ".ipython"), "The directory for storing IPython configuration files.")
+	utils.AddPythonFlags(IpythonCmd)
+	// rootCmd.AddCommand(ipythonCmd)
 }

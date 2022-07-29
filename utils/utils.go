@@ -3,6 +3,7 @@ package utils
 import (
 	"embed"
 	"io"
+	"io/fs"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -35,8 +36,7 @@ func ReadEmbedFileAsString(name string) string {
 	return string(ReadEmbedFile(name))
 }
 
-/*
-func CopyFile(sourceFile string, destinationFile string) {
+func copyFile(sourceFile string, destinationFile string) {
 	input, err := ioutil.ReadFile(sourceFile)
 	if err != nil {
 		log.Fatal("ERROR - ", err)
@@ -45,9 +45,54 @@ func CopyFile(sourceFile string, destinationFile string) {
 	if err != nil {
 		log.Fatal("ERROR - ", err)
 	}
+	fileInfo, err := os.Stat(sourceFile)
+	if err != nil {
+		log.Fatal("ERROR - ", err)
+	}
+	err = os.Chmod(destinationFile, fileInfo.Mode())
+	if err != nil {
+		log.Fatal("ERROR - ", err)
+	}
 	log.Printf("%s is copied to %s.\n", sourceFile, destinationFile)
 }
-*/
+
+func copyFileToDir(sourceFile string, destinationDir string) {
+	destinationFile := filepath.Join(destinationDir, filepath.Base(sourceFile))
+	copyFile(sourceFile, destinationFile)
+}
+
+func CopyDir(sourceDir string, destinationDir string) {
+	if !ExistsDir(destinationDir) {
+		fileInfo, err := os.Stat(sourceDir)
+		if err != nil {
+			log.Fatal("ERROR - ", err)
+		}
+		MkdirAll(destinationDir, fileInfo.Mode())
+	}
+	for _, entry := range ReadDir(sourceDir) {
+		if entry.IsDir() {
+			srcDir := filepath.Join(sourceDir, entry.Name())
+			dstDir := filepath.Join(destinationDir, entry.Name())
+			CopyDir(srcDir, dstDir)
+		} else {
+			sourceFile := filepath.Join(sourceDir, entry.Name())
+			if !IsSocket(sourceFile) {
+				copyFile(sourceFile, filepath.Join(destinationDir, entry.Name()))
+			}
+		}
+	}
+}
+
+func Chmod600(path string) {
+	if ExistsDir(path) {
+		os.Chmod(path, 0o700)
+	} else {
+		os.Chmod(path, 0o600)
+	}
+	for _, entry := range ReadDir(path) {
+		Chmod600(filepath.Join(path, entry.Name()))
+	}
+}
 
 func CopyEmbedFile(sourceFile string, destinationFile string, mode os.FileMode) {
 	bytes := ReadEmbedFile(sourceFile)
@@ -100,25 +145,53 @@ func Format(cmd string, hmap map[string]string) string {
 	return cmd
 }
 
+func HttpGetAsBytes(url string) []byte {
+	resp, err := http.Get(url)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
+	if resp.StatusCode > 399 {
+		log.Fatal("HTTP request got an error response with the status code ", resp.StatusCode)
+	}
+    return body
+}
+
+func HttpGetAsString(url string) string {
+	return string(HttpGetAsBytes(url))
+}
+
 // Download file from the given URL.
-func DownloadFile(url string, name string) *os.File {
-	log.Printf("Downloading %s from: %s\n", name, url)
+func DownloadFile(url string, name string, useTempDir bool) string {
+	var out *os.File
+	var err error
+	if useTempDir {
+		out, err = os.CreateTemp(os.TempDir(), name)
+		if err != nil {
+			log.Fatal("ERROR - ", err)
+		}
+	} else {
+		out, err = os.Create(name)
+		if err != nil {
+			log.Fatal("ERROR - ", err, ": ", name)
+		}
+	}
+	defer out.Close()
+	log.Printf("Downloading %s to %s\n", url, out.Name())
 	resp, err := http.Get(url)
 	if err != nil {
 		log.Fatal("ERROR - ", err)
 	}
-	// create a temp file to receive the download
-	out, err := os.CreateTemp(os.TempDir(), name)
-	if err != nil {
-		log.Fatal("ERROR - ", err)
-	}
+	defer resp.Body.Close()
 	_, err = io.Copy(out, resp.Body)
-	resp.Body.Close()
 	if err != nil {
 		log.Fatal("ERROR - ", err)
 	}
-	log.Printf("%s has been downloaded to %s", name, out.Name())
-	return out
+	return out.Name()
 }
 
 func Max(x int, y int) int {
@@ -270,6 +343,7 @@ func ReadTextFile(path string) string {
 
 func WriteTextFile(path string, text string) {
 	f, err := os.OpenFile(path, os.O_CREATE|os.O_WRONLY, 0644)
+	defer f.Close()
 	if err != nil {
 		log.Fatal("ERROR - ", err)
 	}
@@ -281,11 +355,11 @@ func WriteTextFile(path string, text string) {
 
 func AppendToTextFile(path string, text string) {
 	f, err := os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	defer f.Close()
 	if err != nil {
 		log.Fatal("ERROR - ", err)
 	}
 	_, err = f.WriteString(text)
-	f.Close()
 	if err != nil {
 		log.Fatal("ERROR - ", err)
 	}
@@ -447,4 +521,25 @@ func IfElseString(b bool, t string, f string) string {
 	} else {
 		return f
 	}
+}
+
+// Using Homebrew to install packages 
+// without throwing exceptions if a package to install already exists.
+// @param pkgs: A list of packages to install using Homebrew.
+func BrewInstallSafe(pkgs []string) {
+    for _, pkg := range pkgs{
+		command := Format("brew install --force {pkg} || brew link --overwrite --force {pkg}", map[string]string{
+			"pkg": pkg,
+		})
+        RunCmd(command)
+	}
+}
+
+// Check if a file is a socket.
+func IsSocket(path string) bool {
+	fileInfo, err := os.Stat(path)
+	if err != nil {
+		log.Fatal("ERROR - ", err)
+	}
+	return fileInfo.Mode().Type() == fs.ModeSocket
 }

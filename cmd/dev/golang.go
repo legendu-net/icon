@@ -1,4 +1,4 @@
-package cmd
+package dev
 
 import (
 	"github.com/spf13/cobra"
@@ -17,6 +17,7 @@ func getGolangVersion() string {
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer resp.Body.Close()
 	html := utils.ReadAllAsText(resp.Body)
 	if resp.StatusCode > 399 {
 		log.Fatal("...")
@@ -40,7 +41,7 @@ func golang(cmd *cobra.Command, args []string) {
 		case "linux":
 			ver := getGolangVersion()
 			url := strings.ReplaceAll("https://go.dev/dl/go{ver}.linux-amd64.tar.gz", "{ver}", ver)
-			goTgz := utils.DownloadFile(url, "go_*.tar.gz").Name()
+			goTgz := utils.DownloadFile(url, "go_*.tar.gz", true)
 			cmd := utils.Format(`{prefix} rm -rf /usr/local/go \
 						&& {prefix} tar -C /usr/local/ -xzf {goTgz}`,
 				map[string]string{
@@ -77,9 +78,11 @@ func golang(cmd *cobra.Command, args []string) {
 			log.Fatal("The OS ", runtime.GOOS, " is not supported!")
 		}
 	}
+	if utils.GetBoolFlag(cmd, "uninstall") {
+	}
 }
 
-var golangCmd = &cobra.Command{
+var GolangCmd = &cobra.Command{
 	Use:     "golang",
 	Aliases: []string{"go"},
 	Short:   "Install and configure Golang.",
@@ -88,7 +91,7 @@ var golangCmd = &cobra.Command{
 }
 
 func init() {
-	golangCmd.Flags().BoolP("install", "i", false, "If specified, install Golang.")
-	golangCmd.Flags().BoolP("config", "c", false, "If specified, configure Golang.")
-	rootCmd.AddCommand(golangCmd)
+	GolangCmd.Flags().BoolP("install", "i", false, "Install Golang.")
+	GolangCmd.Flags().BoolP("config", "c", false, "Configure Golang.")
+	// rootCmd.AddCommand(golangCmd)
 }
