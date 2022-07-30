@@ -158,7 +158,7 @@ func HttpGetAsBytes(url string) []byte {
 	if resp.StatusCode > 399 {
 		log.Fatal("HTTP request got an error response with the status code ", resp.StatusCode)
 	}
-    return body
+	return body
 }
 
 func HttpGetAsString(url string) string {
@@ -217,19 +217,19 @@ func sudo(runWithSudo string) string {
 	return "sudo"
 }
 
-func GetCommandPrefix(forceSudo bool, pathPerms map[string]uint32, runWithSudo string) string {
+func GetCommandPrefix(forceSudo bool, pathPerms map[string]uint32) string {
 	switch runtime.GOOS {
 	case "darwin", "linux":
 		if GetCurrentUser().Uid != "0" {
 			if forceSudo {
-				return sudo(runWithSudo)
+				return sudo("true")
 			}
 			for path, perm := range pathPerms {
 				for !ExistsPath(path) {
 					path = filepath.Dir(path)
 				}
 				if unix.Access(path, perm) != nil {
-					return sudo(runWithSudo)
+					return sudo("true")
 				}
 			}
 		}
@@ -523,15 +523,15 @@ func IfElseString(b bool, t string, f string) string {
 	}
 }
 
-// Using Homebrew to install packages 
+// Using Homebrew to install packages
 // without throwing exceptions if a package to install already exists.
 // @param pkgs: A list of packages to install using Homebrew.
 func BrewInstallSafe(pkgs []string) {
-    for _, pkg := range pkgs{
+	for _, pkg := range pkgs {
 		command := Format("brew install --force {pkg} || brew link --overwrite --force {pkg}", map[string]string{
 			"pkg": pkg,
 		})
-        RunCmd(command)
+		RunCmd(command)
 	}
 }
 

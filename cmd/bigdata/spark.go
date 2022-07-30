@@ -80,7 +80,7 @@ func spark(cmd *cobra.Command, args []string) {
 	// install Spark
 	prefix := utils.GetCommandPrefix(false, map[string]uint32{
 		dir: unix.W_OK | unix.R_OK,
-	}, "ls")
+	})
 	if utils.GetBoolFlag(cmd, "install") {
 		sparkTgz := utils.DownloadFile("https://archive.apache.org/dist/spark/spark-3.3.0/spark-3.3.0-bin-hadoop3.tgz", "spark_*.tgz", true)
 		log.Printf("Installing Spark into the directory %s ...\n", sparkHome)

@@ -13,7 +13,6 @@ func SshServer(cmd *cobra.Command, args []string) {
 				"prefix": utils.GetCommandPrefix(
 					true,
 					map[string]uint32{},
-					"ls",
 				),
 				"yes_s": utils.BuildYesFlag(cmd),
 			})
@@ -28,7 +27,6 @@ func SshServer(cmd *cobra.Command, args []string) {
 				"prefix": utils.GetCommandPrefix(
 					true,
 					map[string]uint32{},
-					"ls",
 				),
 				"yes_s": utils.BuildYesFlag(cmd),
 			})

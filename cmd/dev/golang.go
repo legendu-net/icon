@@ -32,7 +32,7 @@ func golang(cmd *cobra.Command, args []string) {
 		"/usr/local/go":  unix.W_OK | unix.R_OK,
 		"/usr/local":     unix.W_OK | unix.R_OK,
 		"/usr/local/bin": unix.W_OK | unix.R_OK,
-	}, "ls")
+	})
 	if utils.GetBoolFlag(cmd, "install") {
 		switch runtime.GOOS {
 		case "windows":

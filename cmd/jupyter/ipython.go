@@ -13,7 +13,6 @@ func ipython(cmd *cobra.Command, args []string) {
 			"prefix": utils.GetCommandPrefix(
 				utils.GetBoolFlag(cmd, "sudo"),
 				map[string]uint32{},
-				"ls",
 			),
 			"pip_install": utils.BuildPipInstall(cmd),
 		})

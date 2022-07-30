@@ -10,7 +10,6 @@ func jupyterlab_vim(cmd *cobra.Command, args []string) {
 	prefix := utils.GetCommandPrefix(
 		utils.GetBoolFlag(cmd, "sudo"),
 		map[string]uint32{},
-		"ls",
 	)
 	if utils.GetBoolFlag(cmd, "install") {
 		command := utils.Format("{prefix} {pip_install} jupyterlab_vim", map[string]string{

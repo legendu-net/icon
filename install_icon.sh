@@ -18,6 +18,7 @@ function install_icon() {
         install_icon.usage
         return 1
     fi
+    echo "Parsing the latest version ..."
     local URL=https://github.com/legendu-net/icon/releases
     local VERSION=$(basename $(curl -sL -o /dev/null -w %{url_effective} $URL/latest))
     local ARCH="$(uname -m)"
@@ -33,7 +34,9 @@ function install_icon() {
             return 2
             ;;
     esac
+    echo "Downloading icon ..."
     curl -sSL $URL/download/$VERSION/icon-$VERSION-$(uname)-${ARCH}.tar.gz -o /tmp/icon.tar.gz
+    echo "Installing icon ..."
     tar zxf /tmp/icon.tar.gz -C /usr/local/bin/
     chmod +x /usr/local/bin/icon
 }

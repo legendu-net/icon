@@ -5,95 +5,97 @@ import (
 	"golang.org/x/sys/unix"
 	"legendu.net/icon/utils"
 	"log"
-	"net/http"
 	"path/filepath"
-	"regexp"
 	"runtime"
-	"strings"
 )
 
-func getRustVersion() string {
-	resp, err := http.Get("https://github.com/golang/go/tags")
-	if err != nil {
-		log.Fatal(err)
+func linkRust(cmd *cobra.Command, cargoHome string) {
+	linkToDir := utils.GetStringFlag(cmd, "link-to-dir")
+	if linkToDir == "" {
+		return
 	}
-	defer resp.Body.Close()
-	html := utils.ReadAllAsText(resp.Body)
-	if resp.StatusCode > 399 {
-		log.Fatal("...")
+	cargoBin := filepath.Join(cargoHome, "bin")
+	switch runtime.GOOS {
+	case "linux", "darwin":
+		prefix := utils.GetCommandPrefix(false, map[string]uint32{
+			cargoBin:  unix.R_OK,
+			linkToDir: unix.W_OK | unix.R_OK,
+		})
+		// TODO:
+		for _, entry := range utils.ReadDir(cargoBin) {
+			bin := filepath.Join(cargoBin, entry.Name())
+			utils.Format("{prefix} ln -svf {bin} {linkToDir}/", map[string]string{
+				"prefix":    prefix,
+				"bin":       bin,
+				"linkToDir": linkToDir,
+			})
+			log.Printf("%s is linked into %s/.", bin, linkToDir)
+		}
+	default:
 	}
-	re := regexp.MustCompile(`tag/go(\d+\.\d+\.\d+)`)
-	return re.FindStringSubmatch(html)[1]
 }
 
 // Install and configure Rust.
 func rust(cmd *cobra.Command, args []string) {
-	prefix := utils.GetCommandPrefix(false, map[string]uint32{
-		"/usr/local/go":  unix.W_OK | unix.R_OK,
-		"/usr/local":     unix.W_OK | unix.R_OK,
-		"/usr/local/bin": unix.W_OK | unix.R_OK,
-	}, "ls")
+	rustupHome := utils.GetStringFlag(cmd, "rustup-home")
+	cargoHome := utils.GetStringFlag(cmd, "cargo-home")
 	if utils.GetBoolFlag(cmd, "install") {
 		switch runtime.GOOS {
-		case "windows":
-		case "darwin":
-			// brew_install_safe("go")
-		case "linux":
-			ver := getRustVersion()
-			url := strings.ReplaceAll("https://go.dev/dl/go{ver}.linux-amd64.tar.gz", "{ver}", ver)
-			goTgz := utils.DownloadFile(url, "go_*.tar.gz", true)
-			cmd := utils.Format(`{prefix} rm -rf /usr/local/go \
-						&& {prefix} tar -C /usr/local/ -xzf {goTgz}`,
-				map[string]string{
-					"prefix": prefix,
-					"goTgz":  goTgz,
-				},
-			)
-			utils.RunCmd(cmd)
+		case "linux", "darwin":
+			if utils.IsDebianSeries() {
+				command := utils.Format(`{prefix} apt-get update \
+						&& {prefix} apt-get install -y cmake libssl-dev pkg-config`, map[string]string{
+					"prefix": utils.GetCommandPrefix(true, map[string]uint32{}),
+				})
+				utils.RunCmd(command)
+			}
+			command := utils.Format(`RUSTUP_HOME={rustupHome} CARGO_HOME={cargoHome} PATH={cargoHome}/bin:$PATH \
+				curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | {prefix} bash -s -- -y \
+                && rustup component add rust-src rustfmt clippy \
+                && cargo install sccache cargo-cache cargo-edit`, map[string]string{
+				"rustupHome": rustupHome,
+				"cargoHome":  cargoHome,
+				"prefix": utils.GetCommandPrefix(false, map[string]uint32{
+					rustupHome: unix.W_OK | unix.R_OK,
+					cargoHome:  unix.W_OK | unix.R_OK,
+				}),
+			})
+			utils.RunCmd(command)
 		default:
-			log.Fatal("The OS ", runtime.GOOS, " is not supported!")
 		}
 	}
 	if utils.GetBoolFlag(cmd, "config") {
-		switch runtime.GOOS {
-		case "windows":
-		case "darwin":
-		case "linux":
-			usr_local_bin := "/usr/local/bin"
-			go_bin := "/usr/local/go/bin"
-			entries := utils.ReadDir(go_bin)
-			for _, entry := range entries {
-				file := filepath.Join(go_bin, entry.Name())
-				log.Printf(
-					"Creating a symbolic link of %s into %s/ ...", file, usr_local_bin,
-				)
-				cmd := utils.Format("{prefix} ln -svf {file} {usr_local_bin}/", map[string]string{
-					"prefix":        prefix,
-					"file":          file,
-					"usr_local_bin": usr_local_bin,
-				})
-				utils.RunCmd(cmd)
-			}
-		default:
-			log.Fatal("The OS ", runtime.GOOS, " is not supported!")
-		}
+		linkRust(cmd, cargoHome)
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
+		command := utils.Format(`RUSTUP_HOME={rustupHome} CARGO_HOME={cargoHome} PATH={cargoHome}/bin:$PATH \
+				{prefix} rustup self uninstall`, map[string]string{
+			"rustupHome": rustupHome,
+			"cargoHome":  cargoHome,
+			"prefix": utils.GetCommandPrefix(false, map[string]uint32{
+				rustupHome: unix.W_OK | unix.R_OK,
+				cargoHome:  unix.W_OK | unix.R_OK,
+			}),
+		})
+		utils.RunCmd(command)
 	}
 }
 
 var RustCmd = &cobra.Command{
-	Use:     "golang",
-	Aliases: []string{"go"},
+	Use:     "rust",
+	Aliases: []string{"rustup", "cargo"},
 	Short:   "Install and configure Rust.",
 	//Args:  cobra.ExactArgs(1),
-	Run: golang,
+	Run: rust,
 }
 
 func init() {
 	RustCmd.Flags().BoolP("install", "i", false, "Install Rust.")
 	RustCmd.Flags().BoolP("config", "c", false, "Configure Rust.")
 	RustCmd.Flags().BoolP("uninstall", "u", false, "Uninstall Rust.")
-	RustCmd.Flags().BoolP("global", "g", false, "Install Rust globally")
-	// rootCmd.AddCommand(golangCmd)
+	RustCmd.Flags().String("link-to-dir", "", "The directory to link commands (cargo and rustc) to.")
+	RustCmd.Flags().String("rust-home", "", "Value for the RUSTUP_HOME environment.")
+	RustCmd.Flags().String("cargo-home", "", "Value for the CARGO_HOME environment.")
+	RustCmd.Flags().BoolP("path", "p", false, "Configure the PATH environment variable.")
+	// rootCmd.AddCommand(RustCmd)
 }
