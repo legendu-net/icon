@@ -40,6 +40,7 @@ func init() {
 	rootCmd.AddCommand(shell.BashItCmd)
 	rootCmd.AddCommand(dev.GitCmd)
 	rootCmd.AddCommand(dev.GolangCmd)
+	rootCmd.AddCommand(dev.RustCmd)
 	rootCmd.AddCommand(dev.PoetryCmd)
 	rootCmd.AddCommand(ide.SpaceVimCmd)
 	rootCmd.AddCommand(ide.VscodeCmd)

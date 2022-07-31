@@ -119,7 +119,7 @@ func CopyEmbedFileToDir(sourceFile string, destinationDir string, mode os.FileMo
 	CopyEmbedFile(sourceFile, destinationFile, mode)
 }
 
-func RunCmd(cmd string) {
+func RunCmd(cmd string, env ...string) {
 	var command *exec.Cmd
 	switch runtime.GOOS {
 	case "windows":
@@ -129,6 +129,7 @@ func RunCmd(cmd string) {
 	default:
 		log.Fatal("ERROR - The OS ", runtime.GOOS, " is not supported!")
 	}
+	command.Env = append(os.Environ(), env...)
 	command.Stdin = os.Stdin
 	command.Stdout = os.Stdout
 	command.Stderr = os.Stderr

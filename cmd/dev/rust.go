@@ -1,12 +1,14 @@
 package dev
 
 import (
+	"log"
+	"os"
+	"path/filepath"
+	"runtime"
+
 	"github.com/spf13/cobra"
 	"golang.org/x/sys/unix"
 	"legendu.net/icon/utils"
-	"log"
-	"path/filepath"
-	"runtime"
 )
 
 func linkRust(cmd *cobra.Command, cargoHome string) {
@@ -38,21 +40,27 @@ func linkRust(cmd *cobra.Command, cargoHome string) {
 // Install and configure Rust.
 func rust(cmd *cobra.Command, args []string) {
 	rustupHome := utils.GetStringFlag(cmd, "rustup-home")
+	if rustupHome == "" {
+		rustupHome = filepath.Join(utils.UserHomeDir(), ".rustup")
+	}
 	cargoHome := utils.GetStringFlag(cmd, "cargo-home")
+	if cargoHome == "" {
+		cargoHome = filepath.Join(utils.UserHomeDir(), ".cargo")
+	}
 	if utils.GetBoolFlag(cmd, "install") {
 		switch runtime.GOOS {
 		case "linux", "darwin":
 			if utils.IsDebianSeries() {
 				command := utils.Format(`{prefix} apt-get update \
-						&& {prefix} apt-get install -y cmake libssl-dev pkg-config`, map[string]string{
+						&& {prefix} apt-get install -y gcc cmake libssl-dev pkg-config`, map[string]string{
 					"prefix": utils.GetCommandPrefix(true, map[string]uint32{}),
 				})
 				utils.RunCmd(command)
 			}
-			command := utils.Format(`RUSTUP_HOME={rustupHome} CARGO_HOME={cargoHome} PATH={cargoHome}/bin:$PATH \
+			command := utils.Format(`
 				curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | {prefix} bash -s -- -y \
-                && rustup component add rust-src rustfmt clippy \
-                && cargo install sccache cargo-cache cargo-edit`, map[string]string{
+                && {cargoHome}/bin/rustup component add rust-src rustfmt clippy \
+                && {cargoHome}/bin/cargo install sccache cargo-cache cargo-edit`, map[string]string{
 				"rustupHome": rustupHome,
 				"cargoHome":  cargoHome,
 				"prefix": utils.GetCommandPrefix(false, map[string]uint32{
@@ -60,7 +68,10 @@ func rust(cmd *cobra.Command, args []string) {
 					cargoHome:  unix.W_OK | unix.R_OK,
 				}),
 			})
-			utils.RunCmd(command)
+			//env := os.Environ()
+			//utils.RunCmd(command, env...)
+			utils.RunCmd(command, "RUSTUP_HOME="+rustupHome, "CARGO_HOME="+cargoHome, "PATH="+os.Getenv("PATH"))
+			// utils.RunCmd(command, "RUSTUP_HOME="+rustupHome, "CARGO_HOME="+cargoHome, env...)
 		default:
 		}
 	}
@@ -94,7 +105,7 @@ func init() {
 	RustCmd.Flags().BoolP("config", "c", false, "Configure Rust.")
 	RustCmd.Flags().BoolP("uninstall", "u", false, "Uninstall Rust.")
 	RustCmd.Flags().String("link-to-dir", "", "The directory to link commands (cargo and rustc) to.")
-	RustCmd.Flags().String("rust-home", "", "Value for the RUSTUP_HOME environment.")
+	RustCmd.Flags().String("rustup-home", "", "Value for the RUSTUP_HOME environment.")
 	RustCmd.Flags().String("cargo-home", "", "Value for the CARGO_HOME environment.")
 	RustCmd.Flags().BoolP("path", "p", false, "Configure the PATH environment variable.")
 	// rootCmd.AddCommand(RustCmd)
