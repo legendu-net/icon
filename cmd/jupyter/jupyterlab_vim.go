@@ -1,4 +1,4 @@
-package cmd
+package jupyter
 
 import (
 	"github.com/spf13/cobra"
@@ -10,7 +10,6 @@ func jupyterlab_vim(cmd *cobra.Command, args []string) {
 	prefix := utils.GetCommandPrefix(
 		utils.GetBoolFlag(cmd, "sudo"),
 		map[string]uint32{},
-		"ls",
 	)
 	if utils.GetBoolFlag(cmd, "install") {
 		command := utils.Format("{prefix} {pip_install} jupyterlab_vim", map[string]string{
@@ -42,7 +41,7 @@ func jupyterlab_vim(cmd *cobra.Command, args []string) {
 	}
 }
 
-var jvimCmd = &cobra.Command{
+var JLabVimCmd = &cobra.Command{
 	Use:     "jupyterlab_vim",
 	Aliases: []string{"jlab_vim", "jlabvim", "jvim"},
 	Short:   "Install and configure the jupyterlab_vim extension for JupyterLab.",
@@ -51,12 +50,12 @@ var jvimCmd = &cobra.Command{
 }
 
 func init() {
-	jvimCmd.Flags().BoolP("install", "i", false, "Install the jupyterlab_vim extension for JupyterLab.")
-	jvimCmd.Flags().Bool("uninstall", false, "Uninstall the jupyterlab_vim extension for JupyterLab.")
-	jvimCmd.Flags().BoolP("config", "c", false, "Configure the jupyterlab_vim extension for JupyterLab.")
-	jvimCmd.Flags().Bool("sudo", false, "Force using sudo.")
-	jvimCmd.Flags().Bool("enable", false, "Enable the jupyterlab_vim extension for JupyterLab.")
-	jvimCmd.Flags().Bool("disable", false, "Disable the jupyterlab_vim extension for JupyterLab.")
-	utils.AddPythonFlags(jvimCmd)
-	rootCmd.AddCommand(jvimCmd)
+	JLabVimCmd.Flags().BoolP("install", "i", false, "Install the jupyterlab_vim extension for JupyterLab.")
+	JLabVimCmd.Flags().Bool("uninstall", false, "Uninstall the jupyterlab_vim extension for JupyterLab.")
+	JLabVimCmd.Flags().BoolP("config", "c", false, "Configure the jupyterlab_vim extension for JupyterLab.")
+	JLabVimCmd.Flags().Bool("sudo", false, "Force using sudo.")
+	JLabVimCmd.Flags().Bool("enable", false, "Enable the jupyterlab_vim extension for JupyterLab.")
+	JLabVimCmd.Flags().Bool("disable", false, "Disable the jupyterlab_vim extension for JupyterLab.")
+	utils.AddPythonFlags(JLabVimCmd)
+	// rootCmd.AddCommand(jvimCmd)
 }

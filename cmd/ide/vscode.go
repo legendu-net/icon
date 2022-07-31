@@ -1,4 +1,4 @@
-package cmd
+package ide
 
 import (
 	"github.com/spf13/cobra"
@@ -16,9 +16,8 @@ func vscode(cmd *cobra.Command, args []string) {
 			if utils.IsDebianSeries() {
 				command := utils.Format("{prefix} apt-get update && {prefix} apt-get install {yes_s} vscode", map[string]string{
 					"prefix": utils.GetCommandPrefix(
-						utils.GetBoolFlag(cmd, "sudo"),
+						true,
 						map[string]uint32{},
-						"ls",
 					),
 					"yes_s": utils.BuildYesFlag(cmd),
 				})
@@ -26,9 +25,8 @@ func vscode(cmd *cobra.Command, args []string) {
 			} else if utils.IsFedoraSeries() {
 				command := utils.Format("{prefix} yum {yes_s} install vscode", map[string]string{
 					"prefix": utils.GetCommandPrefix(
-						utils.GetBoolFlag(cmd, "sudo"),
+						true,
 						map[string]uint32{},
-						"ls",
 					),
 					"yes_s": utils.BuildYesFlag(cmd),
 				})
@@ -65,9 +63,8 @@ func vscode(cmd *cobra.Command, args []string) {
 			if utils.IsDebianSeries() {
 				command := utils.Format("{prefix} apt-get purge {yes_s} vscode", map[string]string{
 					"prefix": utils.GetCommandPrefix(
-						utils.GetBoolFlag(cmd, "sudo"),
+						true,
 						map[string]uint32{},
-						"ls",
 					),
 					"yes_s": utils.BuildYesFlag(cmd),
 				})
@@ -75,9 +72,8 @@ func vscode(cmd *cobra.Command, args []string) {
 			} else if utils.IsFedoraSeries() {
 				command := utils.Format("{prefix} yum remove vscode", map[string]string{
 					"prefix": utils.GetCommandPrefix(
-						utils.GetBoolFlag(cmd, "sudo"),
+						true,
 						map[string]uint32{},
-						"ls",
 					),
 				})
 				utils.RunCmd(command)
@@ -87,7 +83,7 @@ func vscode(cmd *cobra.Command, args []string) {
 	}
 }
 
-var vscodeCmd = &cobra.Command{
+var VscodeCmd = &cobra.Command{
 	Use:     "visual_studio_code",
 	Aliases: []string{"vscode", "code"},
 	Short:   "Install and configure Visual Studio Code.",
@@ -96,9 +92,10 @@ var vscodeCmd = &cobra.Command{
 }
 
 func init() {
-	vscodeCmd.Flags().BoolP("install", "i", false, "Install Visual Studio Code.")
-	vscodeCmd.Flags().Bool("uninstall", false, "Uninstall Visual Studio Code.")
-	vscodeCmd.Flags().BoolP("config", "c", false, "Configure Visual Studio Code.")
-	vscodeCmd.Flags().StringP("user-dir", "d", "", "The configuration directory for Visual Studio Code.")
-	rootCmd.AddCommand(vscodeCmd)
+	VscodeCmd.Flags().BoolP("install", "i", false, "Install Visual Studio Code.")
+	VscodeCmd.Flags().Bool("uninstall", false, "Uninstall Visual Studio Code.")
+	VscodeCmd.Flags().BoolP("config", "c", false, "Configure Visual Studio Code.")
+	VscodeCmd.Flags().StringP("user-dir", "d", "", "The configuration directory for Visual Studio Code.")
+	VscodeCmd.Flags().BoolP("yes", "y", false, "Automatically yes to prompt questions.")
+	// rootCmd.AddCommand(vscodeCmd)
 }

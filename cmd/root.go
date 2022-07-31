@@ -2,6 +2,13 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
+	"legendu.net/icon/cmd/ai"
+	"legendu.net/icon/cmd/bigdata"
+	"legendu.net/icon/cmd/dev"
+	"legendu.net/icon/cmd/ide"
+	"legendu.net/icon/cmd/jupyter"
+	"legendu.net/icon/cmd/network"
+	"legendu.net/icon/cmd/shell"
 	"os"
 )
 
@@ -25,5 +32,18 @@ func Execute() {
 }
 
 func init() {
-	//rootCmd.PersistentFlags().Bool("sudo", false, "Run commands using sudo.")
+	rootCmd.AddCommand(network.DownloadGitHubReleaseCmd)
+	rootCmd.AddCommand(network.SshClientCmd)
+	rootCmd.AddCommand(network.SshServerCmd)
+	rootCmd.AddCommand(jupyter.IpythonCmd)
+	rootCmd.AddCommand(jupyter.JLabVimCmd)
+	rootCmd.AddCommand(shell.BashItCmd)
+	rootCmd.AddCommand(dev.GitCmd)
+	rootCmd.AddCommand(dev.GolangCmd)
+	rootCmd.AddCommand(dev.RustCmd)
+	rootCmd.AddCommand(dev.PoetryCmd)
+	rootCmd.AddCommand(ide.SpaceVimCmd)
+	rootCmd.AddCommand(ide.VscodeCmd)
+	rootCmd.AddCommand(ai.PyTorchCmd)
+	rootCmd.AddCommand(bigdata.SparkCmd)
 }
