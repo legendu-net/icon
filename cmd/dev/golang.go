@@ -92,6 +92,7 @@ var GolangCmd = &cobra.Command{
 
 func init() {
 	GolangCmd.Flags().BoolP("install", "i", false, "Install Golang.")
+	GolangCmd.Flags().BoolP("uninstall", "u", false, "Uninstall Golang.")
 	GolangCmd.Flags().BoolP("config", "c", false, "Configure Golang.")
 	// rootCmd.AddCommand(golangCmd)
 }
