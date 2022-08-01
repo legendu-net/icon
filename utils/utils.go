@@ -86,11 +86,11 @@ func CopyDir(sourceDir string, destinationDir string) {
 func Chmod600(path string) {
 	if ExistsDir(path) {
 		os.Chmod(path, 0o700)
+		for _, entry := range ReadDir(path) {
+			Chmod600(filepath.Join(path, entry.Name()))
+		}
 	} else {
 		os.Chmod(path, 0o600)
-	}
-	for _, entry := range ReadDir(path) {
-		Chmod600(filepath.Join(path, entry.Name()))
 	}
 }
 
@@ -387,6 +387,7 @@ func AddPathShell(paths []string, config_file string) {
 # set $PATH
 _PATHS=(
 	$(ls -d $HOME/*/bin 2> /dev/null)
+	$(ls -d $HOME/.*/bin 2> /dev/null)
 	$(ls -d $HOME/Library/Python/3.*/bin 2> /dev/null)
 )
 for ((_i=${#_PATHS[@]}-1; _i>=0; _i--)); do
