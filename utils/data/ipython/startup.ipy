@@ -131,7 +131,7 @@ def o(line: str) -> None:
     """Open a file using the default application.
     """
     if is_macos():
-        run_cmd(f"open {line} &")
+        os.system(f"open {line} &")
         return
     if is_linux():
         if Path("/usr/bin/dolphin").is_file():
@@ -144,7 +144,7 @@ def o(line: str) -> None:
             cmd = f"/usr/bin/thunar {line} &"
         else:
             raise FileNotFoundError("No valid file manager is found!")
-        run_cmd(cmd)
+        os.system(cmd)
         return
 
 

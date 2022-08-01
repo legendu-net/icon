@@ -9,6 +9,7 @@ import (
 	"legendu.net/icon/cmd/jupyter"
 	"legendu.net/icon/cmd/network"
 	"legendu.net/icon/cmd/shell"
+	"legendu.net/icon/cmd/virtualization"
 	"os"
 )
 
@@ -46,4 +47,5 @@ func init() {
 	rootCmd.AddCommand(ide.VscodeCmd)
 	rootCmd.AddCommand(ai.PyTorchCmd)
 	rootCmd.AddCommand(bigdata.SparkCmd)
+	rootCmd.AddCommand(virtualization.DockerCmd)
 }
