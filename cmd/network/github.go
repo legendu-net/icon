@@ -5,6 +5,7 @@ import (
 	"log"
 	"strings"
 
+	"github.com/mcuadros/go-version"
 	"github.com/spf13/cobra"
 	"legendu.net/icon/utils"
 )
@@ -36,7 +37,8 @@ type AssetInfo struct {
 }
 
 type ReleaseInfo struct {
-	Assets []AssetInfo `json:"assets"`
+	TagName string      `json:"tag_name"`
+	Assets  []AssetInfo `json:"assets"`
 }
 
 func assetNameContainKeywords(name string, keywords []string, keyworkdsExclude []string) bool {
@@ -53,6 +55,26 @@ func assetNameContainKeywords(name string, keywords []string, keyworkdsExclude [
 	return true
 }
 
+func filterReleases(url string, constraint string) ReleaseInfo {
+	var releases []ReleaseInfo
+	json.Unmarshal(utils.HttpGetAsBytes(url), &releases)
+	c := version.NewConstrainGroupFromString(constraint)
+	for _, release := range releases {
+		if c.Match(release.TagName) {
+			return release
+		}
+	}
+	log.Fatal("No release matching the version constraint is found!")
+	return ReleaseInfo{}
+}
+
+func getLatestRelease(releaseUrl string) ReleaseInfo {
+	url := releaseUrl + "/latest"
+	var releaseInfo ReleaseInfo
+	json.Unmarshal(utils.HttpGetAsBytes(url), &releaseInfo)
+	return releaseInfo
+}
+
 // Download a release from GitHub.
 // @param args: The arguments to parse.
 // If None, the arguments from command-line are parsed.
@@ -61,16 +83,13 @@ func downloadGitHubRelease(cmd *cobra.Command, args []string) {
 	// get the version to download
 	version := utils.GetStringFlag(cmd, "version")
 	// form the release URL
-	var url string
-	if version == "" {
-		url = getReleaseUrl(repo) + "/latest"
-	} else if version[0] != 'v' {
-		version = "v" + version
-		url = getReleaseUrl(repo) + "/tags/" + version
-	}
-	// parse JSON
+	releaseUrl := getReleaseUrl(repo)
 	var releaseInfo ReleaseInfo
-	json.Unmarshal(utils.HttpGetAsBytes(url), &releaseInfo)
+	if version == "" {
+		releaseInfo = getLatestRelease(releaseUrl)
+	} else {
+		releaseInfo = filterReleases(releaseUrl, version)
+	}
 	// parse browser download url
 	keywords := utils.GetStringSliceFlag(cmd, "kwd")
 	keywordsExclude := utils.GetStringSliceFlag(cmd, "KWD")

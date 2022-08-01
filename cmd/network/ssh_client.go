@@ -20,7 +20,6 @@ func copySshcSettingsFromHost() {
 		utils.RemoveAll(sshHome)
 		utils.CopyDir(sshSrc, sshHome)
 		adjustPathInConfig()
-		log.Printf("%s is copied to %s.\n", sshSrc, sshHome)
 	}
 }
 
@@ -37,7 +36,6 @@ func adjustPathInConfig() {
 func copySshcConfig() {
 	srcFile := "data/ssh/client/config"
 	utils.CopyEmbedFileToDir(srcFile, sshHome, 0o600)
-	log.Printf("%s is copied to %s.\n", srcFile, sshHome)
 }
 
 // Install and configure SSH client.
