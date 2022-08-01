@@ -14,7 +14,7 @@ func vscode(cmd *cobra.Command, args []string) {
 		switch runtime.GOOS {
 		case "linux":
 			if utils.IsDebianSeries() {
-				command := utils.Format("{prefix} apt-get update && {prefix} apt-get install {yes_s} vscode", map[string]string{
+				command := utils.Format("{prefix} snap install --classic code", map[string]string{
 					"prefix": utils.GetCommandPrefix(
 						true,
 						map[string]uint32{},
