@@ -39,6 +39,16 @@ function install_icon() {
     echo "Installing icon ..."
     tar zxf /tmp/icon.tar.gz -C /usr/local/bin/
     chmod +x /usr/local/bin/icon
+    add_script_ldc
+}
+
+function add_script_ldc() {
+    echo "Creating script /usr/local/bin/ldc ..."
+    cat << EOF > /usr/local/bin/ldc
+#/usr/bin/env bash
+icon ldc \$@
+EOF
+    chmod +x /usr/local/bin/ldc
 }
 
 if [[ "${BASH_SOURCE[0]}" == "" || "${BASH_SOURCE[0]}" == "$0" ]]; then
