@@ -173,6 +173,7 @@ func init() {
 	SparkCmd.Flags().String("hadoop-version", "3.2", "The version of Spark version to install.")
 	SparkCmd.Flags().StringP("directory", "d", "/opt", "The directory to install Spark.")
 	SparkCmd.Flags().BoolP("install", "i", false, "Install Spark.")
+	SparkCmd.Flags().BoolP("uninstall", "u", false, "Uninstall Spark.")
 	SparkCmd.Flags().BoolP("config", "c", false, "Configure Spark.")
 	// rootCmd.AddCommand(sparkCmd)
 }

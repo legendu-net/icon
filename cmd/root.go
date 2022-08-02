@@ -9,6 +9,7 @@ import (
 	"legendu.net/icon/cmd/jupyter"
 	"legendu.net/icon/cmd/network"
 	"legendu.net/icon/cmd/shell"
+	"legendu.net/icon/cmd/virtualization"
 	"os"
 )
 
@@ -38,6 +39,7 @@ func init() {
 	rootCmd.AddCommand(jupyter.IpythonCmd)
 	rootCmd.AddCommand(jupyter.JLabVimCmd)
 	rootCmd.AddCommand(shell.BashItCmd)
+	rootCmd.AddCommand(shell.HyperCmd)
 	rootCmd.AddCommand(dev.GitCmd)
 	rootCmd.AddCommand(dev.GolangCmd)
 	rootCmd.AddCommand(dev.RustCmd)
@@ -46,4 +48,5 @@ func init() {
 	rootCmd.AddCommand(ide.VscodeCmd)
 	rootCmd.AddCommand(ai.PyTorchCmd)
 	rootCmd.AddCommand(bigdata.SparkCmd)
+	rootCmd.AddCommand(virtualization.DockerCmd)
 }

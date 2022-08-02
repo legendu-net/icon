@@ -64,7 +64,8 @@ func stripSpaceVim() {
 func spaceVim(cmd *cobra.Command, args []string) {
 	if utils.GetBoolFlag(cmd, "install") {
 		pipInstall := utils.BuildPipInstall(cmd)
-		utils.RunCmd("curl -sLf https://spacevim.org/install.sh | bash")
+		utils.RunCmd(`curl -sLf https://spacevim.org/install.sh | bash \
+			&& cd ~/.SpaceVim && git checkout v1.9.0`)
 		utils.RunCmd(utils.Format("{pip_install} python-lsp-server", map[string]string{
 			"pip_install": pipInstall,
 		}))
