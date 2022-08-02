@@ -2,7 +2,6 @@ package dev
 
 import (
 	"log"
-	"os"
 	"path/filepath"
 	"runtime"
 
