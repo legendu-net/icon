@@ -66,5 +66,22 @@ func init() {
 	HyperCmd.Flags().BoolP("install", "i", false, "Install the Hyper terminal.")
 	HyperCmd.Flags().Bool("uninstall", false, "Uninstall Hyper terminal.")
 	HyperCmd.Flags().BoolP("config", "c", false, "Configure the Hyper terminal.")
+	HyperCmd.Flags().StringP("repo", "r", "", "A GitHub repo of the form 'user_name/repo_name'.")
+	err := HyperCmd.MarkFlagRequired("repo")
+	if err != nil {
+		log.Fatal("ERROR - ", err)
+	}
+	HyperCmd.Flags().StringP("version", "v", "", "The version of the release.")
+	HyperCmd.Flags().StringSliceP("kwd", "k", []string{}, "Keywords that the assert's name contains.")
+	HyperCmd.Flags().StringSliceP("KWD", "K", []string{}, "Keywords that the assert's name contains.")
+	err = HyperCmd.MarkFlagRequired("kwd")
+	if err != nil {
+		log.Fatal("ERROR - ", err)
+	}
+	HyperCmd.Flags().StringP("output", "o", "", "The output path for the downloaded asset.")
+	err = HyperCmd.MarkFlagRequired("output")
+	if err != nil {
+		log.Fatal("ERROR - ", err)
+	}
 	// rootCmd.AddCommand(HyperCmd)
 }

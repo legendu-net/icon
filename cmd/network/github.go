@@ -129,5 +129,5 @@ func init() {
 	if err != nil {
 		log.Fatal("ERROR - ", err)
 	}
-	// cmd.RootCmd.AddCommand(downloadGitHubReleaseCmd)
+	// rootCmd.AddCommand(downloadgitHubReleaseCmd)
 }
