@@ -545,3 +545,10 @@ func IsSocket(path string) bool {
 	}
 	return fileInfo.Mode().Type() == fs.ModeSocket
 }
+
+func LinkFile(srcFile string, dstLink string) {
+	err := os.Symlink(srcFile, dstLink)
+	if err != nil {
+		log.Fatalf("Failed to link the file %s to %s!\n", srcFile, dstLink)
+	}
+}
