@@ -68,10 +68,7 @@ func rust(cmd *cobra.Command, args []string) {
 					cargoHome:  unix.W_OK | unix.R_OK,
 				}),
 			})
-			//env := os.Environ()
-			//utils.RunCmd(command, env...)
-			utils.RunCmd(command, "RUSTUP_HOME="+rustupHome, "CARGO_HOME="+cargoHome, "PATH="+os.Getenv("PATH"))
-			// utils.RunCmd(command, "RUSTUP_HOME="+rustupHome, "CARGO_HOME="+cargoHome, env...)
+			utils.RunCmd(command, "RUSTUP_HOME="+rustupHome, "CARGO_HOME="+cargoHome)
 		default:
 		}
 	}
