@@ -28,41 +28,44 @@
 
 # Enable autocomplete layer
 [[layers]]
-name = "autocomplete"
-auto-completion-return-key-behavior = "complete"
-auto-completion-tab-key-behavior = "smart"
+    name = "autocomplete"
+    auto-completion-return-key-behavior = "complete"
+    auto-completion-tab-key-behavior = "smart"
 
 [[layers]]
-name = "checkers"
-enable = false
+    name = "checkers"
+    enable = false
 
 [[layers]]
-name = "lsp"
-filetypes = [
-  "python",
-#  "sh",
-#  "rust",
-#  "javascript"
-]
+    name = "lang#python"
 
 [[layers]]
-name = "shell"
-default_position = "top"
-default_height = 30
+    name = "lsp"
+    enabled_clients = ['pylsp']
+    filetypes = [
+    "python",
+    #  "sh",
+    #  "rust",
+    #  "javascript"
+    ]
+
+[[layers]]
+    name = "shell"
+    default_position = "top"
+    default_height = 30
 
 [[custom_plugins]]
-name = "vim-scripts/dbext.vim"
-merged = false
+    name = "vim-scripts/dbext.vim"
+    merged = false
 
 [[custom_plugins]]
-repo = "machakann/vim-swap"
-merged = false
+    repo = "machakann/vim-swap"
+    merged = false
 
 [[custom_plugins]]
-repo = "glacambre/firenvim"
-merged = false
+    repo = "glacambre/firenvim"
+    merged = false
 
 [[custom_plugins]]
-repo = "luk400/vim-jukit"
-merged = false
-
+    repo = "luk400/vim-jukit"
+    merged = false

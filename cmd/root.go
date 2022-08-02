@@ -39,6 +39,7 @@ func init() {
 	rootCmd.AddCommand(jupyter.IpythonCmd)
 	rootCmd.AddCommand(jupyter.JLabVimCmd)
 	rootCmd.AddCommand(shell.BashItCmd)
+	rootCmd.AddCommand(shell.HyperCmd)
 	rootCmd.AddCommand(dev.GitCmd)
 	rootCmd.AddCommand(dev.GolangCmd)
 	rootCmd.AddCommand(dev.RustCmd)
