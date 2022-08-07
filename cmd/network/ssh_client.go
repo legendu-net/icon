@@ -25,11 +25,11 @@ func copySshcSettingsFromHost() {
 
 func adjustPathInConfig() {
 	path := filepath.Join(sshHome, "config")
-	text := utils.ReadTextFile(path)
+	text := utils.ReadFileAsString(path)
 	pattern := "IdentityFile=/Users/"
 	if strings.Contains(text, pattern) {
 		text = strings.ReplaceAll(text, pattern, "IdentityFile=/home/")
-		utils.WriteTextFile(path, text)
+		utils.WriteTextFile(path, text, 0o600)
 	}
 }
 

@@ -41,18 +41,12 @@ func copyFile(sourceFile string, destinationFile string) {
 	if err != nil {
 		log.Fatal("ERROR - ", err)
 	}
-	err = ioutil.WriteFile(destinationFile, input, 0600)
-	if err != nil {
-		log.Fatal("ERROR - ", err)
-	}
+	WriteFile(destinationFile, input, 0o600)
 	fileInfo, err := os.Stat(sourceFile)
 	if err != nil {
 		log.Fatal("ERROR - ", err)
 	}
-	err = os.Chmod(destinationFile, fileInfo.Mode())
-	if err != nil {
-		log.Fatal("ERROR - ", err)
-	}
+	Chmod(destinationFile, fileInfo.Mode())
 	log.Printf("%s is copied to %s.\n", sourceFile, destinationFile)
 }
 
@@ -83,14 +77,21 @@ func CopyDir(sourceDir string, destinationDir string) {
 	}
 }
 
+func Chmod(path string, mode fs.FileMode) {
+	err := os.Chmod(path, mode)
+	if err != nil {
+		log.Fatal("ERROR - ", err)
+	}
+}
+
 func Chmod600(path string) {
 	if ExistsDir(path) {
-		os.Chmod(path, 0o700)
+		Chmod(path, 0o700)
 		for _, entry := range ReadDir(path) {
 			Chmod600(filepath.Join(path, entry.Name()))
 		}
 	} else {
-		os.Chmod(path, 0o600)
+		Chmod(path, 0o600)
 	}
 }
 
@@ -98,19 +99,13 @@ func CopyEmbedFile(sourceFile string, destinationFile string, mode os.FileMode) 
 	bytes := ReadEmbedFile(sourceFile)
 	dir := filepath.Dir(destinationFile)
 	if !ExistsPath(dir) {
-		err := os.MkdirAll(dir, 0700)
+		err := os.MkdirAll(dir, 0o700)
 		if err != nil {
 			log.Fatal("ERROR - ", err)
 		}
 	}
-	err := ioutil.WriteFile(destinationFile, bytes, 0600)
-	if err != nil {
-		log.Fatal("ERROR - ", err)
-	}
-	err = os.Chmod(destinationFile, mode)
-	if err != nil {
-		log.Fatal("ERROR - ", err)
-	}
+	WriteFile(destinationFile, bytes, 0o600)
+	Chmod(destinationFile, mode)
 	log.Printf("%s is copied to %s.\n", sourceFile, destinationFile)
 }
 
@@ -334,24 +329,27 @@ func ReadAllAsText(readCloser io.ReadCloser) string {
 	return string(bytes)
 }
 
-func ReadTextFile(path string) string {
+func ReadFile(path string) []byte {
 	bytes, err := ioutil.ReadFile(path)
 	if err != nil {
 		log.Fatal("ERROR - ", err)
 	}
-	return string(bytes)
+	return bytes
 }
 
-func WriteTextFile(path string, text string) {
-	f, err := os.OpenFile(path, os.O_CREATE|os.O_WRONLY, 0644)
-	defer f.Close()
+func ReadFileAsString(path string) string {
+	return string(ReadFile(path))
+}
+
+func WriteFile(fileName string, data []byte, perm fs.FileMode) {
+	err := ioutil.WriteFile(fileName, data, perm)
 	if err != nil {
 		log.Fatal("ERROR - ", err)
 	}
-	_, err = f.WriteString(text)
-	if err != nil {
-		log.Fatal("ERROR - ", err)
-	}
+}
+
+func WriteTextFile(path string, text string, perm fs.FileMode) {
+	WriteFile(path, []byte(text), perm)
 }
 
 func AppendToTextFile(path string, text string) {
@@ -370,7 +368,7 @@ func AppendToTextFile(path string, text string) {
 // @param paths: Absolute paths to add into PATH.
 // @param config_file: The path of a shell's configuration file.
 func AddPathShell(paths []string, config_file string) {
-	text := ReadTextFile(config_file)
+	text := ReadFileAsString(config_file)
 	pattern := "\n_PATHS=(\n"
 	if strings.Contains(text, pattern) {
 		lines := ""
@@ -419,6 +417,13 @@ func CpuInfo() []cpu.InfoStat {
 
 func BuildYesFlag(cmd *cobra.Command) string {
 	return IfElseString(GetBoolFlag(cmd, "yes"), "-y", "")
+}
+
+func BuildPipUninstall(cmd *cobra.Command) string {
+	python := GetStringFlag(cmd, "python")
+	return Format("{python} -m pip uninstall", map[string]string{
+		"python": python,
+	})
 }
 
 func BuildPipInstall(cmd *cobra.Command) string {
