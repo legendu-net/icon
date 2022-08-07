@@ -20,7 +20,7 @@ endif
 // Enable/disable true color for SpaceVim.
 func configureSpaceVimTrueColor(trueColor bool) {
 	path := filepath.Join(utils.UserHomeDir(), ".SpaceVim.d/init.toml")
-	lines := strings.Split(utils.ReadTextFile(path), "\n")
+	lines := strings.Split(utils.ReadFileAsString(path), "\n")
 	for idx, line := range lines {
 		if strings.HasPrefix(strings.TrimSpace(line), "enable_guicolors") {
 			if trueColor {
@@ -31,7 +31,7 @@ func configureSpaceVimTrueColor(trueColor bool) {
 		}
 	}
 	text := strings.Join(lines, "\n")
-	utils.WriteTextFile(path, text)
+	utils.WriteTextFile(path, text, 0o600)
 }
 
 func stripSpaceVim() {

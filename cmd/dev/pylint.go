@@ -1,12 +1,36 @@
 package dev
 
 import (
+	"github.com/elliotchance/orderedmap/v2"
+	"github.com/pelletier/go-toml/v2"
 	"github.com/spf13/cobra"
 	"legendu.net/icon/utils"
 	"log"
 	"path/filepath"
-	"runtime"
 )
+
+// Update map1 using map2.
+func UpdateMap(map1 orderedmap.OrderedMap[string, any], map2 orderedmap.OrderedMap[string, any]) {
+	for _, key2 := range map2.Keys() {
+		val2, _ := map2.Get(key2)
+		val1, map1HasKey2 := map1.Get(key2)
+		if !map1HasKey2 {
+			map1.Set(key2, val2)
+			continue
+		}
+		switch val2.(type) {
+		case orderedmap.OrderedMap[string, any]:
+			switch val1.(type) {
+			case orderedmap.OrderedMap[string, any]:
+				UpdateMap(val1.(orderedmap.OrderedMap[string, any]), val2.(orderedmap.OrderedMap[string, any]))
+			default:
+				map1.Set(key2, val2)
+			}
+		default:
+			map1.Set(key2, val2)
+		}
+	}
+}
 
 // Install and configure pylint.
 func pylint(cmd *cobra.Command, args []string) {
@@ -17,20 +41,27 @@ func pylint(cmd *cobra.Command, args []string) {
 		utils.RunCmd(command)
 	}
 	if utils.GetBoolFlag(cmd, "config") {
-        srcFile = "data/pylint/pyproject.toml"
-        dictSrc = tomlkit.loads(src_file.read_text())
-        des_file = args.dst_dir / "pyproject.toml"
-        if des_file.is_file(){
-            dictDes = tomlkit.loads(des_file.read_text())
-		} else {
-            dictDes = {}
+		srcFile := "data/pylint/pyproject.toml"
+		var srcMap orderedmap.OrderedMap[string, any]
+		toml.Unmarshal(utils.ReadEmbedFile(srcFile), &srcMap)
+		destFile := filepath.Join(utils.GetStringFlag(cmd, "dest-dir"), "pyproject.toml")
+		var destMap orderedmap.OrderedMap[string, any]
+		if utils.ExistsFile(destFile) {
+			toml.Unmarshal(utils.ReadFile(destFile), &destMap)
 		}
-        update_dict(dic_des, dic_src, recursive=True)
-        des_file.write_text(tomlkit.dumps(dic_des))
-        logging.info("pylint is configured via %s.", des_file)
+		UpdateMap(destMap, srcMap)
+		bytes, err := toml.Marshal(destMap)
+		if err != nil {
+			log.Fatal("ERROR - ", err)
+		}
+		utils.WriteFile(destFile, bytes, 0o600)
+		log.Printf("pylint is configured via %s.", destFile)
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
-		run_cmd(f"{args.pip_uninstall} pylint")
+		command := utils.Format("{pip_uninstall} pylint", map[string]string{
+			"pip_uninstall": utils.BuildPipUninstall(cmd),
+		})
+		utils.RunCmd(command)
 	}
 }
 
