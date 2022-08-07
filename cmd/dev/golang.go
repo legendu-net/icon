@@ -37,13 +37,19 @@ func golang(cmd *cobra.Command, args []string) {
 		switch runtime.GOOS {
 		case "windows":
 		case "darwin":
-			// brew_install_safe("go")
+			utils.BrewInstallSafe([]string{"go"})
 		case "linux":
 			ver := getGolangVersion()
 			url := strings.ReplaceAll("https://go.dev/dl/go{ver}.linux-amd64.tar.gz", "{ver}", ver)
 			goTgz := utils.DownloadFile(url, "go_*.tar.gz", true)
 			cmd := utils.Format(`{prefix} rm -rf /usr/local/go \
-						&& {prefix} tar -C /usr/local/ -xzf {goTgz}`,
+						&& {prefix} tar -C /usr/local/ -xzf {goTgz}\
+						&& {prefix} rm -rf /usr/local/go/pkg/*/cmd \
+							/usr/local/go/pkg/bootstrap \
+							/usr/local/go/pkg/obj \
+							/usr/local/go/pkg/tool/*/api \
+							/usr/local/go/pkg/tool/*/go_bootstrap \
+							/usr/local/go/src/cmd/dist/dist`,
 				map[string]string{
 					"prefix": prefix,
 					"goTgz":  goTgz,
