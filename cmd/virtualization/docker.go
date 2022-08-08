@@ -91,6 +91,7 @@ func init() {
 	DockerCmd.Flags().BoolP("install", "i", false, "Install Rust.")
 	DockerCmd.Flags().BoolP("config", "c", false, "Configure Rust.")
 	DockerCmd.Flags().BoolP("uninstall", "u", false, "Uninstall Rust.")
+	DockerCmd.Flags().BoolP("yes", "y", false, "Automatically yes to prompt questions.")
 	user := utils.GetCurrentUser().Username
 	DockerCmd.Flags().String("user-to-docker", utils.IfElseString(user == "root", "", user), "Add the specified user to the docker group.")
 	// rootCmd.AddCommand(RustCmd)
