@@ -49,6 +49,8 @@ func ldc(cmd *cobra.Command, args []string) {
 		"run",
 		"-it",
 		"--init",
+		"--cap-add", 
+		"SYS_ADMIN",
 		"--platform",
 		"linux/amd64",
 		"--log-opt",
