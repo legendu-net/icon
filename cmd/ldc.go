@@ -50,7 +50,7 @@ func ldc(cmd *cobra.Command, args []string) {
 		"-it",
 		"--init",
 		"--privileged",
-		"--cap-add", 
+		"--cap-add",
 		"SYS_ADMIN",
 		"--platform",
 		"linux/amd64",
