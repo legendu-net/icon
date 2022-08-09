@@ -16,7 +16,10 @@ func git(cmd *cobra.Command, args []string) {
 		switch runtime.GOOS {
 		case "linux":
 			if utils.IsDebianSeries() {
-				command := utils.Format("{prefix} apt-get update && {prefix} apt-get install {yes_s} git git-lfs", map[string]string{
+				network.DownloadGitHubRelease("dandavison/delta", "", []string{"x86_64", "linux", "gnu"}, []string{}, "/tmp/git-delta.tar.gz")
+				command := utils.Format(`{prefix} apt-get update && {prefix} apt-get install {yes_s} git git-lfs \
+					&& tar -zxvf /tmp/git-delta.tar.gz -C /usr/local/bin/ --wildcards --no-anchored delta --strip=1
+					&& rm /tmp/git-delta.tar.gz`, map[string]string{
 					"prefix": utils.GetCommandPrefix(
 						true,
 						map[string]uint32{},
