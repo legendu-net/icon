@@ -51,8 +51,7 @@ func rust(cmd *cobra.Command, args []string) {
 		case "linux", "darwin":
 			if utils.IsDebianSeries() {
 				command := utils.Format(`{prefix} apt-get update \
-						&& {prefix} apt-get install -y gcc cmake libssl-dev pkg-config \
-						`, map[string]string{
+						&& {prefix} apt-get install -y gcc cmake libssl-dev pkg-config`, map[string]string{
 					"prefix": utils.GetCommandPrefix(true, map[string]uint32{}),
 				})
 				utils.RunCmd(command)
