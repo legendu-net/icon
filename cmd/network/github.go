@@ -78,10 +78,20 @@ func getLatestRelease(releaseUrl string) ReleaseInfo {
 // Download a release from GitHub.
 // @param args: The arguments to parse.
 // If None, the arguments from command-line are parsed.
-func DownloadGitHubRelease(cmd *cobra.Command, args []string) {
-	repo := utils.GetStringFlag(cmd, "repo")
-	// get the version to download
-	version := utils.GetStringFlag(cmd, "version")
+func DownloadGitHubReleaseArgs(cmd *cobra.Command, args []string) {
+	DownloadGitHubRelease(
+		utils.GetStringFlag(cmd, "repo"),
+		utils.GetStringFlag(cmd, "version"),
+		utils.GetStringSliceFlag(cmd, "kwd"),
+		utils.GetStringSliceFlag(cmd, "KWD"),
+		utils.GetStringFlag(cmd, "output"),
+	)
+}
+
+// Download a release from GitHub.
+// @param args: The arguments to parse.
+// If None, the arguments from command-line are parsed.
+func DownloadGitHubRelease(repo string, version string, keywords []string, keywordsExclude []string, output string) {
 	// form the release URL
 	releaseUrl := getReleaseUrl(repo)
 	var releaseInfo ReleaseInfo
@@ -91,8 +101,6 @@ func DownloadGitHubRelease(cmd *cobra.Command, args []string) {
 		releaseInfo = filterReleases(releaseUrl, version)
 	}
 	// parse browser download url
-	keywords := utils.GetStringSliceFlag(cmd, "kwd")
-	keywordsExclude := utils.GetStringSliceFlag(cmd, "KWD")
 	var browserDownloadUrl string
 	for _, assert := range releaseInfo.Assets {
 		if assetNameContainKeywords(assert.Name, keywords, keywordsExclude) {
@@ -100,7 +108,7 @@ func DownloadGitHubRelease(cmd *cobra.Command, args []string) {
 		}
 	}
 	// download the asset
-	utils.DownloadFile(browserDownloadUrl, utils.GetStringFlag(cmd, "output"), false)
+	utils.DownloadFile(browserDownloadUrl, output, false)
 }
 
 var DownloadGitHubReleaseCmd = &cobra.Command{
@@ -108,7 +116,7 @@ var DownloadGitHubReleaseCmd = &cobra.Command{
 	Aliases: []string{"download_github", "from_github", "github_release"},
 	Short:   "Download file from GitHub.",
 	//Args:  cobra.ExactArgs(1),
-	Run: DownloadGitHubRelease,
+	Run: DownloadGitHubReleaseArgs,
 }
 
 func init() {

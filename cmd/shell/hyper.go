@@ -15,7 +15,7 @@ func hyper(cmd *cobra.Command, args []string) {
 		switch runtime.GOOS {
 		case "linux":
 			if utils.IsDebianSeries() {
-				network.DownloadGitHubRelease(cmd, args)
+				network.DownloadGitHubReleaseArgs(cmd, args)
 				command := utils.Format("{prefix} apt-get update && {prefix} apt-get install {yes_s} {path}", map[string]string{
 					"prefix": utils.GetCommandPrefix(true, map[string]uint32{}),
 					"yes_s":  utils.BuildYesFlag(cmd),
@@ -23,7 +23,7 @@ func hyper(cmd *cobra.Command, args []string) {
 				})
 				utils.RunCmd(command)
 			} else if utils.IsFedoraSeries() {
-				network.DownloadGitHubRelease(cmd, args)
+				network.DownloadGitHubReleaseArgs(cmd, args)
 				command := utils.Format("{prefix} yum install {yes_s} {path}", map[string]string{
 					"prefix": utils.GetCommandPrefix(true, map[string]uint32{}),
 					"yes_s":  utils.BuildYesFlag(cmd),
