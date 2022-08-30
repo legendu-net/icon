@@ -151,7 +151,9 @@ def symlink_blog() -> None:
     """Create symbolic link for the blog directory 
         to make it easier to use.
     """
-    dstfile = HOME / ".local/bin/blog"
+    local_bin = HOME / ".local/bin"
+    local_bin.mkdir(parents=True, exist_ok=True)
+    dstfile = local_bin / "blog"
     paths = [
         HOME / "archives/blog/blog.py",
         Path("/workdir/archives/blog/blog.py"),
