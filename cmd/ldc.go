@@ -42,6 +42,10 @@ func ldc(cmd *cobra.Command, args []string) {
 	if userName == "" {
 		userName = currentUser.Username
 	}
+	password := utils.GetStringFlag(cmd, "password")
+	if password == "" {
+		password = userName
+	}
 	userId := currentUser.Uid
 	groupId := currentUser.Gid
 	command := []string{
@@ -61,7 +65,7 @@ func ldc(cmd *cobra.Command, args []string) {
 		"-e",
 		"DOCKER_USER_ID=" + userId,
 		"-e",
-		"DOCKER_PASSWORD=" + userName,
+		"DOCKER_PASSWORD=" + password,
 		"-e",
 		"DOCKER_GROUP_ID=" + groupId,
 		"-e",
@@ -72,7 +76,9 @@ func ldc(cmd *cobra.Command, args []string) {
 	cwd := utils.Getwd()
 	command = append(command, "-v", cwd+":/workdir")
 	home := utils.UserHomeDir()
-	command = append(command, "-v", filepath.Dir(home)+":/home_host")
+	if utils.GetBoolFlag(cmd, "mount-home") {
+		command = append(command, "-v", filepath.Dir(home)+":/home_host")
+	}
 	detach := utils.GetBoolFlag(cmd, "detach")
 	if detach {
 		command[2] = "-d"
@@ -117,9 +123,11 @@ var ldcCmd = &cobra.Command{
 }
 
 func init() {
-	ldcCmd.Flags().BoolP("detach", "d", false, "If specified, run container in background and print container ID.")
+	ldcCmd.Flags().BoolP("detach", "d", false, "Run container in background and print container ID.")
 	ldcCmd.Flags().IntP("port", "p", 0, "The port on the Docker host to forward to the port inside the Docker container.")
 	ldcCmd.Flags().StringP("user", "u", "", "The user to create in the Docker container.")
+	ldcCmd.Flags().StringP("password", "P", "", "The default password for the user (to create in the Docker container).")
 	ldcCmd.Flags().StringSlice("extra-port-mappings", []string{}, "Extra port mappings.")
+	ldcCmd.Flags().BoolP("mount-home", "m", false, "Mount /home on the host as /home_host in the Docker container.")
 	rootCmd.AddCommand(ldcCmd)
 }
