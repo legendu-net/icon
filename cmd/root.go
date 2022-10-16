@@ -45,6 +45,7 @@ func init() {
 	rootCmd.AddCommand(dev.RustCmd)
 	rootCmd.AddCommand(dev.PoetryCmd)
 	rootCmd.AddCommand(dev.PylintCmd)
+	rootCmd.AddCommand(ide.NeovimCmd)
 	rootCmd.AddCommand(ide.SpaceVimCmd)
 	rootCmd.AddCommand(ide.VscodeCmd)
 	rootCmd.AddCommand(ai.PyTorchCmd)
