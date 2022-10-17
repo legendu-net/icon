@@ -1,6 +1,7 @@
 package shell
 
 import (
+	"github.com/shirou/gopsutil/host"
 	"github.com/spf13/cobra"
 	"legendu.net/icon/cmd/network"
 	"legendu.net/icon/utils"
@@ -9,13 +10,42 @@ import (
 	"runtime"
 )
 
+func buildGithubCmd() *cobra.Command {
+	var downloadGitHubReleaseCmd = &cobra.Command{}
+	downloadGitHubReleaseCmd.Flags().StringP("repo", "r", "vercel/hyper", "")
+	keywords := []string{"linux"}
+	if utils.IsDebianSeries() {
+		keywords = append(keywords, "deb")
+	} else if utils.IsFedoraSeries() {
+		keywords = append(keywords, "rpm")
+	} else {
+		keywords = append(keywords, "appimage")
+	}
+	info, err := host.Info()
+	if err != nil {
+		log.Fatal(err)
+	}
+	switch info.KernelArch {
+	case "x86_64":
+		keywords = append(keywords, "x64")
+	case "arm":
+		keywords = append(keywords, "arm64")
+	default:
+	}
+	downloadGitHubReleaseCmd.Flags().StringSliceP("kwd", "k", keywords, "")
+	downloadGitHubReleaseCmd.Flags().StringSliceP("KWD", "K", []string{}, "")
+	downloadGitHubReleaseCmd.Flags().StringP("output", "o", "/tmp/_hyper_js_terminal", "")
+	return downloadGitHubReleaseCmd
+}
+
 // Install and configure the Hyper terminal.
 func hyper(cmd *cobra.Command, args []string) {
 	if utils.GetBoolFlag(cmd, "install") {
 		switch runtime.GOOS {
 		case "linux":
+			gitHubCmd := buildGithubCmd()
 			if utils.IsDebianSeries() {
-				network.DownloadGitHubReleaseArgs(cmd, args)
+				network.DownloadGitHubReleaseArgs(gitHubCmd, args)
 				command := utils.Format("{prefix} apt-get update && {prefix} apt-get install {yes_s} {path}", map[string]string{
 					"prefix": utils.GetCommandPrefix(true, map[string]uint32{}),
 					"yes_s":  utils.BuildYesFlag(cmd),
@@ -23,7 +53,7 @@ func hyper(cmd *cobra.Command, args []string) {
 				})
 				utils.RunCmd(command)
 			} else if utils.IsFedoraSeries() {
-				network.DownloadGitHubReleaseArgs(cmd, args)
+				network.DownloadGitHubReleaseArgs(gitHubCmd, args)
 				command := utils.Format("{prefix} yum install {yes_s} {path}", map[string]string{
 					"prefix": utils.GetCommandPrefix(true, map[string]uint32{}),
 					"yes_s":  utils.BuildYesFlag(cmd),
