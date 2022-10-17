@@ -28,7 +28,7 @@ func buildGithubCmd() *cobra.Command {
 	switch info.KernelArch {
 	case "x86_64":
 		keywords = append(keywords, "x64")
-	case "arm":
+	case "arm64":
 		keywords = append(keywords, "arm64")
 	default:
 	}
