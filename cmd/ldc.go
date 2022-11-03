@@ -1,13 +1,14 @@
 package cmd
 
 import (
-	"github.com/spf13/cobra"
-	"legendu.net/icon/utils"
 	"log"
 	"path/filepath"
 	"runtime"
 	"strconv"
 	"strings"
+
+	"github.com/spf13/cobra"
+	"legendu.net/icon/utils"
 )
 
 func getDockerImagePort(imageName string) int {
@@ -24,6 +25,17 @@ func getDockerImagePort(imageName string) int {
 		}
 	}
 	return 0
+}
+
+func appendDockerCommand(command *[]string, args *[]string) {
+	*command = append(*command, *args...)
+	if len(*args) == 1 {
+		if strings.HasPrefix((*args)[0], "dclong/vscode-server") {
+			*command = append(*command, "/scripts/sys/init.sh --switch-user")
+		} else if strings.HasPrefix((*args)[0], "dclong/") {
+			*command = append(*command, "/scripts/sys/init.sh")
+		}
+	}
 }
 
 func getDockerImageHostname(imageName string) string {
@@ -105,10 +117,7 @@ func ldc(cmd *cobra.Command, args []string) {
 			command = append(command, "--publish="+m)
 		}
 	}
-	command = append(command, args...)
-	if len(args) == 1 && strings.HasPrefix(args[0], "dclong/") {
-		command = append(command, "/scripts/sys/init.sh")
-	}
+	appendDockerCommand(&command, &args)
 	command_s := strings.Join(command, " ")
 	log.Printf("Launching Docker container using the following command:\n\n%s\n\n", command_s)
 	utils.RunCmd(command_s)
