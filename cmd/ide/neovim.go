@@ -15,11 +15,12 @@ func neovim(cmd *cobra.Command, args []string) {
 		case "linux":
 			if utils.IsDebianSeries() {
 				if utils.IsUbuntuSeries() {
-					command := utils.Format("{prefix} add-apt-repository ppa:neovim-ppa/stable", map[string]string{
+					command := utils.Format("{prefix} add-apt-repository {yes_s} ppa:neovim-ppa/stable", map[string]string{
 						"prefix": utils.GetCommandPrefix(
 							true,
 							map[string]uint32{},
 						),
+						"yes_s": utils.BuildYesFlag(cmd),
 					})
 					utils.RunCmd(command)
 				}

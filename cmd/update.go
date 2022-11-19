@@ -16,7 +16,7 @@ func update(cmd *cobra.Command, args []string) {
 var updateCmd = &cobra.Command{
 	Use:     "update",
 	Aliases: []string{"upd"},
-	Short:   "Update icon",
+	Short:   "Update icon.",
 	Run:     update,
 }
 
