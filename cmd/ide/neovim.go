@@ -14,6 +14,15 @@ func neovim(cmd *cobra.Command, args []string) {
 			utils.BrewInstallSafe([]string{"neovim"})
 		case "linux":
 			if utils.IsDebianSeries() {
+				if utils.IsUbuntuSeries() {
+					command := utils.Format("{prefix} add-apt-repository ppa:neovim-ppa/stable", map[string]string{
+						"prefix": utils.GetCommandPrefix(
+							true,
+							map[string]uint32{},
+						),
+					})
+					utils.RunCmd(command)
+				}
 				command := utils.Format("{prefix} apt-get update && {prefix} apt-get install {yes_s} neovim", map[string]string{
 					"prefix": utils.GetCommandPrefix(
 						true,
@@ -78,5 +87,6 @@ func init() {
 	NeovimCmd.Flags().Bool("uninstall", false, "Uninstall neovim.")
 	NeovimCmd.Flags().BoolP("config", "c", false, "Configure neovim.")
 	NeovimCmd.Flags().BoolP("yes", "y", false, "Automatically yes to prompt questions.")
+	NeovimCmd.Flags().Bool("ppa", false, "Use PPA to install the latest version of neovim on Ubuntu-based Linux distributions.")
 	// rootCmd.AddCommand(spaceVimCmd)
 }
