@@ -15,7 +15,7 @@ func git(cmd *cobra.Command, args []string) {
 	if utils.GetBoolFlag(cmd, "install") {
 		switch runtime.GOOS {
 		case "linux":
-			if utils.IsDebianSeries() {
+			if utils.IsDebianUbuntuSeries() {
 				network.DownloadGitHubRelease("dandavison/delta", "", []string{"x86_64", "linux", "gnu"}, []string{}, "/tmp/git-delta.tar.gz")
 				command := utils.Format(`{prefix} apt-get update && {prefix} apt-get install {yes_s} git git-lfs \
 					&& tar -zxvf /tmp/git-delta.tar.gz -C /usr/local/bin/ --wildcards --no-anchored delta --strip=1
@@ -29,7 +29,7 @@ func git(cmd *cobra.Command, args []string) {
 				utils.RunCmd(command)
 				// TODO: leverage from_github to download git-delta and install it to /usr/local/bin!!!
 			} else if utils.IsFedoraSeries() {
-				command := utils.Format("{prefix} yum install {yes_s} git", map[string]string{
+				command := utils.Format("{prefix} dnf {yes_s} install git", map[string]string{
 					"prefix": utils.GetCommandPrefix(
 						true,
 						map[string]uint32{},
@@ -75,7 +75,7 @@ func git(cmd *cobra.Command, args []string) {
 		case "darwin":
 			utils.RunCmd("brew uninstall git git-lfs")
 		case "linux":
-			if utils.IsDebianSeries() {
+			if utils.IsDebianUbuntuSeries() {
 				command := utils.Format("{prefix} apt-get purge {yes_s} git git-lfs", map[string]string{
 					"prefix": utils.GetCommandPrefix(
 						true,
@@ -84,7 +84,7 @@ func git(cmd *cobra.Command, args []string) {
 				})
 				utils.RunCmd(command)
 			} else if utils.IsFedoraSeries() {
-				command := utils.Format("{prefix} yum remove git", map[string]string{
+				command := utils.Format("{prefix} dnf {yes_s} remove git", map[string]string{
 					"prefix": utils.GetCommandPrefix(
 						true,
 						map[string]uint32{},

@@ -13,7 +13,7 @@ func neovim(cmd *cobra.Command, args []string) {
 		case "darwin":
 			utils.BrewInstallSafe([]string{"neovim"})
 		case "linux":
-			if utils.IsDebianSeries() {
+			if utils.IsDebianUbuntuSeries() {
 				if utils.IsUbuntuSeries() {
 					command := utils.Format("{prefix} add-apt-repository {yes_s} ppa:neovim-ppa/stable", map[string]string{
 						"prefix": utils.GetCommandPrefix(
@@ -33,7 +33,7 @@ func neovim(cmd *cobra.Command, args []string) {
 				})
 				utils.RunCmd(command)
 			} else if utils.IsFedoraSeries() {
-				command := utils.Format("{prefix} yum {yes_s} install neovim", map[string]string{
+				command := utils.Format("{prefix} dnf {yes_s} install neovim", map[string]string{
 					"prefix": utils.GetCommandPrefix(
 						true,
 						map[string]uint32{},
@@ -52,7 +52,7 @@ func neovim(cmd *cobra.Command, args []string) {
 		case "darwin":
 			utils.RunCmd("brew uninstall neovim")
 		case "linux":
-			if utils.IsDebianSeries() {
+			if utils.IsDebianUbuntuSeries() {
 				command := utils.Format("{prefix} apt-get purge {yes_s} neovim", map[string]string{
 					"prefix": utils.GetCommandPrefix(
 						true,
@@ -62,7 +62,7 @@ func neovim(cmd *cobra.Command, args []string) {
 				})
 				utils.RunCmd(command)
 			} else if utils.IsFedoraSeries() {
-				command := utils.Format("{prefix} yum remove neovim", map[string]string{
+				command := utils.Format("{prefix} dnf {yes_s} remove neovim", map[string]string{
 					"prefix": utils.GetCommandPrefix(
 						true,
 						map[string]uint32{},

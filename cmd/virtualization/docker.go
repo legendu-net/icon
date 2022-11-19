@@ -13,14 +13,14 @@ func docker(cmd *cobra.Command, args []string) {
 	if utils.GetBoolFlag(cmd, "install") {
 		switch runtime.GOOS {
 		case "linux":
-			if utils.IsDebianSeries() {
+			if utils.IsDebianUbuntuSeries() {
 				command := utils.Format("{prefix} apt-get update && {prefix} apt-get install {yes_s} docker.io docker-compose", map[string]string{
 					"prefix": utils.GetCommandPrefix(true, map[string]uint32{}),
 					"yes_s":  utils.BuildYesFlag(cmd),
 				})
 				utils.RunCmd(command)
 			} else if utils.IsFedoraSeries() {
-				command := utils.Format("{prefix} yum install {yes_s} docker docker-compose", map[string]string{
+				command := utils.Format("{prefix} dnf {yes_s} install docker docker-compose", map[string]string{
 					"prefix": utils.GetCommandPrefix(true, map[string]uint32{}),
 					"yes_s":  utils.BuildYesFlag(cmd),
 				})
@@ -36,7 +36,7 @@ func docker(cmd *cobra.Command, args []string) {
 		if userToDocker != "" {
 			switch runtime.GOOS {
 			case "linux":
-				if utils.IsDebianSeries() {
+				if utils.IsDebianUbuntuSeries() {
 					command := utils.Format("{prefix} gpasswd -a {user_to_docker} docker", map[string]string{
 						"prefix":       utils.GetCommandPrefix(true, map[string]uint32{}),
 						"userToDocker": userToDocker,
@@ -57,14 +57,14 @@ func docker(cmd *cobra.Command, args []string) {
 	if utils.GetBoolFlag(cmd, "uninstall") {
 		switch runtime.GOOS {
 		case "linux":
-			if utils.IsDebianSeries() {
+			if utils.IsDebianUbuntuSeries() {
 				command := utils.Format("{prefix} apt-get purge {yes_s} docker docker-compose", map[string]string{
 					"prefix": utils.GetCommandPrefix(true, map[string]uint32{}),
 					"yes_s":  utils.BuildYesFlag(cmd),
 				})
 				utils.RunCmd(command)
 			} else if utils.IsFedoraSeries() {
-				command := utils.Format("{prefix} yum remove {yes_s} docker docker-compose", map[string]string{
+				command := utils.Format("{prefix} dnf {yes_s} remove docker docker-compose", map[string]string{
 					"prefix": utils.GetCommandPrefix(true, map[string]uint32{}),
 					"yes_s":  utils.BuildYesFlag(cmd),
 				})

@@ -486,6 +486,21 @@ func IsDebianSeries() bool {
 		"debian",
 		"antix",
 		"lmde",
+	}
+	distId := GetLinuxDistId()
+	for _, id := range ids {
+		if distId == id {
+			return true
+		}
+	}
+	return false
+}
+
+func IsDebianUbuntuSeries() bool {
+	ids := []string{
+		"debian",
+		"antix",
+		"lmde",
 		"ubuntu", "linuxmint", "pop",
 	}
 	distId := GetLinuxDistId()
