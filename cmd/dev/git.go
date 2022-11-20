@@ -9,6 +9,7 @@ import (
 	"runtime"
 	"strings"
 )
+
 var USER = utils.GetCurrentUser().Username
 
 // Install and configure Git.
@@ -55,7 +56,7 @@ func git(cmd *cobra.Command, args []string) {
 		// user.name and user.email
 		command := utils.Format(`git config --global user.name "{name}" \
 			&& git config --global user.email "{email}"`, map[string]string{
-			"name": utils.GetStringFlag(cmd, "user-name"),
+			"name":  utils.GetStringFlag(cmd, "user-name"),
 			"email": utils.GetStringFlag(cmd, "user-email"),
 		})
 		utils.RunCmd(command)
@@ -139,7 +140,7 @@ func init() {
 	GitCmd.Flags().Bool("uninstall", false, "Uninstall Git.")
 	GitCmd.Flags().BoolP("config", "c", false, "Configure Git.")
 	GitCmd.Flags().StringP("user-name", "n", USER, "The user name for Git.")
-	GitCmd.Flags().StringP("user-email", "e", USER + "@example.com", "The user name for Git.")
+	GitCmd.Flags().StringP("user-email", "e", USER+"@example.com", "The user name for Git.")
 	GitCmd.Flags().String("proxy", "", "Configure Git to use the specified proxy.")
 	GitCmd.Flags().StringP("dest-dir", "d", ".", "The destination directory (current directory, by default) to copy gitignore files to.")
 	GitCmd.Flags().BoolP("append", "a", false, "Append to the .gitignore instead of oveerwriting it.")
