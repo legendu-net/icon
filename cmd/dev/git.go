@@ -52,7 +52,6 @@ func git(cmd *cobra.Command, args []string) {
 		home := utils.UserHomeDir()
 		gitConfig := filepath.Join(home, ".gitconfig")
 		utils.CopyEmbedFile("data/git/gitconfig", gitConfig, 0o600)
-		log.Printf("%s is copied to %s", "data/git/gitconfig", gitConfig)
 		// user.name and user.email
 		command := utils.Format(`git config --global user.name "{name}" \
 			&& git config --global user.email "{email}"`, map[string]string{
