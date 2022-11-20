@@ -1,6 +1,4 @@
 [user]
-    name = Benjamin Du
-    email = longendu@yahoo.com
 [core]
     editor = vim
     pager = delta

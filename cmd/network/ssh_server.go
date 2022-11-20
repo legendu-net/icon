@@ -8,7 +8,7 @@ import (
 // Install and configure SSH server.
 func SshServer(cmd *cobra.Command, args []string) {
 	if utils.GetBoolFlag(cmd, "install") {
-		if utils.IsDebianSeries() {
+		if utils.IsDebianUbuntuSeries() {
 			command := utils.Format("{prefix} apt-get update && {prefix} apt-get install {yes_s} openssh-server fail2ban", map[string]string{
 				"prefix": utils.GetCommandPrefix(
 					true,
@@ -22,7 +22,7 @@ func SshServer(cmd *cobra.Command, args []string) {
 	if utils.GetBoolFlag(cmd, "config") {
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
-		if utils.IsDebianSeries() {
+		if utils.IsDebianUbuntuSeries() {
 			command := utils.Format("{prefix} apt-get purge {yes_s} openssh-server fail2ban", map[string]string{
 				"prefix": utils.GetCommandPrefix(
 					true,

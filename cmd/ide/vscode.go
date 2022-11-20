@@ -13,7 +13,7 @@ func vscode(cmd *cobra.Command, args []string) {
 	if utils.GetBoolFlag(cmd, "install") {
 		switch runtime.GOOS {
 		case "linux":
-			if utils.IsDebianSeries() {
+			if utils.IsDebianUbuntuSeries() {
 				command := utils.Format("{prefix} snap install --classic code", map[string]string{
 					"prefix": utils.GetCommandPrefix(
 						true,
@@ -23,7 +23,7 @@ func vscode(cmd *cobra.Command, args []string) {
 				})
 				utils.RunCmd(command)
 			} else if utils.IsFedoraSeries() {
-				command := utils.Format("{prefix} yum {yes_s} install vscode", map[string]string{
+				command := utils.Format("{prefix} dnf {yes_s} install vscode", map[string]string{
 					"prefix": utils.GetCommandPrefix(
 						true,
 						map[string]uint32{},
@@ -60,7 +60,7 @@ func vscode(cmd *cobra.Command, args []string) {
 			command := "brew cask uninstall visual-studio-code"
 			utils.RunCmd(command)
 		case "linux":
-			if utils.IsDebianSeries() {
+			if utils.IsDebianUbuntuSeries() {
 				command := utils.Format("{prefix} apt-get purge {yes_s} vscode", map[string]string{
 					"prefix": utils.GetCommandPrefix(
 						true,
@@ -70,7 +70,7 @@ func vscode(cmd *cobra.Command, args []string) {
 				})
 				utils.RunCmd(command)
 			} else if utils.IsFedoraSeries() {
-				command := utils.Format("{prefix} yum remove vscode", map[string]string{
+				command := utils.Format("{prefix} dnf {yes_s} remove vscode", map[string]string{
 					"prefix": utils.GetCommandPrefix(
 						true,
 						map[string]uint32{},

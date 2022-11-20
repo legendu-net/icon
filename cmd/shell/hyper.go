@@ -14,7 +14,7 @@ func buildGithubCmd() *cobra.Command {
 	var downloadGitHubReleaseCmd = &cobra.Command{}
 	downloadGitHubReleaseCmd.Flags().StringP("repo", "r", "vercel/hyper", "")
 	keywords := []string{"linux"}
-	if utils.IsDebianSeries() {
+	if utils.IsDebianUbuntuSeries() {
 		keywords = append(keywords, "deb")
 	} else if utils.IsFedoraSeries() {
 		keywords = append(keywords, "rpm")
@@ -44,7 +44,7 @@ func hyper(cmd *cobra.Command, args []string) {
 		switch runtime.GOOS {
 		case "linux":
 			gitHubCmd := buildGithubCmd()
-			if utils.IsDebianSeries() {
+			if utils.IsDebianUbuntuSeries() {
 				network.DownloadGitHubReleaseArgs(gitHubCmd, args)
 				command := utils.Format("{prefix} apt-get update && {prefix} apt-get install {yes_s} {path}", map[string]string{
 					"prefix": utils.GetCommandPrefix(true, map[string]uint32{}),
@@ -54,7 +54,7 @@ func hyper(cmd *cobra.Command, args []string) {
 				utils.RunCmd(command)
 			} else if utils.IsFedoraSeries() {
 				network.DownloadGitHubReleaseArgs(gitHubCmd, args)
-				command := utils.Format("{prefix} yum install {yes_s} {path}", map[string]string{
+				command := utils.Format("{prefix} dnf {yes_s} install {path}", map[string]string{
 					"prefix": utils.GetCommandPrefix(true, map[string]uint32{}),
 					"yes_s":  utils.BuildYesFlag(cmd),
 					"path":   utils.GetStringFlag(cmd, "output"),
