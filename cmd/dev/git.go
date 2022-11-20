@@ -9,6 +9,7 @@ import (
 	"runtime"
 	"strings"
 )
+var USER = utils.GetCurrentUser().Username
 
 // Install and configure Git.
 func git(cmd *cobra.Command, args []string) {
@@ -46,10 +47,19 @@ func git(cmd *cobra.Command, args []string) {
 	}
 	if utils.GetBoolFlag(cmd, "config") {
 		network.SshClient(cmd, args)
+		// create .gitconfig
 		home := utils.UserHomeDir()
 		gitConfig := filepath.Join(home, ".gitconfig")
 		utils.CopyEmbedFile("data/git/gitconfig", gitConfig, 0o600)
 		log.Printf("%s is copied to %s", "data/git/gitconfig", gitConfig)
+		// user.name and user.email
+		command := utils.Format(`git config --global user.name "{name}" \
+			&& git config --global user.email "{email}"`, map[string]string{
+			"name": utils.GetStringFlag(cmd, "user-name"),
+			"email": utils.GetStringFlag(cmd, "user-email"),
+		})
+		utils.RunCmd(command)
+		// bash completion for Git
 		switch runtime.GOOS {
 		case "darwin":
 			file := "/usr/local/etc/bash_completion.d/git-completion.bash"
@@ -61,6 +71,7 @@ func git(cmd *cobra.Command, args []string) {
 		default:
 		}
 		configureGitIgnore(cmd)
+		// config proxy
 		proxy := utils.GetStringFlag(cmd, "proxy")
 		if proxy != "" {
 			command := utils.Format("git config --global http.proxy {proxy} && git config --global https.proxy {proxy}", map[string]string{
@@ -127,6 +138,8 @@ func init() {
 	GitCmd.Flags().BoolP("install", "i", false, "Install Git.")
 	GitCmd.Flags().Bool("uninstall", false, "Uninstall Git.")
 	GitCmd.Flags().BoolP("config", "c", false, "Configure Git.")
+	GitCmd.Flags().StringP("user-name", "n", USER, "The user name for Git.")
+	GitCmd.Flags().StringP("user-email", "e", USER + "@example.com", "The user name for Git.")
 	GitCmd.Flags().String("proxy", "", "Configure Git to use the specified proxy.")
 	GitCmd.Flags().StringP("dest-dir", "d", ".", "The destination directory (current directory, by default) to copy gitignore files to.")
 	GitCmd.Flags().BoolP("append", "a", false, "Append to the .gitignore instead of oveerwriting it.")
