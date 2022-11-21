@@ -8,7 +8,7 @@ import (
 
 // Update icon.
 func version(cmd *cobra.Command, args []string) {
-	fmt.Println("0.12.0")
+	fmt.Println("0.12.1")
 }
 
 var versionCmd = &cobra.Command{
