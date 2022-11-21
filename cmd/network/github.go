@@ -13,7 +13,7 @@ import (
 // Get the release URL of a project on GitHub.
 // @param repo: The repo name of the project on GitHub.
 // return: The release URL of the project on GitHub.
-func getReleaseUrl(repo string) string {
+func GetReleaseUrl(repo string) string {
 	if strings.HasSuffix(repo, ".git") {
 		repo = repo[:len(repo)-4]
 	}
@@ -68,7 +68,7 @@ func filterReleases(url string, constraint string) ReleaseInfo {
 	return ReleaseInfo{}
 }
 
-func getLatestRelease(releaseUrl string) ReleaseInfo {
+func GetLatestRelease(releaseUrl string) ReleaseInfo {
 	url := releaseUrl + "/latest"
 	var releaseInfo ReleaseInfo
 	json.Unmarshal(utils.HttpGetAsBytes(url), &releaseInfo)
@@ -93,10 +93,10 @@ func DownloadGitHubReleaseArgs(cmd *cobra.Command, args []string) {
 // If None, the arguments from command-line are parsed.
 func DownloadGitHubRelease(repo string, version string, keywords []string, keywordsExclude []string, output string) {
 	// form the release URL
-	releaseUrl := getReleaseUrl(repo)
+	releaseUrl := GetReleaseUrl(repo)
 	var releaseInfo ReleaseInfo
 	if version == "" {
-		releaseInfo = getLatestRelease(releaseUrl)
+		releaseInfo = GetLatestRelease(releaseUrl)
 	} else {
 		releaseInfo = filterReleases(releaseUrl, version)
 	}

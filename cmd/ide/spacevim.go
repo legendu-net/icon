@@ -2,6 +2,7 @@ package ide
 
 import (
 	"github.com/spf13/cobra"
+	"legendu.net/icon/cmd/network"
 	"legendu.net/icon/utils"
 	"log"
 	"path/filepath"
@@ -63,11 +64,19 @@ func stripSpaceVim() {
 // Install and configure SpaceVim.
 func spaceVim(cmd *cobra.Command, args []string) {
 	if utils.GetBoolFlag(cmd, "install") {
+		version := utils.GetStringFlag(cmd, "version")
+		if version == "" {
+			version = network.GetLatestRelease(network.GetReleaseUrl("SpaceVim/SpaceVim")).TagName
+		} else if !strings.HasPrefix(version, "v") {
+			version = "v" + version
+		}
 		pipInstall := utils.BuildPipInstall(cmd)
 		utils.RemoveAll(filepath.Join(utils.UserHomeDir(), ".SpaceVim"))
-		//utils.RunCmd(`curl -sLf https://spacevim.org/install.sh | bash \
-			//&& cd ~/.SpaceVim && git checkout v1.9.0`)
-		utils.RunCmd(`curl -sLf https://spacevim.org/install.sh | bash`)
+		command := utils.Format(`curl -sLf https://spacevim.org/install.sh | bash \
+			&& cd ~/.SpaceVim && git checkout {version}`, map[string]string{
+			"version": version,
+		})
+		utils.RunCmd(command)
 		utils.RunCmd(utils.Format("{pip_install} python-lsp-server", map[string]string{
 			"pip_install": pipInstall,
 		}))
@@ -119,6 +128,7 @@ func init() {
 	SpaceVimCmd.Flags().BoolP("install", "i", false, "Install SpaceVim.")
 	SpaceVimCmd.Flags().Bool("uninstall", false, "Uninstall SpaceVim.")
 	SpaceVimCmd.Flags().BoolP("config", "c", false, "Configure SpaceVim.")
+	SpaceVimCmd.Flags().StringP("version", "v", "", "The version (latest release by default) of SpaceVim to install.")
 	SpaceVimCmd.Flags().Bool("enable-true-color", false, "Enable true color support in SpaceVim.")
 	SpaceVimCmd.Flags().Bool("disable-true-color", false, "Disable true color support in SpaceVim.")
 	SpaceVimCmd.Flags().Bool("strip", false, "Strip unnecessary files from '~/.SpaceVim/'.")
