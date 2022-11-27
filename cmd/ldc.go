@@ -30,7 +30,7 @@ func getDockerImagePort(imageName string) int {
 func appendDockerCommand(command *[]string, args *[]string) {
 	*command = append(*command, *args...)
 	if len(*args) == 1 {
-		if strings.HasPrefix((*args)[0], "dclong/vscode-server") {
+		if strings.HasPrefix((*args)[0], "dclong/vscode-server") || strings.HasPrefix((*args)[0], "dclong/jupyterlab") {
 			*command = append(*command, "/scripts/sys/init.sh --switch-user")
 		} else if strings.HasPrefix((*args)[0], "dclong/") {
 			*command = append(*command, "/scripts/sys/init.sh")
