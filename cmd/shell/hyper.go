@@ -10,10 +10,9 @@ import (
 	"runtime"
 )
 
-func buildGithubCmd() *cobra.Command {
-	var downloadGitHubReleaseCmd = &cobra.Command{}
-	downloadGitHubReleaseCmd.Flags().StringP("repo", "r", "vercel/hyper", "")
-	keywords := []string{"linux"}
+func downloadHyperFromGitHub(version string) {
+	repo := "vercel/hyper"
+	keywords := []string{}
 	if utils.IsDebianUbuntuSeries() {
 		keywords = append(keywords, "deb")
 	} else if utils.IsFedoraSeries() {
@@ -27,15 +26,14 @@ func buildGithubCmd() *cobra.Command {
 	}
 	switch info.KernelArch {
 	case "x86_64":
-		keywords = append(keywords, "x64")
+		keywords = append(keywords, "amd64")
 	case "arm64":
 		keywords = append(keywords, "arm64")
 	default:
 	}
-	downloadGitHubReleaseCmd.Flags().StringSliceP("kwd", "k", keywords, "")
-	downloadGitHubReleaseCmd.Flags().StringSliceP("KWD", "K", []string{}, "")
-	downloadGitHubReleaseCmd.Flags().StringP("output", "o", "/tmp/_hyper_js_terminal", "")
-	return downloadGitHubReleaseCmd
+	keywordsExclude := []string{}
+	output := "/tmp/_hyper_js_terminal"
+	network.DownloadGitHubRelease(repo, version, keywords, keywordsExclude, output)
 }
 
 // Install and configure the Hyper terminal.
@@ -43,9 +41,8 @@ func hyper(cmd *cobra.Command, args []string) {
 	if utils.GetBoolFlag(cmd, "install") {
 		switch runtime.GOOS {
 		case "linux":
-			gitHubCmd := buildGithubCmd()
+			downloadHyperFromGitHub(utils.GetStringFlag(cmd, "version"))
 			if utils.IsDebianUbuntuSeries() {
-				network.DownloadGitHubReleaseArgs(gitHubCmd, args)
 				command := utils.Format("{prefix} apt-get update && {prefix} apt-get install {yes_s} {path}", map[string]string{
 					"prefix": utils.GetCommandPrefix(true, map[string]uint32{}),
 					"yes_s":  utils.BuildYesFlag(cmd),
@@ -53,7 +50,6 @@ func hyper(cmd *cobra.Command, args []string) {
 				})
 				utils.RunCmd(command)
 			} else if utils.IsFedoraSeries() {
-				network.DownloadGitHubReleaseArgs(gitHubCmd, args)
 				command := utils.Format("{prefix} dnf {yes_s} install {path}", map[string]string{
 					"prefix": utils.GetCommandPrefix(true, map[string]uint32{}),
 					"yes_s":  utils.BuildYesFlag(cmd),
@@ -96,22 +92,6 @@ func init() {
 	HyperCmd.Flags().BoolP("install", "i", false, "Install the Hyper terminal.")
 	HyperCmd.Flags().Bool("uninstall", false, "Uninstall Hyper terminal.")
 	HyperCmd.Flags().BoolP("config", "c", false, "Configure the Hyper terminal.")
-	HyperCmd.Flags().StringP("repo", "r", "", "A GitHub repo of the form 'user_name/repo_name'.")
-	err := HyperCmd.MarkFlagRequired("repo")
-	if err != nil {
-		log.Fatal("ERROR - ", err)
-	}
 	HyperCmd.Flags().StringP("version", "v", "", "The version of the release.")
-	HyperCmd.Flags().StringSliceP("kwd", "k", []string{}, "Keywords that the assert's name contains.")
-	HyperCmd.Flags().StringSliceP("KWD", "K", []string{}, "Keywords that the assert's name contains.")
-	err = HyperCmd.MarkFlagRequired("kwd")
-	if err != nil {
-		log.Fatal("ERROR - ", err)
-	}
-	HyperCmd.Flags().StringP("output", "o", "", "The output path for the downloaded asset.")
-	err = HyperCmd.MarkFlagRequired("output")
-	if err != nil {
-		log.Fatal("ERROR - ", err)
-	}
 	// rootCmd.AddCommand(HyperCmd)
 }

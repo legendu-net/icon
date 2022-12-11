@@ -56,6 +56,7 @@ func assetNameContainKeywords(name string, keywords []string, keyworkdsExclude [
 }
 
 func filterReleases(url string, constraint string) ReleaseInfo {
+	log.Printf("Extracting release from %s with the constraint %s", url, constraint)
 	var releases []ReleaseInfo
 	json.Unmarshal(utils.HttpGetAsBytes(url), &releases)
 	c := version.NewConstrainGroupFromString(constraint)
@@ -71,7 +72,10 @@ func filterReleases(url string, constraint string) ReleaseInfo {
 func GetLatestRelease(releaseUrl string) ReleaseInfo {
 	url := releaseUrl + "/latest"
 	var releaseInfo ReleaseInfo
-	json.Unmarshal(utils.HttpGetAsBytes(url), &releaseInfo)
+	err := json.Unmarshal(utils.HttpGetAsBytes(url), &releaseInfo)
+	if err != nil {
+		log.Fatal("ERROR - ", err)
+	}
 	return releaseInfo
 }
 
@@ -92,8 +96,15 @@ func DownloadGitHubReleaseArgs(cmd *cobra.Command, args []string) {
 // @param args: The arguments to parse.
 // If None, the arguments from command-line are parsed.
 func DownloadGitHubRelease(repo string, version string, keywords []string, keywordsExclude []string, output string) {
+	log.Printf(`Download release from the GitHub repository %s satisfying the following conditions:
+	Version: %s
+	Contains: %s
+	Does not contain: %s
+	Write to: %s
+	`, repo, version, strings.Join(keywords, ", "), strings.Join(keywordsExclude, ", "), output)
 	// form the release URL
 	releaseUrl := GetReleaseUrl(repo)
+	log.Printf("Release URL: %s\n", releaseUrl)
 	var releaseInfo ReleaseInfo
 	if version == "" {
 		releaseInfo = GetLatestRelease(releaseUrl)
@@ -104,7 +115,11 @@ func DownloadGitHubRelease(repo string, version string, keywords []string, keywo
 	var browserDownloadUrl string
 	for _, assert := range releaseInfo.Assets {
 		if assetNameContainKeywords(assert.Name, keywords, keywordsExclude) {
+			log.Printf("Assert %s is matched.", assert.Name)
 			browserDownloadUrl = assert.BrowserDownloadUrl
+			break
+		} else {
+			log.Printf("Assert %s is not matched.", assert.Name)
 		}
 	}
 	// download the asset
