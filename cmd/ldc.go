@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"log"
 	"path/filepath"
 	"runtime"
@@ -14,27 +15,58 @@ import (
 func getDockerImagePort(imageName string) int {
 	if strings.HasPrefix(imageName, "dclong/") {
 		imageName = imageName[7:]
-		if strings.HasPrefix(imageName, "jupyterlab") {
-			return 8888
+		ports := map[string]int{
+			"jupyterlab": 8888,
+			"jupyterhub": 8000,
+			"gitpod":     8000,
+			"vscode":     8080,
 		}
-		if strings.HasPrefix(imageName, "jupyterhub") {
-			return 8000
-		}
-		if strings.HasPrefix(imageName, "vscode") {
-			return 8080
+		for prefix, port := range ports {
+			if strings.HasPrefix(imageName, prefix) {
+				return port
+			}
 		}
 	}
 	return 0
 }
 
-func appendDockerCommand(command *[]string, args *[]string) {
+func appendDockerImagePort(command *[]string, cmd *cobra.Command, imageName string) {
+	port := getDockerImagePort(imageName)
+	if port > 0 {
+		portHost := utils.GetIntFlag(cmd, "port")
+		if portHost == 0 {
+			portHost = port
+		}
+		*command = append(*command, fmt.Sprintf("--publish=%d:%d", portHost, port))
+	}
+	extraPortMappings := utils.GetStringSliceFlag(cmd, "extra-port-mappings")
+	if len(extraPortMappings) > 0 {
+		for _, m := range extraPortMappings {
+			*command = append(*command, "--publish="+m)
+		}
+	}
+}
+
+func getDockerImageCommand(imageName string) string {
+	dockerCommands := map[string]string{
+		"dclong/vscode-server": "/scripts/sys/init.sh --switch-user",
+		"dclong/jupyterlab":    "/scripts/sys/init.sh --switch-user",
+	}
+	for prefix, dockerCommand := range dockerCommands {
+		if strings.HasPrefix(imageName, prefix) {
+			return dockerCommand
+		}
+	}
+	if strings.HasPrefix(imageName, "dclong/") {
+		return "/scripts/sys/init.sh"
+	}
+	return ""
+}
+
+func appendDockerImageCommand(command *[]string, args *[]string) {
 	*command = append(*command, *args...)
 	if len(*args) == 1 {
-		if strings.HasPrefix((*args)[0], "dclong/vscode-server") || strings.HasPrefix((*args)[0], "dclong/jupyterlab") {
-			*command = append(*command, "/scripts/sys/init.sh --switch-user")
-		} else if strings.HasPrefix((*args)[0], "dclong/") {
-			*command = append(*command, "/scripts/sys/init.sh")
-		}
+		*command = append(*command, getDockerImageCommand((*args)[0]))
 	}
 }
 
@@ -103,21 +135,8 @@ func ldc(cmd *cobra.Command, args []string) {
 		cpus := utils.Max(len(cpuInfo)-1, 1)
 		command = append(command, "--cpus="+strconv.Itoa(cpus))
 	}
-	port := getDockerImagePort(args[0])
-	if port > 0 {
-		portHost := utils.GetIntFlag(cmd, "port")
-		if portHost == 0 {
-			portHost = port
-		}
-		command = append(command, "--publish="+strconv.Itoa(portHost)+":"+strconv.Itoa(port))
-	}
-	extraPortMappings := utils.GetStringSliceFlag(cmd, "extra-port-mappings")
-	if len(extraPortMappings) > 0 {
-		for _, m := range extraPortMappings {
-			command = append(command, "--publish="+m)
-		}
-	}
-	appendDockerCommand(&command, &args)
+	appendDockerImagePort(&command, cmd, args[0])
+	appendDockerImageCommand(&command, &args)
 	command_s := strings.Join(command, " ")
 	log.Printf("Launching Docker container using the following command:\n\n%s\n\n", command_s)
 	utils.RunCmd(command_s)
