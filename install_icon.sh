@@ -18,6 +18,7 @@ function install_icon() {
         install_icon.usage
         return 1
     fi
+    add_script_ldc
     echo "Parsing the latest version ..."
     local URL=https://github.com/legendu-net/icon/releases
     local VERSION=$(basename $(curl -sL -o /dev/null -w %{url_effective} $URL/latest))
@@ -39,7 +40,6 @@ function install_icon() {
     echo "Installing icon ..."
     tar zxf /tmp/icon.tar.gz -C /usr/local/bin/
     chmod +x /usr/local/bin/icon
-    add_script_ldc
 }
 
 function add_script_ldc() {
