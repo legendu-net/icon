@@ -1,8 +1,10 @@
 package dev
 
 import (
+	"bufio"
 	"fmt"
 	"log"
+	"os"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -22,8 +24,14 @@ func getGitUserName(cmd *cobra.Command) string {
 	if utils.GetBoolFlag(cmd, "yes") {
 		return USER
 	}
-	fmt.Scanf("%s", &user)
-	return user
+	fmt.Printf("Please enter the user name for Git: ")
+	scanner := bufio.NewScanner(os.Stdin)
+	scanner.Scan()
+	err := scanner.Err() 
+	if err != nil {
+		log.Fatal("ERROR - ", err)
+	}
+	return scanner.Text()
 }
 
 func getGitUserEmail(cmd *cobra.Command) string {
@@ -34,8 +42,14 @@ func getGitUserEmail(cmd *cobra.Command) string {
 	if utils.GetBoolFlag(cmd, "yes") {
 		return USER + "@example.com"
 	}
-	fmt.Scanf("%s", &email)
-	return email
+	fmt.Printf("Please enter the user email for Git: ")
+	scanner := bufio.NewScanner(os.Stdin)
+	scanner.Scan()
+	err := scanner.Err() 
+	if err != nil {
+		log.Fatal("ERROR - ", err)
+	}
+	return scanner.Text()
 }
 
 // Install and configure Git.
