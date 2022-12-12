@@ -115,5 +115,6 @@ func init() {
 	PerfCmd.Flags().BoolP("install", "i", false, "Install Git.")
 	PerfCmd.Flags().Bool("uninstall", false, "Uninstall Git.")
 	PerfCmd.Flags().BoolP("config", "c", false, "Configure Git.")
+	PerfCmd.Flags().BoolP("yes", "y", false, "Automatically yes to prompt questions.")
 	// rootCmd.AddCommand(gitCmd)
 }

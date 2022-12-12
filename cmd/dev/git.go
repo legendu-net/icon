@@ -20,7 +20,7 @@ func git(cmd *cobra.Command, args []string) {
 			if utils.IsDebianUbuntuSeries() {
 				network.DownloadGitHubRelease("dandavison/delta", "", []string{"x86_64", "linux", "gnu"}, []string{}, "/tmp/git-delta.tar.gz")
 				command := utils.Format(`{prefix} apt-get update && {prefix} apt-get install {yes_s} git git-lfs \
-					&& tar -zxvf /tmp/git-delta.tar.gz -C /usr/local/bin/ --wildcards --no-anchored delta --strip=1
+					&& {prefix} tar -zxvf /tmp/git-delta.tar.gz -C /usr/local/bin/ --wildcards --no-anchored delta --strip=1 \
 					&& rm /tmp/git-delta.tar.gz`, map[string]string{
 					"prefix": utils.GetCommandPrefix(
 						true,
@@ -138,6 +138,7 @@ func init() {
 	GitCmd.Flags().BoolP("install", "i", false, "Install Git.")
 	GitCmd.Flags().Bool("uninstall", false, "Uninstall Git.")
 	GitCmd.Flags().BoolP("config", "c", false, "Configure Git.")
+	GitCmd.Flags().BoolP("yes", "y", false, "Automatically yes to prompt questions.")
 	GitCmd.Flags().StringP("user-name", "n", USER, "The user name for Git.")
 	GitCmd.Flags().StringP("user-email", "e", USER+"@example.com", "The user name for Git.")
 	GitCmd.Flags().String("proxy", "", "Configure Git to use the specified proxy.")

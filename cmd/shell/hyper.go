@@ -92,6 +92,7 @@ func init() {
 	HyperCmd.Flags().BoolP("install", "i", false, "Install the Hyper terminal.")
 	HyperCmd.Flags().Bool("uninstall", false, "Uninstall Hyper terminal.")
 	HyperCmd.Flags().BoolP("config", "c", false, "Configure the Hyper terminal.")
+	HyperCmd.Flags().BoolP("yes", "y", false, "Automatically yes to prompt questions.")
 	HyperCmd.Flags().StringP("version", "v", "", "The version of the release.")
 	// rootCmd.AddCommand(HyperCmd)
 }
