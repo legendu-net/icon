@@ -1,16 +1,56 @@
 package dev
 
 import (
-	"github.com/spf13/cobra"
-	"legendu.net/icon/cmd/network"
-	"legendu.net/icon/utils"
+	"bufio"
+	"fmt"
 	"log"
+	"os"
 	"path/filepath"
 	"runtime"
 	"strings"
+
+	"github.com/spf13/cobra"
+	"legendu.net/icon/cmd/network"
+	"legendu.net/icon/utils"
 )
 
 var USER = utils.GetCurrentUser().Username
+
+func getGitUserName(cmd *cobra.Command) string {
+	user := utils.GetStringFlag(cmd, "user-name")
+	if user != "" {
+		return user
+	}
+	if utils.GetBoolFlag(cmd, "yes") {
+		return USER
+	}
+	fmt.Printf("Please enter the user name for Git: ")
+	scanner := bufio.NewScanner(os.Stdin)
+	scanner.Scan()
+	err := scanner.Err() 
+	if err != nil {
+		log.Fatal("ERROR - ", err)
+	}
+	return scanner.Text()
+}
+
+func getGitUserEmail(cmd *cobra.Command) string {
+	email := utils.GetStringFlag(cmd, "user-email")
+	if email != "" {
+		return email
+	}
+	if utils.GetBoolFlag(cmd, "yes") {
+		return USER + "@example.com"
+	}
+	fmt.Printf("Please enter the user email for Git: ")
+	scanner := bufio.NewScanner(os.Stdin)
+	scanner.Scan()
+	err := scanner.Err() 
+	if err != nil {
+		log.Fatal("ERROR - ", err)
+	}
+	return scanner.Text()
+}
 
 // Install and configure Git.
 func git(cmd *cobra.Command, args []string) {
@@ -20,7 +60,7 @@ func git(cmd *cobra.Command, args []string) {
 			if utils.IsDebianUbuntuSeries() {
 				network.DownloadGitHubRelease("dandavison/delta", "", []string{"x86_64", "linux", "gnu"}, []string{}, "/tmp/git-delta.tar.gz")
 				command := utils.Format(`{prefix} apt-get update && {prefix} apt-get install {yes_s} git git-lfs \
-					&& tar -zxvf /tmp/git-delta.tar.gz -C /usr/local/bin/ --wildcards --no-anchored delta --strip=1
+					&& {prefix} tar -zxvf /tmp/git-delta.tar.gz -C /usr/local/bin/ --wildcards --no-anchored delta --strip=1 \
 					&& rm /tmp/git-delta.tar.gz`, map[string]string{
 					"prefix": utils.GetCommandPrefix(
 						true,
@@ -55,8 +95,8 @@ func git(cmd *cobra.Command, args []string) {
 		// user.name and user.email
 		command := utils.Format(`git config --global user.name "{name}" \
 			&& git config --global user.email "{email}"`, map[string]string{
-			"name":  utils.GetStringFlag(cmd, "user-name"),
-			"email": utils.GetStringFlag(cmd, "user-email"),
+			"name":  getGitUserName(cmd),
+			"email": getGitUserEmail(cmd),
 		})
 		utils.RunCmd(command)
 		// bash completion for Git
@@ -138,8 +178,9 @@ func init() {
 	GitCmd.Flags().BoolP("install", "i", false, "Install Git.")
 	GitCmd.Flags().Bool("uninstall", false, "Uninstall Git.")
 	GitCmd.Flags().BoolP("config", "c", false, "Configure Git.")
-	GitCmd.Flags().StringP("user-name", "n", USER, "The user name for Git.")
-	GitCmd.Flags().StringP("user-email", "e", USER+"@example.com", "The user name for Git.")
+	GitCmd.Flags().BoolP("yes", "y", false, "Automatically yes to prompt questions.")
+	GitCmd.Flags().StringP("user-name", "n", "", "The user name for Git.")
+	GitCmd.Flags().StringP("user-email", "e", "", "The user name for Git.")
 	GitCmd.Flags().String("proxy", "", "Configure Git to use the specified proxy.")
 	GitCmd.Flags().StringP("dest-dir", "d", ".", "The destination directory (current directory, by default) to copy gitignore files to.")
 	GitCmd.Flags().BoolP("append", "a", false, "Append to the .gitignore instead of oveerwriting it.")
