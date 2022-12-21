@@ -48,6 +48,7 @@ func init() {
 	rootCmd.AddCommand(dev.PylintCmd)
 	rootCmd.AddCommand(ide.NeovimCmd)
 	rootCmd.AddCommand(ide.SpaceVimCmd)
+	rootCmd.AddCommand(ide.FirenvimCmd)
 	rootCmd.AddCommand(ide.VscodeCmd)
 	rootCmd.AddCommand(ai.PyTorchCmd)
 	rootCmd.AddCommand(bigdata.SparkCmd)

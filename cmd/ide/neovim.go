@@ -8,7 +8,16 @@ import (
 
 // Install and configure neovim.
 func neovim(cmd *cobra.Command, args []string) {
-	if utils.GetBoolFlag(cmd, "install") {
+	Neovim(
+		utils.GetBoolFlag(cmd, "install"),
+		utils.GetBoolFlag(cmd, "config"),
+		utils.GetBoolFlag(cmd, "uninstall"),
+		utils.BuildYesFlag(cmd),
+	)
+}
+
+func Neovim(install bool, config bool, uninstall bool, yes_s string) {
+	if install {
 		switch runtime.GOOS {
 		case "darwin":
 			utils.BrewInstallSafe([]string{"neovim"})
@@ -20,7 +29,7 @@ func neovim(cmd *cobra.Command, args []string) {
 							true,
 							map[string]uint32{},
 						),
-						"yes_s": utils.BuildYesFlag(cmd),
+						"yes_s": yes_s,
 					})
 					utils.RunCmd(command)
 				}
@@ -29,7 +38,7 @@ func neovim(cmd *cobra.Command, args []string) {
 						true,
 						map[string]uint32{},
 					),
-					"yes_s": utils.BuildYesFlag(cmd),
+					"yes_s": yes_s,
 				})
 				utils.RunCmd(command)
 			} else if utils.IsFedoraSeries() {
@@ -38,16 +47,16 @@ func neovim(cmd *cobra.Command, args []string) {
 						true,
 						map[string]uint32{},
 					),
-					"yes_s": utils.BuildYesFlag(cmd),
+					"yes_s": yes_s,
 				})
 				utils.RunCmd(command)
 			}
 		default:
 		}
 	}
-	if utils.GetBoolFlag(cmd, "config") {
+	if config {
 	}
-	if utils.GetBoolFlag(cmd, "uninstall") {
+	if uninstall {
 		switch runtime.GOOS {
 		case "darwin":
 			utils.RunCmd("brew uninstall neovim")
@@ -58,7 +67,7 @@ func neovim(cmd *cobra.Command, args []string) {
 						true,
 						map[string]uint32{},
 					),
-					"yes_s": utils.BuildYesFlag(cmd),
+					"yes_s": yes_s,
 				})
 				utils.RunCmd(command)
 			} else if utils.IsFedoraSeries() {
@@ -88,6 +97,5 @@ func init() {
 	NeovimCmd.Flags().Bool("uninstall", false, "Uninstall neovim.")
 	NeovimCmd.Flags().BoolP("config", "c", false, "Configure neovim.")
 	NeovimCmd.Flags().BoolP("yes", "y", false, "Automatically yes to prompt questions.")
-	NeovimCmd.Flags().Bool("ppa", false, "Use PPA to install the latest version of neovim on Ubuntu-based Linux distributions.")
 	// rootCmd.AddCommand(spaceVimCmd)
 }
