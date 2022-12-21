@@ -36,6 +36,28 @@ func linkRust(cmd *cobra.Command, cargoHome string) {
 	}
 }
 
+func installRustNix(rustupHome string, cargoHome string) {
+	command := utils.Format(`
+		curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | {prefix} bash -s -- -y \
+		&& {cargoHome}/bin/rustup component add rust-src rustfmt clippy \
+		&& {cargoHome}/bin/cargo install sccache cargo-cache cargo-edit`, map[string]string{
+		"rustupHome": rustupHome,
+		"cargoHome":  cargoHome,
+		"prefix": utils.GetCommandPrefix(false, map[string]uint32{
+			rustupHome: unix.W_OK | unix.R_OK,
+			cargoHome:  unix.W_OK | unix.R_OK,
+		}),
+	})
+	utils.RunCmd(command, "RUSTUP_HOME="+rustupHome, "CARGO_HOME="+cargoHome)
+	command = utils.Format("{prefix} rm -rf {registry}", map[string]string{
+		"registry": filepath.Join(cargoHome, "registry"),
+		"prefix": utils.GetCommandPrefix(false, map[string]uint32{
+			cargoHome: unix.W_OK | unix.R_OK,
+		}),
+	})
+	utils.RunCmd(command)
+}
+
 // Install and configure Rust.
 func rust(cmd *cobra.Command, args []string) {
 	rustupHome := utils.GetStringFlag(cmd, "rustup-home")
@@ -48,7 +70,10 @@ func rust(cmd *cobra.Command, args []string) {
 	}
 	if utils.GetBoolFlag(cmd, "install") {
 		switch runtime.GOOS {
-		case "linux", "darwin":
+		case "darwin":
+			utils.BrewInstallSafe([]string{"pkg-config", "openssl"})
+			installRustNix(rustupHome, cargoHome)
+		case "linux":
 			if utils.IsDebianUbuntuSeries() {
 				command := utils.Format(`{prefix} apt-get update \
 						&& {prefix} apt-get install -y gcc cmake libssl-dev pkg-config`, map[string]string{
@@ -56,18 +81,7 @@ func rust(cmd *cobra.Command, args []string) {
 				})
 				utils.RunCmd(command)
 			}
-			command := utils.Format(`
-				curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | {prefix} bash -s -- -y \
-                && {cargoHome}/bin/rustup component add rust-src rustfmt clippy \
-                && {cargoHome}/bin/cargo install sccache cargo-cache cargo-edit`, map[string]string{
-				"rustupHome": rustupHome,
-				"cargoHome":  cargoHome,
-				"prefix": utils.GetCommandPrefix(false, map[string]uint32{
-					rustupHome: unix.W_OK | unix.R_OK,
-					cargoHome:  unix.W_OK | unix.R_OK,
-				}),
-			})
-			utils.RunCmd(command, "RUSTUP_HOME="+rustupHome, "CARGO_HOME="+cargoHome)
+			installRustNix(rustupHome, cargoHome)
 		default:
 		}
 	}
