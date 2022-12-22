@@ -40,5 +40,5 @@ func init() {
 	FirenvimCmd.Flags().BoolP("install", "i", false, "Install Firenvim.")
 	FirenvimCmd.Flags().Bool("uninstall", false, "Uninstall Firenvim.")
 	FirenvimCmd.Flags().BoolP("config", "c", false, "Configure Firenvim.")
-	// rootCmd.AddCommand(spaceVimCmd)
+	// rootCmd.AddCommand(FirenvimCmd)
 }

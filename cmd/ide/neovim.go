@@ -97,5 +97,5 @@ func init() {
 	NeovimCmd.Flags().Bool("uninstall", false, "Uninstall neovim.")
 	NeovimCmd.Flags().BoolP("config", "c", false, "Configure neovim.")
 	NeovimCmd.Flags().BoolP("yes", "y", false, "Automatically yes to prompt questions.")
-	// rootCmd.AddCommand(spaceVimCmd)
+	// rootCmd.AddCommand(NeovimCmd)
 }
