@@ -63,14 +63,25 @@ func stripSpaceVim() {
 
 // Install and configure SpaceVim.
 func spaceVim(cmd *cobra.Command, args []string) {
-	if utils.GetBoolFlag(cmd, "install") {
-		version := utils.GetStringFlag(cmd, "version")
+	SpaceVim(
+		utils.GetBoolFlag(cmd, "install"),
+		utils.GetBoolFlag(cmd, "config"),
+		utils.GetBoolFlag(cmd, "strip"),
+		utils.GetBoolFlag(cmd, "enable-true-color"),
+		utils.GetBoolFlag(cmd, "disable-true-color"),
+		utils.GetBoolFlag(cmd, "uninstall"),
+		utils.GetStringFlag(cmd, "version"),
+		utils.BuildPipInstall(cmd),
+	)
+}
+
+func SpaceVim(install bool, config bool, strip bool, enableTrueColor bool, disableTrueColor bool, uninstall bool, version string, pipInstall string) {
+	if install {
 		if version == "" {
 			version = network.GetLatestRelease(network.GetReleaseUrl("SpaceVim/SpaceVim")).TagName
 		} else if !strings.HasPrefix(version, "v") {
 			version = "v" + version
 		}
-		pipInstall := utils.BuildPipInstall(cmd)
 		utils.RemoveAll(filepath.Join(utils.UserHomeDir(), ".SpaceVim"))
 		command := utils.Format(`curl -sLf https://spacevim.org/install.sh | bash \
 			&& cd ~/.SpaceVim && git checkout {version}`, map[string]string{
@@ -82,7 +93,7 @@ func spaceVim(cmd *cobra.Command, args []string) {
 		}))
 		log.Print("The Python package python-lsp-server is installed! Please make sure pylsp is on the search path!\n")
 		// npm install -g bash-language-server javascript-typescript-langserver
-		if utils.GetBoolFlag(cmd, "strip") {
+		if strip {
 			stripSpaceVim()
 		}
 		if utils.ExistsCommand("nvim") {
@@ -91,7 +102,7 @@ func spaceVim(cmd *cobra.Command, args []string) {
 			}))
 		}
 	}
-	if utils.GetBoolFlag(cmd, "config") {
+	if config {
 		home := utils.UserHomeDir()
 		// configure .SpaceVim
 		desDir := filepath.Join(home, ".SpaceVim")
@@ -103,15 +114,15 @@ func spaceVim(cmd *cobra.Command, args []string) {
 		utils.CopyEmbedFileToDir("data/SpaceVim/SpaceVim.d/init.toml", desDir, 0600)
 		utils.CopyEmbedFileToDir("data/SpaceVim/SpaceVim.d/vimrc", desDir, 0600)
 		// -----------------------------------------------------------
-		if utils.GetBoolFlag(cmd, "enable-true-color") {
+		if enableTrueColor {
 			configureSpaceVimTrueColor(true)
 		}
-		if utils.GetBoolFlag(cmd, "disable-true-color") {
+		if disableTrueColor {
 			configureSpaceVimTrueColor(false)
 		}
 		configureSpaceVimForFirenvim()
 	}
-	if utils.GetBoolFlag(cmd, "uninstall") {
+	if uninstall {
 		utils.RunCmd("curl -sLf https://spacevim.org/install.sh | bash -s -- --uninstall")
 	}
 }

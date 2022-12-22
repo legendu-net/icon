@@ -50,5 +50,6 @@ func init() {
 	ArrowDbCmd.Flags().BoolP("install", "i", false, "Install Spark.")
 	ArrowDbCmd.Flags().BoolP("uninstall", "u", false, "Uninstall Spark.")
 	ArrowDbCmd.Flags().BoolP("config", "c", false, "Configure Spark.")
+	utils.AddPythonFlags(ArrowDbCmd)
 	// rootCmd.AddCommand(ArrowDbCmd)
 }

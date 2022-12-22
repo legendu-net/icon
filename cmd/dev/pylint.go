@@ -78,5 +78,6 @@ func init() {
 	PylintCmd.Flags().Bool("uninstall", false, "Uninstall Python Poetry.")
 	PylintCmd.Flags().BoolP("config", "c", false, "Configure Python Poetry.")
 	PylintCmd.Flags().StringP("dest-dir", "d", ".", "The destination directory to copy the pylint configuration file to.")
+	utils.AddPythonFlags(PylintCmd)
 	// rootCmd.AddCommand(PylintCmd)
 }
