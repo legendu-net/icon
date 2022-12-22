@@ -10,8 +10,7 @@ import (
 	"runtime"
 )
 
-func downloadHyperFromGitHub(version string) {
-	repo := "vercel/hyper"
+func downloadHyperFromGitHub(version string) string {
 	keywords := []string{}
 	if utils.IsDebianUbuntuSeries() {
 		keywords = append(keywords, "deb")
@@ -31,9 +30,9 @@ func downloadHyperFromGitHub(version string) {
 		keywords = append(keywords, "arm64")
 	default:
 	}
-	keywordsExclude := []string{}
 	output := "/tmp/_hyper_js_terminal"
-	network.DownloadGitHubRelease(repo, version, keywords, keywordsExclude, output)
+	network.DownloadGitHubRelease("vercel/hyper", version, keywords, []string{}, output)
+	return output
 }
 
 // Install and configure the Hyper terminal.
@@ -41,19 +40,19 @@ func hyper(cmd *cobra.Command, args []string) {
 	if utils.GetBoolFlag(cmd, "install") {
 		switch runtime.GOOS {
 		case "linux":
-			downloadHyperFromGitHub(utils.GetStringFlag(cmd, "version"))
+			file := downloadHyperFromGitHub(utils.GetStringFlag(cmd, "version"))
 			if utils.IsDebianUbuntuSeries() {
-				command := utils.Format("{prefix} apt-get update && {prefix} apt-get install {yes_s} {path}", map[string]string{
+				command := utils.Format("{prefix} apt-get update && {prefix} apt-get install {yes_s} {file}", map[string]string{
 					"prefix": utils.GetCommandPrefix(true, map[string]uint32{}),
 					"yes_s":  utils.BuildYesFlag(cmd),
-					"path":   utils.GetStringFlag(cmd, "output"),
+					"file":   file,
 				})
 				utils.RunCmd(command)
 			} else if utils.IsFedoraSeries() {
-				command := utils.Format("{prefix} dnf {yes_s} install {path}", map[string]string{
+				command := utils.Format("{prefix} dnf {yes_s} install {file}", map[string]string{
 					"prefix": utils.GetCommandPrefix(true, map[string]uint32{}),
 					"yes_s":  utils.BuildYesFlag(cmd),
-					"path":   utils.GetStringFlag(cmd, "output"),
+					"file":   file,
 				})
 				utils.RunCmd(command)
 			}

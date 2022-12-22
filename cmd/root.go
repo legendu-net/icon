@@ -7,9 +7,11 @@ import (
 	"legendu.net/icon/cmd/dev"
 	"legendu.net/icon/cmd/ide"
 	"legendu.net/icon/cmd/jupyter"
+	"legendu.net/icon/cmd/misc"
 	"legendu.net/icon/cmd/network"
 	"legendu.net/icon/cmd/shell"
 	"legendu.net/icon/cmd/virtualization"
+	"legendu.net/icon/cmd/filesystem"
 	"os"
 )
 
@@ -38,6 +40,7 @@ func init() {
 	rootCmd.AddCommand(network.SshServerCmd)
 	rootCmd.AddCommand(jupyter.IpythonCmd)
 	rootCmd.AddCommand(jupyter.JLabVimCmd)
+	rootCmd.AddCommand(jupyter.JupyterBookCmd)
 	rootCmd.AddCommand(shell.BashItCmd)
 	rootCmd.AddCommand(shell.HyperCmd)
 	rootCmd.AddCommand(shell.AlacrittyCmd)
@@ -53,4 +56,6 @@ func init() {
 	rootCmd.AddCommand(ai.PyTorchCmd)
 	rootCmd.AddCommand(bigdata.SparkCmd)
 	rootCmd.AddCommand(virtualization.DockerCmd)
+	rootCmd.AddCommand(misc.KeepassXCCmd)
+	rootCmd.AddCommand(filesystem.RipCmd)
 }
