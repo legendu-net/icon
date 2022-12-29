@@ -23,5 +23,6 @@
     "python.terminal.activateEnvironment": false,
     "autoDocstring.docstringFormat": "sphinx",
     "python.formatting.provider": "yapf",
-    "rust-analyzer.inlayHints.parameterHints": true
+    "rust-analyzer.inlayHints.parameterHints": true,
+    "rust-analyzer.checkOnSave.command": "clippy"
 }
