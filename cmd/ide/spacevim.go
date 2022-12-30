@@ -152,6 +152,7 @@ func init() {
 	SpaceVimCmd.Flags().Bool("enable-true-color", false, "Enable true color support in SpaceVim.")
 	SpaceVimCmd.Flags().Bool("disable-true-color", false, "Disable true color support in SpaceVim.")
 	SpaceVimCmd.Flags().Bool("strip", false, "Strip unnecessary files from '~/.SpaceVim/'.")
+	SpaceVimCmd.Flags().BoolP("yes", "y", false, "Automatically yes to prompt questions.")
 	utils.AddPythonFlags(SpaceVimCmd)
 	// rootCmd.AddCommand(spaceVimCmd)
 }
