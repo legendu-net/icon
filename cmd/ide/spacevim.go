@@ -65,6 +65,8 @@ func stripSpaceVim() {
 func spaceVim(cmd *cobra.Command, args []string) {
 	SpaceVim(
 		utils.GetBoolFlag(cmd, "install"),
+		utils.GetCommandPrefix(true, map[string]uint32{}),
+		utils.BuildYesFlag(cmd),
 		utils.GetBoolFlag(cmd, "config"),
 		utils.GetBoolFlag(cmd, "strip"),
 		utils.GetBoolFlag(cmd, "enable-true-color"),
@@ -75,8 +77,15 @@ func spaceVim(cmd *cobra.Command, args []string) {
 	)
 }
 
-func SpaceVim(install bool, config bool, strip bool, enableTrueColor bool, disableTrueColor bool, uninstall bool, version string, pipInstall string) {
+func SpaceVim(install bool, prefix string, yes_s string, config bool, strip bool, enableTrueColor bool, disableTrueColor bool, uninstall bool, version string, pipInstall string) {
 	if install {
+		if utils.IsDebianUbuntuSeries() {
+			cmd := utils.Format("{prefix} apt-get update && {prefix} apt-get install {yes_s} xfonts-utils", map[string]string{
+				"prefix": prefix,
+				"yes_s":  yes_s,
+			})
+			utils.RunCmd(cmd)
+		}
 		if version == "" {
 			version = network.GetLatestRelease(network.GetReleaseUrl("SpaceVim/SpaceVim")).TagName
 		} else if !strings.HasPrefix(version, "v") {
@@ -143,6 +152,7 @@ func init() {
 	SpaceVimCmd.Flags().Bool("enable-true-color", false, "Enable true color support in SpaceVim.")
 	SpaceVimCmd.Flags().Bool("disable-true-color", false, "Disable true color support in SpaceVim.")
 	SpaceVimCmd.Flags().Bool("strip", false, "Strip unnecessary files from '~/.SpaceVim/'.")
+	SpaceVimCmd.Flags().BoolP("yes", "y", false, "Automatically yes to prompt questions.")
 	utils.AddPythonFlags(SpaceVimCmd)
 	// rootCmd.AddCommand(spaceVimCmd)
 }
