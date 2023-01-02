@@ -93,6 +93,7 @@ func SpaceVim(install bool, prefix string, yes_s string, config bool, strip bool
 		}
 		utils.RemoveAll(filepath.Join(utils.UserHomeDir(), ".SpaceVim"))
 		command := utils.Format(`curl -sLf https://spacevim.org/install.sh | bash \
+			&& mkdir -p ~/.config && ln -svf ~/.SpaceVim ~/.config/nvim \
 			&& cd ~/.SpaceVim && git checkout {version}`, map[string]string{
 			"version": version,
 		})
