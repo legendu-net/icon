@@ -91,7 +91,7 @@ func git(cmd *cobra.Command, args []string) {
 		// create .gitconfig
 		home := utils.UserHomeDir()
 		gitConfig := filepath.Join(home, ".gitconfig")
-		utils.CopyEmbedFile("data/git/gitconfig", gitConfig, 0o600)
+		utils.CopyEmbedFile("data/git/gitconfig", gitConfig, 0o600, true)
 		// user.name and user.email
 		command := utils.Format(`git config --global user.name "{name}" \
 			&& git config --global user.email "{email}"`, map[string]string{
@@ -110,7 +110,6 @@ func git(cmd *cobra.Command, args []string) {
 			log.Printf("Bash completion is enabled for Git.")
 		default:
 		}
-		configureGitIgnore(cmd)
 		// config proxy
 		proxy := utils.GetStringFlag(cmd, "proxy")
 		if proxy != "" {
@@ -120,6 +119,7 @@ func git(cmd *cobra.Command, args []string) {
 			utils.RunCmd(command)
 		}
 	}
+	configureGitIgnore(cmd)
 	if utils.GetBoolFlag(cmd, "uninstall") {
 		utils.RunCmd("git lfs uninstall")
 		switch runtime.GOOS {
@@ -155,14 +155,13 @@ func configureGitIgnore(cmd *cobra.Command) {
 		return
 	}
 	srcFile := "data/git/gitignore_" + lang
-	dstDir := utils.GetStringFlag(cmd, "dst-dir")
+	dstDir := utils.GetStringFlag(cmd, "dest-dir")
 	dstFile := filepath.Join(dstDir, ".gitignore")
 	if utils.GetBoolFlag(cmd, "append") {
 		utils.AppendToTextFile(dstFile, utils.ReadEmbedFileAsString(srcFile))
 		log.Printf("%s is appended into %s.", srcFile, dstFile)
 	} else {
-		utils.CopyEmbedFile(srcFile, dstFile, 0o600)
-		log.Printf("%s is copied to %s.", srcFile, dstFile)
+		utils.CopyEmbedFile(srcFile, dstFile, 0o600, true)
 	}
 }
 

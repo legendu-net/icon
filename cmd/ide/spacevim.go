@@ -117,12 +117,12 @@ func SpaceVim(install bool, prefix string, yes_s string, config bool, strip bool
 		// configure .SpaceVim
 		desDir := filepath.Join(home, ".SpaceVim")
 		utils.MkdirAll(desDir, 0700)
-		utils.CopyEmbedFileToDir("data/SpaceVim/SpaceVim/init.vim", desDir, 0600)
+		utils.CopyEmbedFileToDir("data/SpaceVim/SpaceVim/init.vim", desDir, 0600, true)
 		// configure .SpaceVim.d
 		desDir = filepath.Join(home, ".SpaceVim.d")
 		utils.MkdirAll(desDir, 0700)
-		utils.CopyEmbedFileToDir("data/SpaceVim/SpaceVim.d/init.toml", desDir, 0600)
-		utils.CopyEmbedFileToDir("data/SpaceVim/SpaceVim.d/vimrc", desDir, 0600)
+		utils.CopyEmbedFileToDir("data/SpaceVim/SpaceVim.d/init.toml", desDir, 0600, true)
+		utils.CopyEmbedFileToDir("data/SpaceVim/SpaceVim.d/vimrc", desDir, 0600, true)
 		// -----------------------------------------------------------
 		if enableTrueColor {
 			configureSpaceVimTrueColor(true)
