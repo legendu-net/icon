@@ -96,7 +96,7 @@ func Chmod600(path string) {
 	}
 }
 
-func CopyEmbedFile(sourceFile string, destinationFile string, mode os.FileMode) {
+func CopyEmbedFile(sourceFile string, destinationFile string, mode os.FileMode, info bool) {
 	bytes := ReadEmbedFile(sourceFile)
 	dir := filepath.Dir(destinationFile)
 	if !ExistsPath(dir) {
@@ -107,12 +107,14 @@ func CopyEmbedFile(sourceFile string, destinationFile string, mode os.FileMode) 
 	}
 	WriteFile(destinationFile, bytes, 0o600)
 	Chmod(destinationFile, mode)
-	log.Printf("%s is copied to %s.\n", sourceFile, destinationFile)
+	if info {
+		log.Printf("%s is copied to %s.\n", sourceFile, destinationFile)
+	}
 }
 
-func CopyEmbedFileToDir(sourceFile string, destinationDir string, mode os.FileMode) {
+func CopyEmbedFileToDir(sourceFile string, destinationDir string, mode os.FileMode, info bool) {
 	destinationFile := filepath.Join(destinationDir, filepath.Base(sourceFile))
-	CopyEmbedFile(sourceFile, destinationFile, mode)
+	CopyEmbedFile(sourceFile, destinationFile, mode, info)
 }
 
 func RunCmd(cmd string, env ...string) {

@@ -52,7 +52,7 @@ func vscode(cmd *cobra.Command, args []string) {
 			}
 		}
 		utils.MkdirAll(userDir, 0700)
-		utils.CopyEmbedFileToDir(srcFile, userDir, 0600)
+		utils.CopyEmbedFileToDir(srcFile, userDir, 0600, true)
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
 		switch runtime.GOOS {
