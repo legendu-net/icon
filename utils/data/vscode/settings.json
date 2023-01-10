@@ -22,7 +22,7 @@
     ],
     "python.terminal.activateEnvironment": false,
     "autoDocstring.docstringFormat": "sphinx",
-    "python.formatting.provider": "yapf",
+    "python.formatting.provider": "black",
     "rust-analyzer.inlayHints.parameterHints": true,
     "rust-analyzer.checkOnSave.command": "clippy"
 }

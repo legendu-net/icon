@@ -14,6 +14,7 @@ import (
 	"runtime"
 	"strings"
 
+	"github.com/elliotchance/orderedmap/v2"
 	"github.com/shirou/gopsutil/cpu"
 	"github.com/shirou/gopsutil/mem"
 	"github.com/spf13/cobra"
@@ -571,5 +572,28 @@ func LinkFile(srcFile string, dstLink string) {
 	err := os.Symlink(srcFile, dstLink)
 	if err != nil {
 		log.Fatalf("Failed to link the file %s to %s!\n", srcFile, dstLink)
+	}
+}
+
+// Update map1 using map2.
+func UpdateMap(map1 orderedmap.OrderedMap[string, any], map2 orderedmap.OrderedMap[string, any]) {
+	for _, key2 := range map2.Keys() {
+		val2, _ := map2.Get(key2)
+		val1, map1HasKey2 := map1.Get(key2)
+		if !map1HasKey2 {
+			map1.Set(key2, val2)
+			continue
+		}
+		switch val2.(type) {
+		case orderedmap.OrderedMap[string, any]:
+			switch val1.(type) {
+			case orderedmap.OrderedMap[string, any]:
+				UpdateMap(val1.(orderedmap.OrderedMap[string, any]), val2.(orderedmap.OrderedMap[string, any]))
+			default:
+				map1.Set(key2, val2)
+			}
+		default:
+			map1.Set(key2, val2)
+		}
 	}
 }

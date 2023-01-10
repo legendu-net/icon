@@ -1,0 +1,6 @@
+[tool.pytype]
+exclude = [
+    ".venv/",
+    "dist/",
+    "*/.ipynb_checkpoints/",
+]
