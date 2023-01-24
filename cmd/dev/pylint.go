@@ -9,29 +9,6 @@ import (
 	"path/filepath"
 )
 
-// Update map1 using map2.
-func UpdateMap(map1 orderedmap.OrderedMap[string, any], map2 orderedmap.OrderedMap[string, any]) {
-	for _, key2 := range map2.Keys() {
-		val2, _ := map2.Get(key2)
-		val1, map1HasKey2 := map1.Get(key2)
-		if !map1HasKey2 {
-			map1.Set(key2, val2)
-			continue
-		}
-		switch val2.(type) {
-		case orderedmap.OrderedMap[string, any]:
-			switch val1.(type) {
-			case orderedmap.OrderedMap[string, any]:
-				UpdateMap(val1.(orderedmap.OrderedMap[string, any]), val2.(orderedmap.OrderedMap[string, any]))
-			default:
-				map1.Set(key2, val2)
-			}
-		default:
-			map1.Set(key2, val2)
-		}
-	}
-}
-
 // Install and configure pylint.
 func pylint(cmd *cobra.Command, args []string) {
 	if utils.GetBoolFlag(cmd, "install") {
@@ -48,8 +25,10 @@ func pylint(cmd *cobra.Command, args []string) {
 		var destMap orderedmap.OrderedMap[string, any]
 		if utils.ExistsFile(destFile) {
 			toml.Unmarshal(utils.ReadFile(destFile), &destMap)
+			utils.UpdateMap(destMap, srcMap)
+		} else {
+			destMap = srcMap
 		}
-		UpdateMap(destMap, srcMap)
 		bytes, err := toml.Marshal(destMap)
 		if err != nil {
 			log.Fatal("ERROR - ", err)
@@ -77,7 +56,7 @@ func init() {
 	PylintCmd.Flags().BoolP("install", "i", false, "Install Python Poetry.")
 	PylintCmd.Flags().Bool("uninstall", false, "Uninstall Python Poetry.")
 	PylintCmd.Flags().BoolP("config", "c", false, "Configure Python Poetry.")
-	PylintCmd.Flags().StringP("dest-dir", "d", ".", "The destination directory to copy the pylint configuration file to.")
+	PylintCmd.Flags().StringP("dest-dir", "d", ".", "The destination directory to copy the pylint configuration to.")
 	utils.AddPythonFlags(PylintCmd)
 	// rootCmd.AddCommand(PylintCmd)
 }

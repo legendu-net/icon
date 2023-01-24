@@ -36,13 +36,14 @@ func linkRust(cmd *cobra.Command, cargoHome string) {
 	}
 }
 
-func installRustNix(rustupHome string, cargoHome string) {
+func installRustNix(rustupHome string, cargoHome string, toolchain string) {
 	command := utils.Format(`
-		curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | {prefix} bash -s -- -y \
+		curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | {prefix} bash -s -- --default-toolchain {toolchain} -y \
 		&& {cargoHome}/bin/rustup component add rust-src rustfmt clippy \
 		&& {cargoHome}/bin/cargo install sccache cargo-cache cargo-edit`, map[string]string{
 		"rustupHome": rustupHome,
 		"cargoHome":  cargoHome,
+		"toolchain":  toolchain,
 		"prefix": utils.GetCommandPrefix(false, map[string]uint32{
 			rustupHome: unix.W_OK | unix.R_OK,
 			cargoHome:  unix.W_OK | unix.R_OK,
@@ -68,11 +69,12 @@ func rust(cmd *cobra.Command, args []string) {
 	if cargoHome == "" {
 		cargoHome = filepath.Join(utils.UserHomeDir(), ".cargo")
 	}
+	toolchain := utils.GetStringFlag(cmd, "toolchain")
 	if utils.GetBoolFlag(cmd, "install") {
 		switch runtime.GOOS {
 		case "darwin":
 			utils.BrewInstallSafe([]string{"pkg-config", "openssl"})
-			installRustNix(rustupHome, cargoHome)
+			installRustNix(rustupHome, cargoHome, toolchain)
 		case "linux":
 			if utils.IsDebianUbuntuSeries() {
 				command := utils.Format(`{prefix} apt-get update \
@@ -81,7 +83,7 @@ func rust(cmd *cobra.Command, args []string) {
 				})
 				utils.RunCmd(command)
 			}
-			installRustNix(rustupHome, cargoHome)
+			installRustNix(rustupHome, cargoHome, toolchain)
 		default:
 		}
 	}
@@ -117,6 +119,7 @@ func init() {
 	RustCmd.Flags().String("link-to-dir", "", "The directory to link commands (cargo and rustc) to.")
 	RustCmd.Flags().String("rustup-home", "", "Value for the RUSTUP_HOME environment.")
 	RustCmd.Flags().String("cargo-home", "", "Value for the CARGO_HOME environment.")
+	RustCmd.Flags().String("toolchain", "stable", "The Rust toolchain (stable by default) to install.")
 	RustCmd.Flags().BoolP("path", "p", false, "Configure the PATH environment variable.")
 	// rootCmd.AddCommand(RustCmd)
 }

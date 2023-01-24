@@ -25,9 +25,12 @@ func pytype(cmd *cobra.Command, args []string) {
 		var destMap orderedmap.OrderedMap[string, any]
 		if utils.ExistsFile(destFile) {
 			toml.Unmarshal(utils.ReadFile(destFile), &destMap)
+			utils.UpdateMap(destMap, srcMap)
+		} else {
+			destMap = srcMap
 		}
-		utils.UpdateMap(destMap, srcMap)
 		bytes, err := toml.Marshal(destMap)
+		//bytes, err := toml.Marshal(srcMap)
 		if err != nil {
 			log.Fatal("ERROR - ", err)
 		}
@@ -51,9 +54,9 @@ var PytypeCmd = &cobra.Command{
 }
 
 func init() {
-	PytypeCmd.Flags().BoolP("install", "i", false, "Install Python Poetry.")
-	PytypeCmd.Flags().Bool("uninstall", false, "Uninstall Python Poetry.")
-	PytypeCmd.Flags().BoolP("config", "c", false, "Configure Python Poetry.")
-	PytypeCmd.Flags().StringP("dest-dir", "d", ".", "The destination directory to copy the pylint configuration file to.")
+	PytypeCmd.Flags().BoolP("install", "i", false, "Install Pytype.")
+	PytypeCmd.Flags().Bool("uninstall", false, "Uninstall Pytype.")
+	PytypeCmd.Flags().BoolP("config", "c", false, "Configure Pytype.")
+	PytypeCmd.Flags().StringP("dest-dir", "d", ".", "The destination directory to copy the Pytype configuration to.")
 	utils.AddPythonFlags(PytypeCmd)
 }
