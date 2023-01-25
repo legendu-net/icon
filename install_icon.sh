@@ -3,9 +3,9 @@
 function install_icon.usage() {
     cat << EOF
 NAME
-    /scripts/sys/install_icon.sh - Download and install icon to /usr/local/bin/.
+    ./install_icon.sh - Download and install icon to /usr/local/bin/.
 SYNTAX 
-    /scripts/sys/install_icon.sh [-h]
+    ./install_icon.sh [-h]
 EOF
 }
 

@@ -47,6 +47,7 @@ func init() {
 	rootCmd.AddCommand(dev.GitCmd)
 	rootCmd.AddCommand(dev.GolangCmd)
 	rootCmd.AddCommand(dev.RustCmd)
+	rootCmd.AddCommand(dev.BytehoundCmd)
 	rootCmd.AddCommand(dev.PoetryCmd)
 	rootCmd.AddCommand(dev.PylintCmd)
 	rootCmd.AddCommand(dev.PytypeCmd)
