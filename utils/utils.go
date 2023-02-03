@@ -355,8 +355,14 @@ func WriteTextFile(path string, text string, perm fs.FileMode) {
 	WriteFile(path, []byte(text), perm)
 }
 
-func AppendToTextFile(path string, text string) {
-	f, err := os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+func AppendToTextFile(path string, text string, checkExistence bool) {
+	if checkExistence {
+		fileContent := ReadFileAsString(path)
+		if !strings.Contains(fileContent, strings.TrimSpace(text)) {
+			AppendToTextFile(path, text, false)
+		}
+	}
+	f, err := os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o644)
 	defer f.Close()
 	if err != nil {
 		log.Fatal("ERROR - ", err)
@@ -367,23 +373,39 @@ func AppendToTextFile(path string, text string) {
 	}
 }
 
+func GetBashConfigFile() string {
+	home := UserHomeDir()
+	file := ".bash_profile"
+	if runtime.GOOS == "linux" {
+		file = ".bashrc"
+	}
+	return filepath.Join(home, file)
+}
+
+func ConfigBash() {
+	ConfigShellPath(GetBashConfigFile())
+	if runtime.GOOS == "linux" {
+		sourceIn := `
+# source in ~/.bashrc
+if [[ -f $HOME/.bashrc ]]; then
+	. $HOME/.bashrc
+fi
+`
+		AppendToTextFile(
+			filepath.Join(UserHomeDir(), ".bash_profile"),
+			sourceIn,
+			true,
+		)
+	}
+}
+
 // Configure shell to add a path into the environment variable PATH.
 // @param paths: Absolute paths to add into PATH.
 // @param config_file: The path of a shell's configuration file.
-func AddPathShell(paths []string, config_file string) {
+func ConfigShellPath(config_file string) {
 	text := ReadFileAsString(config_file)
 	pattern := "\n_PATHS=(\n"
-	if strings.Contains(text, pattern) {
-		lines := ""
-		for _, path := range paths {
-			if strings.Contains(path, "*") {
-				lines += "    $(ls -d " + path + " 2> /dev/null)\n"
-			} else {
-				lines += "    \"" + path + "\"\n"
-			}
-		}
-		text = strings.Replace(text, pattern+lines, "", 1)
-	} else {
+	if !strings.Contains(text, pattern) {
 		text = `
 # set $PATH
 _PATHS=(
@@ -399,8 +421,9 @@ for ((_i=${#_PATHS[@]}-1; _i>=0; _i--)); do
 	fi
 done
 `
-		AppendToTextFile(config_file, text)
+		AppendToTextFile(config_file, text, true)
 	}
+	log.Printf("%s is configured to insert common bin paths into $PATH.", config_file)
 }
 
 func VirtualMemory() *mem.VirtualMemoryStat {
