@@ -42,6 +42,7 @@ func init() {
 	rootCmd.AddCommand(jupyter.JLabVimCmd)
 	rootCmd.AddCommand(jupyter.JupyterBookCmd)
 	rootCmd.AddCommand(shell.BashItCmd)
+	rootCmd.AddCommand(shell.ZoxideCmd)
 	rootCmd.AddCommand(shell.HyperCmd)
 	rootCmd.AddCommand(shell.AlacrittyCmd)
 	rootCmd.AddCommand(dev.GitCmd)

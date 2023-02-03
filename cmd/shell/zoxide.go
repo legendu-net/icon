@@ -21,7 +21,7 @@ func zoxide(cmd *cobra.Command, args []string) {
 	}
 }
 
-var zoxideCmd = &cobra.Command{
+var ZoxideCmd = &cobra.Command{
 	Use:     "bash_it",
 	Aliases: []string{"zoxide", "bit"},
 	Short:   "Install and configure bash-it.",
@@ -30,8 +30,8 @@ var zoxideCmd = &cobra.Command{
 }
 
 func init() {
-	zoxideCmd.Flags().BoolP("install", "i", false, "If specified, install bash-it.")
-	zoxideCmd.Flags().Bool("uninstall", false, "If specified, uninstall bash-it.")
-	zoxideCmd.Flags().BoolP("config", "c", false, "If specified, configure bash-it.")
+	ZoxideCmd.Flags().BoolP("install", "i", false, "If specified, install bash-it.")
+	ZoxideCmd.Flags().Bool("uninstall", false, "If specified, uninstall bash-it.")
+	ZoxideCmd.Flags().BoolP("config", "c", false, "If specified, configure bash-it.")
 	// rootCmd.AddCommand(zoxideCmd)
 }
