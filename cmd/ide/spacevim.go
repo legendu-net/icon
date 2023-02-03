@@ -10,12 +10,12 @@ import (
 )
 
 func configureSpaceVimForFirenvim() {
-	text := `"----------------------------------------------------------------------
+	script := `"----------------------------------------------------------------------
 if exists('g:started_by_firenvim')
 	set guifont=Monaco:h16
 endif
 	`
-	utils.AppendToTextFile(filepath.Join(utils.UserHomeDir(), ".SpaceVim/init.vim"), text)
+	utils.AppendToTextFile(filepath.Join(utils.UserHomeDir(), ".SpaceVim/init.vim"), script, true)
 }
 
 // Enable/disable true color for SpaceVim.
