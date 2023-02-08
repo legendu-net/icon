@@ -106,7 +106,7 @@ func git(cmd *cobra.Command, args []string) {
 			script := utils.Format("\n# Git completion\n[ -f {file} ] &&  . {file}", map[string]string{
 				"file": file,
 			})
-			utils.AppendToTextFile(filepath.Join(home, ".bash_profile"), script)
+			utils.AppendToTextFile(filepath.Join(home, ".bash_profile"), script, true)
 			log.Printf("Bash completion is enabled for Git.")
 		default:
 		}
@@ -158,7 +158,7 @@ func configureGitIgnore(cmd *cobra.Command) {
 	dstDir := utils.GetStringFlag(cmd, "dest-dir")
 	dstFile := filepath.Join(dstDir, ".gitignore")
 	if utils.GetBoolFlag(cmd, "append") {
-		utils.AppendToTextFile(dstFile, utils.ReadEmbedFileAsString(srcFile))
+		utils.AppendToTextFile(dstFile, utils.ReadEmbedFileAsString(srcFile), true)
 		log.Printf("%s is appended into %s.", srcFile, dstFile)
 	} else {
 		utils.CopyEmbedFile(srcFile, dstFile, 0o600, true)

@@ -56,7 +56,7 @@ func SshClient(cmd *cobra.Command, args []string) {
 					}
 		*/
 		utils.Chmod600(sshHome)
-		log.Print("The permissions of ~/.ssh and its contents are corrected set.\n")
+		log.Print("The permissions of ~/.ssh and its contents are correctly set.\n")
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
 	}

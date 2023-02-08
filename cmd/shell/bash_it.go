@@ -3,9 +3,7 @@ package shell
 import (
 	"github.com/spf13/cobra"
 	"legendu.net/icon/utils"
-	"log"
 	"path/filepath"
-	"runtime"
 )
 
 // Install bash-it, a community Bash framework.
@@ -23,22 +21,7 @@ func bashIt(cmd *cobra.Command, args []string) {
 		utils.RunCmd(command)
 	}
 	if utils.GetBoolFlag(cmd, "config") {
-		profile := ".bash_profile"
-		if runtime.GOOS == "linux" {
-			profile = ".bashrc"
-		}
-		profile = filepath.Join(home, profile)
-		utils.AddPathShell([]string{"$HOME/*/bin"}, profile)
-		log.Printf("%s is configured to insert $HOME/*/bin into $PATH.", profile)
-		if runtime.GOOS == "linux" {
-			text := `
-# source in ~/.bashrc
-if [[ -f $HOME/.bashrc ]]; then
-	. $HOME/.bashrc
-fi
-`
-			utils.AppendToTextFile(filepath.Join(home, ".bash_profile"), text)
-		}
+		utils.ConfigBash()
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
 		utils.RunCmd("~/.bash_it/uninstall.sh && rm -rf ~/.bash_it/")
