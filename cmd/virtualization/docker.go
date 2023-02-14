@@ -39,15 +39,15 @@ func docker(cmd *cobra.Command, args []string) {
 				if utils.IsDebianUbuntuSeries() {
 					command := utils.Format("{prefix} gpasswd -a {user_to_docker} docker", map[string]string{
 						"prefix":       utils.GetCommandPrefix(true, map[string]uint32{}),
-						"userToDocker": userToDocker,
+						"user_to_docker": userToDocker,
 					})
 					utils.RunCmd(command)
 					log.Printf("Please run the command 'newgrp docker' or logout/login to make the group 'docker' effective!\n")
 				}
 			case "darwin":
-				command := utils.Format("{prefix} dseditgroup -o edit -a {userToDocker} -t user staff", map[string]string{
+				command := utils.Format("{prefix} dseditgroup -o edit -a {user_to_docker} -t user staff", map[string]string{
 					"prefix":       utils.GetCommandPrefix(true, map[string]uint32{}),
-					"userToDocker": userToDocker,
+					"user_to_docker": userToDocker,
 				})
 				utils.RunCmd(command)
 			default:
