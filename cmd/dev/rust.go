@@ -40,7 +40,7 @@ func installRustNix(rustupHome string, cargoHome string, toolchain string) {
 	command := utils.Format(`
 		curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | {prefix} bash -s -- --default-toolchain {toolchain} -y \
 		&& {cargoHome}/bin/rustup component add rust-src rustfmt clippy \
-		&& {cargoHome}/bin/cargo install sccache cargo-cache cargo-edit`, map[string]string{
+		&& {cargoHome}/bin/cargo install sccache cargo-cache cargo-edit cargo-criterion`, map[string]string{
 		"rustupHome": rustupHome,
 		"cargoHome":  cargoHome,
 		"toolchain":  toolchain,

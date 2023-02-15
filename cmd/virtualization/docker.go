@@ -38,7 +38,7 @@ func docker(cmd *cobra.Command, args []string) {
 			case "linux":
 				if utils.IsDebianUbuntuSeries() {
 					command := utils.Format("{prefix} gpasswd -a {user_to_docker} docker", map[string]string{
-						"prefix":       utils.GetCommandPrefix(true, map[string]uint32{}),
+						"prefix":         utils.GetCommandPrefix(true, map[string]uint32{}),
 						"user_to_docker": userToDocker,
 					})
 					utils.RunCmd(command)
@@ -46,7 +46,7 @@ func docker(cmd *cobra.Command, args []string) {
 				}
 			case "darwin":
 				command := utils.Format("{prefix} dseditgroup -o edit -a {user_to_docker} -t user staff", map[string]string{
-					"prefix":       utils.GetCommandPrefix(true, map[string]uint32{}),
+					"prefix":         utils.GetCommandPrefix(true, map[string]uint32{}),
 					"user_to_docker": userToDocker,
 				})
 				utils.RunCmd(command)
