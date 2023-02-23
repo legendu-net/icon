@@ -164,20 +164,24 @@ func HttpGetAsString(url string) string {
 	return string(HttpGetAsBytes(url))
 }
 
+func CreateTempDir(pattern string) string {
+	dir, err := ioutil.TempDir("", pattern)
+	if err != nil {
+		log.Fatal("ERROR - ", err)
+	}
+	return dir
+}
+
 // Download file from the given URL.
 func DownloadFile(url string, name string, useTempDir bool) string {
 	var out *os.File
 	var err error
 	if useTempDir {
-		out, err = os.CreateTemp(os.TempDir(), name)
-		if err != nil {
-			log.Fatal("ERROR - ", err)
-		}
-	} else {
-		out, err = os.Create(name)
-		if err != nil {
-			log.Fatal("ERROR - ", err, ": ", name)
-		}
+		name = filepath.Join(CreateTempDir(""), name)
+	}
+	out, err = os.Create(name)
+	if err != nil {
+		log.Fatal("ERROR - ", err, ": ", name)
 	}
 	defer out.Close()
 	log.Printf("Downloading %s to %s\n", url, out.Name())
