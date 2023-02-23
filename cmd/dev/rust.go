@@ -2,11 +2,13 @@ package dev
 
 import (
 	"log"
+	"os"
 	"path/filepath"
 	"runtime"
 
 	"github.com/spf13/cobra"
 	"golang.org/x/sys/unix"
+	"legendu.net/icon/cmd/network"
 	"legendu.net/icon/utils"
 )
 
@@ -40,7 +42,7 @@ func installRustNix(rustupHome string, cargoHome string, toolchain string) {
 	command := utils.Format(`
 		curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | {prefix} bash -s -- --default-toolchain {toolchain} -y \
 		&& {cargoHome}/bin/rustup component add rust-src rustfmt clippy \
-		&& {cargoHome}/bin/cargo install sccache cargo-cache cargo-edit`, map[string]string{
+		&& {cargoHome}/bin/cargo install cargo-cache cargo-edit`, map[string]string{
 		"rustupHome": rustupHome,
 		"cargoHome":  cargoHome,
 		"toolchain":  toolchain,
@@ -57,6 +59,22 @@ func installRustNix(rustupHome string, cargoHome string, toolchain string) {
 		}),
 	})
 	utils.RunCmd(command)
+	installCargoBinstall()
+	//installSccache()
+}
+
+func installSccache() {
+	tmpdir := utils.CreateTempDir("")
+	defer os.RemoveAll(tmpdir)
+	file := filepath.Join(tmpdir, "sccache.tar.gz")
+	network.DownloadGitHubRelease("sccache/releases", "", []string{"x86_64", "unknown", "linux", "musl", "tar.gz"}, []string{"pre", "dist", "sha256"}, file)
+}
+
+func installCargoBinstall() {
+	tmpdir := utils.CreateTempDir("")
+	defer os.RemoveAll(tmpdir)
+	file := filepath.Join(tmpdir, "cargo-binstall.tgz")
+	network.DownloadGitHubRelease("cargo-bins/cargo-binstall", "", []string{"x86_64", "unknown", "linux", "gnu", "tgz"}, []string{"pre", "full"}, file)
 }
 
 // Install and configure Rust.
