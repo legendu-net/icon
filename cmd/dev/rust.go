@@ -60,7 +60,7 @@ func installRustNix(rustupHome string, cargoHome string, toolchain string) {
 	})
 	utils.RunCmd(command)
 	installCargoBinstall()
-	//installSccache()
+	installSccache()
 }
 
 func installSccache() {
@@ -68,6 +68,13 @@ func installSccache() {
 	defer os.RemoveAll(tmpdir)
 	file := filepath.Join(tmpdir, "sccache.tar.gz")
 	network.DownloadGitHubRelease("sccache/releases", "", []string{"x86_64", "unknown", "linux", "musl", "tar.gz"}, []string{"pre", "dist", "sha256"}, file)
+	command := utils.Format("{prefix} tar --strip-components=1 -C /usr/local/bin/ -zxvf {file} */sccache", map[string]string{
+		"prefix": utils.GetCommandPrefix(false, map[string]uint32{
+			"/usr/local/bin": unix.W_OK | unix.R_OK,
+		}),
+		"file": file,
+	})
+	utils.RunCmd(command)
 }
 
 func installCargoBinstall() {
@@ -75,6 +82,13 @@ func installCargoBinstall() {
 	defer os.RemoveAll(tmpdir)
 	file := filepath.Join(tmpdir, "cargo-binstall.tgz")
 	network.DownloadGitHubRelease("cargo-bins/cargo-binstall", "", []string{"x86_64", "unknown", "linux", "gnu", "tgz"}, []string{"pre", "full"}, file)
+	command := utils.Format("{prefix} tar -C /usr/local/bin/ -zxvf {file}", map[string]string{
+		"prefix": utils.GetCommandPrefix(false, map[string]uint32{
+			"/usr/local/bin": unix.W_OK | unix.R_OK,
+		}),
+		"file": file,
+	})
+	utils.RunCmd(command)
 }
 
 // Install and configure Rust.
