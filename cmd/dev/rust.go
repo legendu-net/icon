@@ -67,7 +67,7 @@ func installSccache() {
 	tmpdir := utils.CreateTempDir("")
 	defer os.RemoveAll(tmpdir)
 	file := filepath.Join(tmpdir, "sccache.tar.gz")
-	network.DownloadGitHubRelease("sccache/releases", "", []string{"x86_64", "unknown", "linux", "musl", "tar.gz"}, []string{"pre", "dist", "sha256"}, file)
+	network.DownloadGitHubRelease("mozilla/sccache", "", []string{"x86_64", "unknown", "linux", "musl", "tar.gz"}, []string{"pre", "dist", "sha256"}, file)
 	command := utils.Format("{prefix} tar --strip-components=1 -C /usr/local/bin/ -zxvf {file} */sccache", map[string]string{
 		"prefix": utils.GetCommandPrefix(false, map[string]uint32{
 			"/usr/local/bin": unix.W_OK | unix.R_OK,
