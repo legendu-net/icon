@@ -54,6 +54,7 @@ func getGitUserEmail(cmd *cobra.Command) string {
 
 // Install and configure Git.
 func git(cmd *cobra.Command, args []string) {
+	git := utils.GetStringFlag(cmd, "git")
 	if utils.GetBoolFlag(cmd, "install") {
 		switch runtime.GOOS {
 		case "linux":
@@ -84,7 +85,10 @@ func git(cmd *cobra.Command, args []string) {
 			utils.BrewInstallSafe([]string{"git", "git-lfs", "bash-completion@2"})
 		default:
 		}
-		utils.RunCmd("git lfs install")
+		command := utils.Format("{git} lfs install", map[string]string{
+			"git": git,
+		})
+		utils.RunCmd(command)
 	}
 	if utils.GetBoolFlag(cmd, "config") {
 		network.SshClient(cmd, args)
@@ -93,10 +97,11 @@ func git(cmd *cobra.Command, args []string) {
 		gitConfig := filepath.Join(home, ".gitconfig")
 		utils.CopyEmbedFile("data/git/gitconfig", gitConfig, 0o600, true)
 		// user.name and user.email
-		command := utils.Format(`git config --global user.name "{name}" \
-			&& git config --global user.email "{email}"`, map[string]string{
+		command := utils.Format(`{git} config --global user.name "{name}" \
+			&& {git} config --global user.email "{email}"`, map[string]string{
 			"name":  getGitUserName(cmd),
 			"email": getGitUserEmail(cmd),
+			"git":   git,
 		})
 		utils.RunCmd(command)
 		// bash completion for Git
@@ -113,15 +118,19 @@ func git(cmd *cobra.Command, args []string) {
 		// config proxy
 		proxy := utils.GetStringFlag(cmd, "proxy")
 		if proxy != "" {
-			command := utils.Format("git config --global http.proxy {proxy} && git config --global https.proxy {proxy}", map[string]string{
+			command := utils.Format("{git} config --global http.proxy {proxy} && {git} config --global https.proxy {proxy}", map[string]string{
 				"proxy": proxy,
+				"git":   git,
 			})
 			utils.RunCmd(command)
 		}
 	}
 	configureGitIgnore(cmd)
 	if utils.GetBoolFlag(cmd, "uninstall") {
-		utils.RunCmd("git lfs uninstall")
+		command := utils.Format("{git} lfs uninstall", map[string]string{
+			"git": git,
+		})
+		utils.RunCmd(command)
 		switch runtime.GOOS {
 		case "darwin":
 			utils.RunCmd("brew uninstall git git-lfs")
@@ -177,6 +186,7 @@ func init() {
 	GitCmd.Flags().BoolP("install", "i", false, "Install Git.")
 	GitCmd.Flags().Bool("uninstall", false, "Uninstall Git.")
 	GitCmd.Flags().BoolP("config", "c", false, "Configure Git.")
+	GitCmd.Flags().String("git", "git", "Path to the Git command.")
 	GitCmd.Flags().BoolP("yes", "y", false, "Automatically yes to prompt questions.")
 	GitCmd.Flags().StringP("user-name", "n", "", "The user name for Git.")
 	GitCmd.Flags().StringP("user-email", "e", "", "The user name for Git.")
