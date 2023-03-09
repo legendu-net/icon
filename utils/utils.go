@@ -361,10 +361,14 @@ func WriteTextFile(path string, text string, perm fs.FileMode) {
 
 func AppendToTextFile(path string, text string, checkExistence bool) {
 	if checkExistence {
-		fileContent := ReadFileAsString(path)
+		fileContent := ""
+		if ExistsFile(path) {
+			fileContent = ReadFileAsString(path)
+		}
 		if !strings.Contains(fileContent, strings.TrimSpace(text)) {
 			AppendToTextFile(path, text, false)
 		}
+		return
 	}
 	f, err := os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o644)
 	defer f.Close()

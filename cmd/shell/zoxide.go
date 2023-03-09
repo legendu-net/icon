@@ -13,7 +13,7 @@ func zoxide(cmd *cobra.Command, args []string) {
 	}
 	if utils.GetBoolFlag(cmd, "config") {
 		utils.ConfigBash()
-		utils.AppendToTextFile(utils.GetBashConfigFile(), `eval "$(zoxide init bash)"`, true)
+		utils.AppendToTextFile(utils.GetBashConfigFile(), "eval \"$(zoxide init bash)\"\n", true)
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
 	}
