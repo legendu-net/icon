@@ -59,10 +59,7 @@ func git(cmd *cobra.Command, args []string) {
 		switch runtime.GOOS {
 		case "linux":
 			if utils.IsDebianUbuntuSeries() {
-				network.DownloadGitHubRelease("dandavison/delta", "", []string{"x86_64", "linux", "gnu"}, []string{}, "/tmp/git-delta.tar.gz")
-				command := utils.Format(`{prefix} apt-get update && {prefix} apt-get install {yes_s} git git-lfs \
-					&& {prefix} tar -zxvf /tmp/git-delta.tar.gz -C /usr/local/bin/ --wildcards --no-anchored delta --strip=1 \
-					&& rm /tmp/git-delta.tar.gz`, map[string]string{
+				command := utils.Format(`{prefix} apt-get update && {prefix} apt-get install {yes_s} git git-lfs`, map[string]string{
 					"prefix": utils.GetCommandPrefix(
 						true,
 						map[string]uint32{},
@@ -70,7 +67,6 @@ func git(cmd *cobra.Command, args []string) {
 					"yes_s": utils.BuildYesFlag(cmd),
 				})
 				utils.RunCmd(command)
-				// TODO: leverage from_github to download git-delta and install it to /usr/local/bin!!!
 			} else if utils.IsFedoraSeries() {
 				command := utils.Format("{prefix} dnf {yes_s} install git", map[string]string{
 					"prefix": utils.GetCommandPrefix(
@@ -78,6 +74,48 @@ func git(cmd *cobra.Command, args []string) {
 						map[string]uint32{},
 					),
 					"yes_s": utils.BuildYesFlag(cmd),
+				})
+				utils.RunCmd(command)
+			}
+			// install git-delta
+			tmpdir := utils.CreateTempDir("")
+			defer os.RemoveAll(tmpdir)
+			file := filepath.Join(tmpdir, "git-delta.tar.gz")
+			network.DownloadGitHubRelease("dandavison/delta", "", map[string][]string{
+				"common": {},
+				"x86_64": {"x86_64"},
+				"arm64": {"aarch64"},
+				"linux": {"linux", "gnu"},
+				"darwin": {"apple", "darwin"},
+			}, []string{}, file)
+			command := utils.Format(`{prefix} tar -zxvf {file} -C /usr/local/bin/ --wildcards --no-anchored delta --strip=1 \
+				&& rm /tmp/git-delta.tar.gz`, map[string]string{
+				"prefix": utils.GetCommandPrefix(
+					true,
+					map[string]uint32{},
+				),
+				"yes_s": utils.BuildYesFlag(cmd),
+				"file": file,
+			})
+			utils.RunCmd(command)
+			// install gitui
+			if utils.GetBoolFlag(cmd, "gitui") {
+				tmpdir := utils.CreateTempDir("")
+				defer os.RemoveAll(tmpdir)
+				file := filepath.Join(tmpdir, "gitui.tar.gz")
+				network.DownloadGitHubRelease("extrawurst/gitui", "", map[string][]string{
+					"common": {"tar.gz"},
+					"linux": {"linux"},
+					"darwin": {"mac"},
+					"x86_64": {"musl"},
+					"arm64": {"aarch64"},
+				}, []string{}, file)
+				command := utils.Format(`{prefix} tar -zxvf {file} -C /usr/local/bin/`, map[string]string{
+					"prefix": utils.GetCommandPrefix(
+						true,
+						map[string]uint32{},
+					),
+					"file": file,
 				})
 				utils.RunCmd(command)
 			}

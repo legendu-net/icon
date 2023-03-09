@@ -86,7 +86,7 @@ func DownloadGitHubReleaseArgs(cmd *cobra.Command, args []string) {
 	DownloadGitHubRelease(
 		utils.GetStringFlag(cmd, "repo"),
 		utils.GetStringFlag(cmd, "version"),
-		utils.GetStringSliceFlag(cmd, "kwd"),
+		map[string][]string{"common": utils.GetStringSliceFlag(cmd, "kwd")},
 		utils.GetStringSliceFlag(cmd, "KWD"),
 		utils.GetStringFlag(cmd, "output"),
 	)
@@ -95,13 +95,14 @@ func DownloadGitHubReleaseArgs(cmd *cobra.Command, args []string) {
 // Download a release from GitHub.
 // @param args: The arguments to parse.
 // If None, the arguments from command-line are parsed.
-func DownloadGitHubRelease(repo string, version string, keywords []string, keywordsExclude []string, output string) {
+func DownloadGitHubRelease(repo string, version string, keywords map[string][]string, keywordsExclude []string, output string) {
+	keywords_ := utils.BuildKernelOSKeywords(keywords)
 	log.Printf(`Download release from the GitHub repository %s satisfying the following conditions:
 	Version: %s
 	Contains: %s
 	Does not contain: %s
 	Write to: %s
-	`, repo, version, strings.Join(keywords, ", "), strings.Join(keywordsExclude, ", "), output)
+	`, repo, version, strings.Join(keywords_, ", "), strings.Join(keywordsExclude, ", "), output)
 	// form the release URL
 	releaseUrl := GetReleaseUrl(repo)
 	log.Printf("Release URL: %s\n", releaseUrl)
@@ -114,7 +115,7 @@ func DownloadGitHubRelease(repo string, version string, keywords []string, keywo
 	// parse browser download url
 	var browserDownloadUrl string
 	for _, assert := range releaseInfo.Assets {
-		if assetNameContainKeywords(assert.Name, keywords, keywordsExclude) {
+		if assetNameContainKeywords(assert.Name, keywords_, keywordsExclude) {
 			log.Printf("Assert %s is matched.", assert.Name)
 			browserDownloadUrl = assert.BrowserDownloadUrl
 			break

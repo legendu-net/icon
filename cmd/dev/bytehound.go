@@ -14,7 +14,11 @@ func bytehound(cmd *cobra.Command, args []string) {
 	if utils.GetBoolFlag(cmd, "install") {
 		switch runtime.GOOS {
 		case "linux":
-			network.DownloadGitHubRelease("koute/bytehound", "", []string{"bytehound", "x86_64", "linux", "gnu", "tgz"}, []string{}, "/tmp/bytehound.tar.gz")
+			network.DownloadGitHubRelease("koute/bytehound", "", map[string][]string{
+				"common": {"bytehound", "tgz"},
+				"x86_64": {"x86_64"},
+				"linux": {"linux", "gnu"},
+			}, []string{}, "/tmp/bytehound.tar.gz")
 			command := utils.Format(`mkdir -p ~/.local/bin && tar -zxvf /tmp/bytehound.tar.gz -C ~/.local/bin \
 				&& mkdir -p ~/.local/lib && mv ~/.local/bin/libbytehound.so ~/.local/lib`, map[string]string{})
 			utils.RunCmd(command)

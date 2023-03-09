@@ -16,6 +16,7 @@ import (
 
 	"github.com/elliotchance/orderedmap/v2"
 	"github.com/shirou/gopsutil/cpu"
+	"github.com/shirou/gopsutil/host"
 	"github.com/shirou/gopsutil/mem"
 	"github.com/spf13/cobra"
 	"golang.org/x/sys/unix"
@@ -629,4 +630,55 @@ func UpdateMap(map1 orderedmap.OrderedMap[string, any], map2 orderedmap.OrderedM
 			map1.Set(key2, val2)
 		}
 	}
+}
+
+func BuildKernelOSKeywords(keywords map[string][]string) []string {
+	kwds := keywords["common"]
+	info, err := host.Info()
+	if err != nil {
+		log.Fatal(err)
+	}
+	switch info.KernelArch {
+	case "x86_64":
+		x86_64, found := keywords["x86_64"]
+		if found {
+			kwds = append(kwds, x86_64...)
+		}
+	case "arm64", "aarch64":
+		arm64, found := keywords["arm64"]
+		if found {
+			kwds = append(kwds, arm64...)
+		}
+	default:
+	}
+	switch runtime.GOOS {
+	case "darwin":
+		darwin, found := keywords["darwin"]
+		if found {
+			kwds = append(kwds, darwin...)
+		}
+	case "linux":
+		linux, found := keywords["linux"]
+		if found {
+			kwds = append(kwds, linux...)
+		}
+		if IsDebianUbuntuSeries() {
+			debianUbuntuSeries, found := keywords["DebianUbuntuSeries"]
+			if found {
+				kwds = append(kwds, debianUbuntuSeries...)
+			}
+		} else if IsFedoraSeries() {
+			fedoraSeries, found := keywords["FedoraSeries"]
+			if found {
+				kwds = append(kwds, fedoraSeries...)
+			}
+		} else {
+			otherLinux, found := keywords["OtherLinux"]
+			if found {
+				kwds = append(kwds, otherLinux...)
+			}
+		}
+	default:
+	}
+	return kwds
 }
