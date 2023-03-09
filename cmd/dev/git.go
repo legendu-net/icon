@@ -52,6 +52,96 @@ func getGitUserEmail(cmd *cobra.Command) string {
 	return scanner.Text()
 }
 
+func installGitUi(cmd *cobra.Command) {
+	if utils.GetBoolFlag(cmd, "gitui") {
+		tmpdir := utils.CreateTempDir("")
+		defer os.RemoveAll(tmpdir)
+		file := filepath.Join(tmpdir, "gitui.tar.gz")
+		network.DownloadGitHubRelease("extrawurst/gitui", "", map[string][]string{
+			"common": {"tar.gz"},
+			"linux":  {"linux"},
+			"darwin": {"mac"},
+			"x86_64": {"musl"},
+			"arm64":  {"aarch64"},
+		}, []string{}, file)
+		command := utils.Format(`{prefix} tar -zxvf {file} -C /usr/local/bin/`, map[string]string{
+			"prefix": utils.GetCommandPrefix(
+				true,
+				map[string]uint32{},
+			),
+			"file": file,
+		})
+		utils.RunCmd(command)
+	}
+}
+
+func installGitDelta(cmd *cobra.Command) {
+	tmpdir := utils.CreateTempDir("")
+	defer os.RemoveAll(tmpdir)
+	file := filepath.Join(tmpdir, "git-delta.tar.gz")
+	network.DownloadGitHubRelease("dandavison/delta", "", map[string][]string{
+		"common": {},
+		"x86_64": {"x86_64"},
+		"arm64":  {"aarch64"},
+		"linux":  {"linux", "gnu"},
+		"darwin": {"apple", "darwin"},
+	}, []string{}, file)
+	command := utils.Format(`{prefix} tar -zxvf {file} -C /usr/local/bin/ --wildcards --no-anchored delta --strip=1 \
+		&& rm /tmp/git-delta.tar.gz`, map[string]string{
+		"prefix": utils.GetCommandPrefix(
+			true,
+			map[string]uint32{},
+		),
+		"yes_s": utils.BuildYesFlag(cmd),
+		"file":  file,
+	})
+	utils.RunCmd(command)
+}
+
+func configGitProxy(cmd *cobra.Command) {
+	git := utils.GetStringFlag(cmd, "git")
+	proxy := utils.GetStringFlag(cmd, "proxy")
+	if proxy != "" {
+		command := utils.Format("{git} config --global http.proxy {proxy} && {git} config --global https.proxy {proxy}", map[string]string{
+			"proxy": proxy,
+			"git":   git,
+		})
+		utils.RunCmd(command)
+	}
+}
+
+func configGitBashCompletion(cmd *cobra.Command) {
+	switch runtime.GOOS {
+	case "darwin":
+		file := "/usr/local/etc/bash_completion.d/git-completion.bash"
+		script := utils.Format("\n# Git completion\n[ -f {file} ] &&  . {file}", map[string]string{
+			"file": file,
+		})
+		home := utils.UserHomeDir()
+		utils.AppendToTextFile(filepath.Join(home, ".bash_profile"), script, true)
+		log.Printf("Bash completion is enabled for Git.")
+	default:
+	}
+}
+
+func configGitUser(cmd *cobra.Command) {
+	// user.name and user.email
+	git := utils.GetStringFlag(cmd, "git")
+	command := utils.Format(`{git} config --global user.name "{name}" \
+		&& {git} config --global user.email "{email}"`, map[string]string{
+		"name":  getGitUserName(cmd),
+		"email": getGitUserEmail(cmd),
+		"git":   git,
+	})
+	utils.RunCmd(command)
+}
+
+func createGitConfig() {
+	home := utils.UserHomeDir()
+	gitConfig := filepath.Join(home, ".gitconfig")
+	utils.CopyEmbedFile("data/git/gitconfig", gitConfig, 0o600, true)
+}
+
 // Install and configure Git.
 func git(cmd *cobra.Command, args []string) {
 	git := utils.GetStringFlag(cmd, "git")
@@ -77,48 +167,8 @@ func git(cmd *cobra.Command, args []string) {
 				})
 				utils.RunCmd(command)
 			}
-			// install git-delta
-			tmpdir := utils.CreateTempDir("")
-			defer os.RemoveAll(tmpdir)
-			file := filepath.Join(tmpdir, "git-delta.tar.gz")
-			network.DownloadGitHubRelease("dandavison/delta", "", map[string][]string{
-				"common": {},
-				"x86_64": {"x86_64"},
-				"arm64":  {"aarch64"},
-				"linux":  {"linux", "gnu"},
-				"darwin": {"apple", "darwin"},
-			}, []string{}, file)
-			command := utils.Format(`{prefix} tar -zxvf {file} -C /usr/local/bin/ --wildcards --no-anchored delta --strip=1 \
-				&& rm /tmp/git-delta.tar.gz`, map[string]string{
-				"prefix": utils.GetCommandPrefix(
-					true,
-					map[string]uint32{},
-				),
-				"yes_s": utils.BuildYesFlag(cmd),
-				"file":  file,
-			})
-			utils.RunCmd(command)
-			// install gitui
-			if utils.GetBoolFlag(cmd, "gitui") {
-				tmpdir := utils.CreateTempDir("")
-				defer os.RemoveAll(tmpdir)
-				file := filepath.Join(tmpdir, "gitui.tar.gz")
-				network.DownloadGitHubRelease("extrawurst/gitui", "", map[string][]string{
-					"common": {"tar.gz"},
-					"linux":  {"linux"},
-					"darwin": {"mac"},
-					"x86_64": {"musl"},
-					"arm64":  {"aarch64"},
-				}, []string{}, file)
-				command := utils.Format(`{prefix} tar -zxvf {file} -C /usr/local/bin/`, map[string]string{
-					"prefix": utils.GetCommandPrefix(
-						true,
-						map[string]uint32{},
-					),
-					"file": file,
-				})
-				utils.RunCmd(command)
-			}
+			installGitDelta(cmd)
+			installGitUi(cmd)
 		case "darwin":
 			utils.BrewInstallSafe([]string{"git", "git-lfs", "bash-completion@2"})
 		default:
@@ -130,38 +180,10 @@ func git(cmd *cobra.Command, args []string) {
 	}
 	if utils.GetBoolFlag(cmd, "config") {
 		network.SshClient(cmd, args)
-		// create .gitconfig
-		home := utils.UserHomeDir()
-		gitConfig := filepath.Join(home, ".gitconfig")
-		utils.CopyEmbedFile("data/git/gitconfig", gitConfig, 0o600, true)
-		// user.name and user.email
-		command := utils.Format(`{git} config --global user.name "{name}" \
-			&& {git} config --global user.email "{email}"`, map[string]string{
-			"name":  getGitUserName(cmd),
-			"email": getGitUserEmail(cmd),
-			"git":   git,
-		})
-		utils.RunCmd(command)
-		// bash completion for Git
-		switch runtime.GOOS {
-		case "darwin":
-			file := "/usr/local/etc/bash_completion.d/git-completion.bash"
-			script := utils.Format("\n# Git completion\n[ -f {file} ] &&  . {file}", map[string]string{
-				"file": file,
-			})
-			utils.AppendToTextFile(filepath.Join(home, ".bash_profile"), script, true)
-			log.Printf("Bash completion is enabled for Git.")
-		default:
-		}
-		// config proxy
-		proxy := utils.GetStringFlag(cmd, "proxy")
-		if proxy != "" {
-			command := utils.Format("{git} config --global http.proxy {proxy} && {git} config --global https.proxy {proxy}", map[string]string{
-				"proxy": proxy,
-				"git":   git,
-			})
-			utils.RunCmd(command)
-		}
+		createGitConfig()
+		configGitUser(cmd)
+		configGitBashCompletion(cmd)
+		configGitProxy(cmd)
 	}
 	configureGitIgnore(cmd)
 	if utils.GetBoolFlag(cmd, "uninstall") {
