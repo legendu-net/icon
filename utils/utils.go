@@ -498,6 +498,15 @@ func AddPythonFlags(cmd *cobra.Command) {
 	cmd.Flags().StringSlice("extra-pip-options", []string{}, "Extra options (separated by comma) to pass to pip.")
 }
 
+func IsLinux() bool {
+	switch runtime.GOOS {
+	case "linux":
+		return true
+	default:
+		return false
+	}
+}
+
 func GetLinuxDistId() string {
 	m := distro.OSRelease()
 	distId, found := m["ID"]

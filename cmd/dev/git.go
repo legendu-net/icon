@@ -75,6 +75,25 @@ func installGitUi(cmd *cobra.Command) {
 	}
 }
 
+func configGitUiHelper(baseDir string) {
+	dstDir := filepath.Join(baseDir, "gitui/")
+	utils.MkdirAll(dstDir, 0o700)
+	utils.CopyEmbedFileToDir("data/git/gitui/key_bindings.ron", dstDir, 0o600, true)
+}
+
+func configGitUi(cmd *cobra.Command) {
+	if utils.GetBoolFlag(cmd, "gitui") {
+		home := utils.UserHomeDir()
+		configGitUiHelper(filepath.Join(home, ".config/"))
+		if utils.IsLinux() {
+			baseDir := os.Getenv("XDG_CONFIG_HOME") 
+			if baseDir != "" {
+				configGitUiHelper(filepath.Join(baseDir))
+			}
+		}
+	}
+}
+
 func installGitDelta(cmd *cobra.Command) {
 	tmpdir := utils.CreateTempDir("")
 	defer os.RemoveAll(tmpdir)
@@ -184,6 +203,7 @@ func git(cmd *cobra.Command, args []string) {
 		configGitUser(cmd)
 		configGitBashCompletion(cmd)
 		configGitProxy(cmd)
+		configGitUi(cmd)
 	}
 	configureGitIgnore(cmd)
 	if utils.GetBoolFlag(cmd, "uninstall") {
