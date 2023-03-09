@@ -70,8 +70,8 @@ func installSccache() {
 	network.DownloadGitHubRelease("mozilla/sccache", "", map[string][]string{
 		"common": {"tar.gz"},
 		"x86_64": {"x86_64"},
-		"arm64": {"aarch64"},
-		"linux": {"unknown", "linux", "musl"},
+		"arm64":  {"aarch64"},
+		"linux":  {"unknown", "linux", "musl"},
 		"darwin": {"apple", "darwin"},
 	}, []string{"pre", "dist", "sha256"}, file)
 	command := utils.Format("{prefix} tar --wildcards --strip-components=1 -C /usr/local/bin/ -zxvf {file} */sccache", map[string]string{
@@ -90,8 +90,8 @@ func installCargoBinstall() {
 	network.DownloadGitHubRelease("cargo-bins/cargo-binstall", "", map[string][]string{
 		"common": {"tgz"},
 		"x86_64": {"x86_64"},
-		"arm64": {"aarch64"},
-		"linux": {"unknown", "linux", "gnu"},
+		"arm64":  {"aarch64"},
+		"linux":  {"unknown", "linux", "gnu"},
 		"darwin": {"apple", "darwin"},
 	}, []string{"pre", "full"}, file)
 	command := utils.Format("{prefix} tar -C /usr/local/bin/ -zxvf {file}", map[string]string{

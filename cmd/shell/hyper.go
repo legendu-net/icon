@@ -12,12 +12,12 @@ import (
 func downloadHyperFromGitHub(version string) string {
 	output := "/tmp/_hyper_js_terminal"
 	network.DownloadGitHubRelease("vercel/hyper", version, map[string][]string{
-		"common": {},
-		"x86_64": {"amd64"},
-		"arm64": {"arm64"},
+		"common":             {},
+		"x86_64":             {"amd64"},
+		"arm64":              {"arm64"},
 		"DebianUbuntuSeries": {"deb"},
-		"FedoraSeries": {"rpm"},
-		"OtherLinux": {"appimage"},
+		"FedoraSeries":       {"rpm"},
+		"OtherLinux":         {"appimage"},
 	}, []string{}, output)
 	return output
 }

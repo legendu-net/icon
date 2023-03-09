@@ -11,14 +11,14 @@ import (
 
 func downloadNushellFromGitHub(version string) string {
 	output := "/tmp/_nu.tar.gz"
-	network.DownloadGitHubRelease("nushell/nushell", version, 
-	map[string][]string{
-		"common": {"tar.gz"},
-		"linux": {"unknown", "linux", "gnu"},
-		"darwin": {"apple", "darwin"},
-		"x86_64": {"x86_64"},
-		"arm64": {"aarch64"},
-	}, []string{}, output)
+	network.DownloadGitHubRelease("nushell/nushell", version,
+		map[string][]string{
+			"common": {"tar.gz"},
+			"linux":  {"unknown", "linux", "gnu"},
+			"darwin": {"apple", "darwin"},
+			"x86_64": {"x86_64"},
+			"arm64":  {"aarch64"},
+		}, []string{}, output)
 	return output
 }
 

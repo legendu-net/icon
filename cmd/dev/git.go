@@ -84,8 +84,8 @@ func git(cmd *cobra.Command, args []string) {
 			network.DownloadGitHubRelease("dandavison/delta", "", map[string][]string{
 				"common": {},
 				"x86_64": {"x86_64"},
-				"arm64": {"aarch64"},
-				"linux": {"linux", "gnu"},
+				"arm64":  {"aarch64"},
+				"linux":  {"linux", "gnu"},
 				"darwin": {"apple", "darwin"},
 			}, []string{}, file)
 			command := utils.Format(`{prefix} tar -zxvf {file} -C /usr/local/bin/ --wildcards --no-anchored delta --strip=1 \
@@ -95,7 +95,7 @@ func git(cmd *cobra.Command, args []string) {
 					map[string]uint32{},
 				),
 				"yes_s": utils.BuildYesFlag(cmd),
-				"file": file,
+				"file":  file,
 			})
 			utils.RunCmd(command)
 			// install gitui
@@ -105,10 +105,10 @@ func git(cmd *cobra.Command, args []string) {
 				file := filepath.Join(tmpdir, "gitui.tar.gz")
 				network.DownloadGitHubRelease("extrawurst/gitui", "", map[string][]string{
 					"common": {"tar.gz"},
-					"linux": {"linux"},
+					"linux":  {"linux"},
 					"darwin": {"mac"},
 					"x86_64": {"musl"},
-					"arm64": {"aarch64"},
+					"arm64":  {"aarch64"},
 				}, []string{}, file)
 				command := utils.Format(`{prefix} tar -zxvf {file} -C /usr/local/bin/`, map[string]string{
 					"prefix": utils.GetCommandPrefix(
