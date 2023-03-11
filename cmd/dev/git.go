@@ -106,7 +106,7 @@ func installGitDelta(cmd *cobra.Command) {
 		"darwin": {"apple", "darwin"},
 	}, []string{}, file)
 	command := utils.Format(`{prefix} tar -zxvf {file} -C /usr/local/bin/ --wildcards --no-anchored delta --strip=1 \
-		&& rm /tmp/git-delta.tar.gz`, map[string]string{
+		&& rm {file}`, map[string]string{
 		"prefix": utils.GetCommandPrefix(
 			true,
 			map[string]uint32{},
@@ -268,6 +268,7 @@ func init() {
 	GitCmd.Flags().BoolP("config", "c", false, "Configure Git.")
 	GitCmd.Flags().String("git", "git", "Path to the Git command.")
 	GitCmd.Flags().BoolP("yes", "y", false, "Automatically yes to prompt questions.")
+	GitCmd.Flags().Bool("gitui", false, "Install and configure gitui too.")
 	GitCmd.Flags().StringP("user-name", "n", "", "The user name for Git.")
 	GitCmd.Flags().StringP("user-email", "e", "", "The user name for Git.")
 	GitCmd.Flags().String("proxy", "", "Configure Git to use the specified proxy.")
