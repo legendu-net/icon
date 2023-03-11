@@ -1,7 +1,6 @@
 package shell
 
 import (
-	"github.com/shirou/gopsutil/host"
 	"github.com/spf13/cobra"
 	"legendu.net/icon/cmd/network"
 	"legendu.net/icon/utils"
@@ -11,27 +10,15 @@ import (
 )
 
 func downloadHyperFromGitHub(version string) string {
-	keywords := []string{}
-	if utils.IsDebianUbuntuSeries() {
-		keywords = append(keywords, "deb")
-	} else if utils.IsFedoraSeries() {
-		keywords = append(keywords, "rpm")
-	} else {
-		keywords = append(keywords, "appimage")
-	}
-	info, err := host.Info()
-	if err != nil {
-		log.Fatal(err)
-	}
-	switch info.KernelArch {
-	case "x86_64":
-		keywords = append(keywords, "amd64")
-	case "arm64":
-		keywords = append(keywords, "arm64")
-	default:
-	}
 	output := "/tmp/_hyper_js_terminal"
-	network.DownloadGitHubRelease("vercel/hyper", version, keywords, []string{}, output)
+	network.DownloadGitHubRelease("vercel/hyper", version, map[string][]string{
+		"common":             {},
+		"x86_64":             {"amd64"},
+		"arm64":              {"arm64"},
+		"DebianUbuntuSeries": {"deb"},
+		"FedoraSeries":       {"rpm"},
+		"OtherLinux":         {"appimage"},
+	}, []string{}, output)
 	return output
 }
 

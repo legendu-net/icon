@@ -19,7 +19,7 @@ func ganymede(cmd *cobra.Command, args []string) {
 		network.DownloadGitHubRelease(
 			"allen-ball/ganymede",
 			"",
-			[]string{"jar"},
+			map[string][]string{"common": {"jar"}},
 			[]string{"asc"},
 			file,
 		)

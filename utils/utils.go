@@ -16,6 +16,7 @@ import (
 
 	"github.com/elliotchance/orderedmap/v2"
 	"github.com/shirou/gopsutil/cpu"
+	"github.com/shirou/gopsutil/host"
 	"github.com/shirou/gopsutil/mem"
 	"github.com/spf13/cobra"
 	"golang.org/x/sys/unix"
@@ -361,10 +362,14 @@ func WriteTextFile(path string, text string, perm fs.FileMode) {
 
 func AppendToTextFile(path string, text string, checkExistence bool) {
 	if checkExistence {
-		fileContent := ReadFileAsString(path)
+		fileContent := ""
+		if ExistsFile(path) {
+			fileContent = ReadFileAsString(path)
+		}
 		if !strings.Contains(fileContent, strings.TrimSpace(text)) {
 			AppendToTextFile(path, text, false)
 		}
+		return
 	}
 	f, err := os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o644)
 	defer f.Close()
@@ -491,6 +496,15 @@ func AddPythonFlags(cmd *cobra.Command) {
 	cmd.Flags().String("python", "python3", "Path to the python3 command.")
 	cmd.Flags().Bool("user", false, "Install Python packages to user's local directory.")
 	cmd.Flags().StringSlice("extra-pip-options", []string{}, "Extra options (separated by comma) to pass to pip.")
+}
+
+func IsLinux() bool {
+	switch runtime.GOOS {
+	case "linux":
+		return true
+	default:
+		return false
+	}
 }
 
 func GetLinuxDistId() string {
@@ -625,4 +639,55 @@ func UpdateMap(map1 orderedmap.OrderedMap[string, any], map2 orderedmap.OrderedM
 			map1.Set(key2, val2)
 		}
 	}
+}
+
+func BuildKernelOSKeywords(keywords map[string][]string) []string {
+	kwds := keywords["common"]
+	info, err := host.Info()
+	if err != nil {
+		log.Fatal(err)
+	}
+	switch info.KernelArch {
+	case "x86_64":
+		x86_64, found := keywords["x86_64"]
+		if found {
+			kwds = append(kwds, x86_64...)
+		}
+	case "arm64", "aarch64":
+		arm64, found := keywords["arm64"]
+		if found {
+			kwds = append(kwds, arm64...)
+		}
+	default:
+	}
+	switch runtime.GOOS {
+	case "darwin":
+		darwin, found := keywords["darwin"]
+		if found {
+			kwds = append(kwds, darwin...)
+		}
+	case "linux":
+		linux, found := keywords["linux"]
+		if found {
+			kwds = append(kwds, linux...)
+		}
+		if IsDebianUbuntuSeries() {
+			debianUbuntuSeries, found := keywords["DebianUbuntuSeries"]
+			if found {
+				kwds = append(kwds, debianUbuntuSeries...)
+			}
+		} else if IsFedoraSeries() {
+			fedoraSeries, found := keywords["FedoraSeries"]
+			if found {
+				kwds = append(kwds, fedoraSeries...)
+			}
+		} else {
+			otherLinux, found := keywords["OtherLinux"]
+			if found {
+				kwds = append(kwds, otherLinux...)
+			}
+		}
+	default:
+	}
+	return kwds
 }

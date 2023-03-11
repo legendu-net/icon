@@ -4,27 +4,21 @@ import (
 	"log"
 	"runtime"
 
-	"github.com/shirou/gopsutil/host"
 	"github.com/spf13/cobra"
 	"legendu.net/icon/cmd/network"
 	"legendu.net/icon/utils"
 )
 
 func downloadNushellFromGitHub(version string) string {
-	keywords := []string{"unknown", "linux", "gnu", "tar", "gz"}
-	info, err := host.Info()
-	if err != nil {
-		log.Fatal(err)
-	}
-	switch info.KernelArch {
-	case "x86_64":
-		keywords = append(keywords, "x86_64")
-	case "arm64":
-		keywords = append(keywords, "aarch64")
-	default:
-	}
 	output := "/tmp/_nu.tar.gz"
-	network.DownloadGitHubRelease("nushell/nushell", version, keywords, []string{}, output)
+	network.DownloadGitHubRelease("nushell/nushell", version,
+		map[string][]string{
+			"common": {"tar.gz"},
+			"linux":  {"unknown", "linux", "gnu"},
+			"darwin": {"apple", "darwin"},
+			"x86_64": {"x86_64"},
+			"arm64":  {"aarch64"},
+		}, []string{}, output)
 	return output
 }
 
