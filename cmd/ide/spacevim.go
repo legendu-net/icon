@@ -11,23 +11,24 @@ import (
 
 func configureSpaceVimForFirenvim() {
 	script := `
-"--------------------------- FireNVim Configurations --------------------------
-if vim.g.started_by_firenvim == true then
-    set guifont=Monaco:h16
+"-------------------------- FireNVim Configurations --------------------------
+if exists('g:started_by_firenvim')
+  set guifont=Monaco:h16
 endif
-
-vim.g.firenvim_config = {
-    globalSettings = { alt = "all" },
-    localSettings = {
-        [".*"] = {
-            cmdline  = "neovim",
-            content  = "text",
-            priority = 0,
-            selector = "textarea",
-            takeover = "never"
-        }
-    }
-}
+let g:firenvim_config = { 
+    \ 'globalSettings': {
+        \ 'alt': 'all',
+    \  },
+    \ 'localSettings': {
+        \ '.*': {
+            \ 'cmdline': 'neovim',
+            \ 'content': 'text',
+            \ 'priority': 0,
+            \ 'selector': 'textarea',
+            \ 'takeover': 'always',
+        \ },
+    \ }
+\ }
 `
 	utils.AppendToTextFile(filepath.Join(utils.UserHomeDir(), ".SpaceVim/init.vim"), script, true)
 }
