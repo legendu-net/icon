@@ -86,7 +86,7 @@ func configGitUi(cmd *cobra.Command) {
 		home := utils.UserHomeDir()
 		configGitUiHelper(filepath.Join(home, ".config/"))
 		if utils.IsLinux() {
-			baseDir := os.Getenv("XDG_CONFIG_HOME") 
+			baseDir := os.Getenv("XDG_CONFIG_HOME")
 			if baseDir != "" {
 				configGitUiHelper(filepath.Join(baseDir))
 			}

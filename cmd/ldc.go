@@ -139,7 +139,9 @@ func ldc(cmd *cobra.Command, args []string) {
 	appendDockerImageCommand(&command, &args)
 	command_s := strings.Join(command, " ")
 	log.Printf("Launching Docker container using the following command:\n\n%s\n\n", command_s)
-	utils.RunCmd(command_s)
+	if !utils.GetBoolFlag(cmd, "dry-run") {
+		utils.RunCmd(command_s)
+	}
 }
 
 var ldcCmd = &cobra.Command{
@@ -157,5 +159,6 @@ func init() {
 	ldcCmd.Flags().StringP("password", "P", "", "The default password for the user (to create in the Docker container).")
 	ldcCmd.Flags().StringSlice("extra-port-mappings", []string{}, "Extra port mappings.")
 	ldcCmd.Flags().BoolP("mount-home", "m", false, "Mount /home on the host as /home_host in the Docker container.")
+	ldcCmd.Flags().Bool("dry-run", false, "Print out the docker command without running it.")
 	rootCmd.AddCommand(ldcCmd)
 }
