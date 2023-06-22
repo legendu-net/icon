@@ -117,6 +117,9 @@ func ldc(cmd *cobra.Command, args []string) {
 		"--hostname",
 		getDockerImageHostname(args[0]),
 	}
+	if utils.GetBoolFlag(cmd, "docker-in-docker") {
+		command = append(command, "-v", "/var/run/docker.sock:/var/run/docker.sock")
+	}
 	cwd := utils.Getwd()
 	command = append(command, "-v", cwd+":/workdir")
 	home := utils.UserHomeDir()
@@ -159,6 +162,7 @@ func init() {
 	ldcCmd.Flags().StringP("password", "P", "", "The default password for the user (to create in the Docker container).")
 	ldcCmd.Flags().StringSlice("extra-port-mappings", []string{}, "Extra port mappings.")
 	ldcCmd.Flags().BoolP("mount-home", "m", false, "Mount /home on the host as /home_host in the Docker container.")
+	ldcCmd.Flags().Bool("docker-in-docker", false, "Mount docker.sock to allow running Docker in Docker containers.")
 	ldcCmd.Flags().Bool("dry-run", false, "Print out the docker command without running it.")
 	rootCmd.AddCommand(ldcCmd)
 }
