@@ -26,6 +26,10 @@ func docker(cmd *cobra.Command, args []string) {
 				})
 				utils.RunCmd(command)
 			}
+			command := utils.Format("{prefix} chown root:docker /var/run/docker.sock", map[string]string{
+				"prefix": utils.GetCommandPrefix(true, map[string]uint32{}),
+			})
+			utils.RunCmd(command)
 		case "darwin":
 			utils.BrewInstallSafe([]string{"docker", "docker-compose", "bash-completion@2"})
 		default:
