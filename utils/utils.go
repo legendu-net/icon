@@ -413,8 +413,7 @@ fi
 // @param config_file: The path of a shell's configuration file.
 func ConfigShellPath(config_file string) {
 	text := ReadFileAsString(config_file)
-	pattern := "\n_PATHS=(\n"
-	if !strings.Contains(text, pattern) {
+	if !strings.Contains(text, ". /scripts/path.sh") && !strings.Contains(text, "\n_PATHS=(\n") {
 		text = `
 # set $PATH
 _PATHS=(
