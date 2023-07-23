@@ -20,7 +20,7 @@ func atuin(cmd *cobra.Command, args []string) {
 		case "darwin":
 			atuinBash := `
 [[ -f ~/.bash-preexec.sh ]] && source ~/.bash-preexec.sh
-eval "$(atuin init bash)"
+eval "$(atuin init bash --disable-up-arrow)"
 `
 			utils.AppendToTextFile(
 				filepath.Join(utils.UserHomeDir(), ".bash_profile"),
@@ -28,6 +28,7 @@ eval "$(atuin init bash)"
 				true,
 			)
 		case "linux":
+			utils.ReplacePattern(utils.GetBashConfigFile(), `eval "$(atuin init bash)"`, "eval \"$(atuin init bash --disable-up-arrow)\"\n")
 		default:
 		}
 	}

@@ -38,17 +38,21 @@ func ReadEmbedFileAsString(name string) string {
 	return string(ReadEmbedFile(name))
 }
 
+func GetFileMode(file string) fs.FileMode {
+	fileInfo, err := os.Stat(file)
+	if err != nil {
+		log.Fatal("ERROR - ", err)
+	}
+	return fileInfo.Mode()
+}
+
 func copyFile(sourceFile string, destinationFile string) {
 	input, err := ioutil.ReadFile(sourceFile)
 	if err != nil {
 		log.Fatal("ERROR - ", err)
 	}
 	WriteFile(destinationFile, input, 0o600)
-	fileInfo, err := os.Stat(sourceFile)
-	if err != nil {
-		log.Fatal("ERROR - ", err)
-	}
-	Chmod(destinationFile, fileInfo.Mode())
+	Chmod(destinationFile, GetFileMode(sourceFile))
 	log.Printf("%s is copied to %s.\n", sourceFile, destinationFile)
 }
 
@@ -59,11 +63,7 @@ func copyFileToDir(sourceFile string, destinationDir string) {
 
 func CopyDir(sourceDir string, destinationDir string) {
 	if !ExistsDir(destinationDir) {
-		fileInfo, err := os.Stat(sourceDir)
-		if err != nil {
-			log.Fatal("ERROR - ", err)
-		}
-		MkdirAll(destinationDir, fileInfo.Mode())
+		MkdirAll(destinationDir, GetFileMode(sourceDir))
 	}
 	for _, entry := range ReadDir(sourceDir) {
 		if entry.IsDir() {
@@ -358,6 +358,16 @@ func WriteFile(fileName string, data []byte, perm fs.FileMode) {
 
 func WriteTextFile(path string, text string, perm fs.FileMode) {
 	WriteFile(path, []byte(text), perm)
+}
+
+/*
+*
+Update a text file by replacing patterns with specified substitutions.
+*/
+func ReplacePattern(path string, pattern string, repl string) {
+	text := ReadFileAsString(path)
+	text = strings.ReplaceAll(text, pattern, repl)
+	WriteTextFile(path, text, GetFileMode(path))
 }
 
 func AppendToTextFile(path string, text string, checkExistence bool) {
