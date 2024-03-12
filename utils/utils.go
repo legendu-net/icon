@@ -329,7 +329,7 @@ func ReadDir(dir string) []os.DirEntry {
 }
 
 func ReadAllAsText(readCloser io.ReadCloser) string {
-	bytes, err := ioutil.ReadAll(readCloser)
+	bytes, err := io.ReadAll(readCloser)
 	readCloser.Close()
 	if err != nil {
 		log.Fatal("ERROR - ", err)
@@ -338,7 +338,7 @@ func ReadAllAsText(readCloser io.ReadCloser) string {
 }
 
 func ReadFile(path string) []byte {
-	bytes, err := ioutil.ReadFile(path)
+	bytes, err := os.ReadFile(path)
 	if err != nil {
 		log.Fatal("ERROR - ", err)
 	}
@@ -350,7 +350,7 @@ func ReadFileAsString(path string) string {
 }
 
 func WriteFile(fileName string, data []byte, perm fs.FileMode) {
-	err := ioutil.WriteFile(fileName, data, perm)
+	err := os.WriteFile(fileName, data, perm)
 	if err != nil {
 		log.Fatal("ERROR - ", err)
 	}
