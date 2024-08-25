@@ -21,7 +21,7 @@ except:
     pass
 HOME = Path.home()
 USER = getpass.getuser()
-HOST = re.sub("\.local$", "", socket.gethostname())
+HOST = re.sub(r"\.local$", "", socket.gethostname())
 
 
 class MyPrompt(Prompts):
