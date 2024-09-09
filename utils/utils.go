@@ -402,7 +402,13 @@ func GetBashConfigFile() string {
 }
 
 func ConfigBash() {
-	ConfigShellPath(GetBashConfigFile())
+	bashConfigFile := GetBashConfigFile()
+	ConfigShellPath(bashConfigFile)
+	AppendToTextFile(
+		bashConfigFile,
+		"export EDITOR=vim\n",
+		true,
+	)
 	if runtime.GOOS == "linux" {
 		sourceIn := `
 # source in ~/.bashrc
