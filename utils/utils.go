@@ -488,7 +488,7 @@ func BuildPipInstall(cmd *cobra.Command) string {
 	for _, option := range extraPipOptions {
 		options += "--" + option
 	}
-	return Format("{python} -m pip install {user} {options}", map[string]string{
+	return Format("PIP_BREAK_SYSTEM_PACKAGES=1 {python} -m pip install {user} {options}", map[string]string{
 		"python":  python,
 		"user":    user,
 		"options": options,
