@@ -214,6 +214,10 @@ func GetCurrentUser() *user.User {
 }
 
 func sudo(runWithSudo string) string {
+	_, err := exec.LookPath("sudo")
+	if err != nil {
+		return ""
+	}
 	runWithSudo = strings.TrimSpace(runWithSudo)
 	if runWithSudo != "" {
 		RunCmd("sudo " + runWithSudo)
@@ -479,6 +483,10 @@ func BuildPipUninstall(cmd *cobra.Command) string {
 
 func BuildPipInstall(cmd *cobra.Command) string {
 	python := GetStringFlag(cmd, "python")
+	_, err := exec.LookPath(python)
+	if err != nil {
+		return ""
+	}
 	user := ""
 	if GetBoolFlag(cmd, "user") {
 		user = "--user"

@@ -1,4 +1,5 @@
 {pkgs, ...}: {
+  channel = "stable-24.11";
   packages = [
     pkgs.neovim
     pkgs.rm-improved
@@ -9,7 +10,8 @@
     # check extensions on https://open-vsx.org/
     extensions = [
       "golang.go"
-      "vscodevim.vim"
+      #"vscodevim.vim"
+      "asvetliakov.vscode-neovim"
     ];
     workspace = {
       #onCreate = {
