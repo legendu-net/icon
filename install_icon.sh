@@ -12,7 +12,6 @@ EOF
 
 function install_icon() {
     local install_dir="/usr/local/bin/"
-
     while getopts "hd:" opt; do
         case $opt in
             h) install_icon.usage; return 0 ;;
@@ -20,6 +19,7 @@ function install_icon() {
             \?) install_icon.usage; return 1 ;;
         esac
     done
+    mkdir -p "$install_dir"
     add_script_ldc "$install_dir"
     echo "Parsing the latest version ..."
     local URL=https://github.com/legendu-net/icon/releases
