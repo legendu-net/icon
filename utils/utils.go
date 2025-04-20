@@ -483,6 +483,10 @@ func BuildPipUninstall(cmd *cobra.Command) string {
 
 func BuildPipInstall(cmd *cobra.Command) string {
 	python := GetStringFlag(cmd, "python")
+	_, err := exec.LookPath(python)
+	if err != nil {
+		return ""
+	}
 	user := ""
 	if GetBoolFlag(cmd, "user") {
 		user = "--user"

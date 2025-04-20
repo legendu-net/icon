@@ -1,12 +1,15 @@
 package ide
 
 import (
+	"fmt"
+
 	"github.com/spf13/cobra"
 	//"legendu.net/icon/cmd/network"
-	"legendu.net/icon/utils"
 	"log"
 	"path/filepath"
 	"strings"
+
+	"legendu.net/icon/utils"
 )
 
 func configureSpaceVimForFirenvim() {
@@ -92,6 +95,17 @@ func spaceVim(cmd *cobra.Command, args []string) {
 	)
 }
 
+func SpaceVimPythonLsp(pipInstall string) {
+	if pipInstall == "" {
+		fmt.Print("Skip installing python-lsp-server as the specfied Python executable does not exist.")
+		return
+	}
+	utils.RunCmd(utils.Format("{pip_install} python-lsp-server", map[string]string{
+		"pip_install": pipInstall,
+	}))
+	log.Print("The Python package python-lsp-server is installed! Please make sure pylsp is on the search path!\n")
+}
+
 func SpaceVim(install bool, prefix string, yes_s string, config bool, strip bool, enableTrueColor bool, disableTrueColor bool, uninstall bool, version string, pipInstall string) {
 	if install {
 		if utils.IsDebianUbuntuSeries() {
@@ -113,18 +127,13 @@ func SpaceVim(install bool, prefix string, yes_s string, config bool, strip bool
 			// "version": version,
 		})
 		utils.RunCmd(command)
-		utils.RunCmd(utils.Format("{pip_install} python-lsp-server", map[string]string{
-			"pip_install": pipInstall,
-		}))
-		log.Print("The Python package python-lsp-server is installed! Please make sure pylsp is on the search path!\n")
+		SpaceVimPythonLsp(pipInstall)
 		// npm install -g bash-language-server javascript-typescript-langserver
 		if strip {
 			stripSpaceVim()
 		}
 		if utils.ExistsCommand("nvim") {
-			utils.RunCmd(utils.Format(`nvim --headless +"call dein#install()" +qall && {pip_install} pynvim`, map[string]string{
-				"pip_install": pipInstall,
-			}))
+			utils.RunCmd(utils.Format(`nvim --headless +"call dein#install()" +qall`, map[string]string{}))
 		}
 	}
 	if config {
