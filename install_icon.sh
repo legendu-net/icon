@@ -2,23 +2,25 @@
 
 function install_icon.usage() {
     cat << EOF
-NAME
-    ./install_icon.sh - Download and install icon to /usr/local/bin/.
-SYNTAX 
-    ./install_icon.sh [-h]
+Usage: $0 [options]
+
+Options:
+  -h        Display this help message
+  -d <dir>  Specify the installation directory (default: /usr/local/bin/)
 EOF
 }
 
 function install_icon() {
-    if [[ $1 == "-h" ]]; then
-        install_icon.usage
-        return 0
-    fi
-    if [[ $# == 1 && "$1" != "-h" || $# > 1 ]]; then
-        install_icon.usage
-        return 1
-    fi
-    add_script_ldc
+    local install_dir="/usr/local/bin/"
+    while getopts "hd:" opt; do
+        case $opt in
+            h) install_icon.usage; return 0 ;;
+            d) install_dir="$OPTARG" ;;
+            \?) install_icon.usage; return 1 ;;
+        esac
+    done
+    mkdir -p "$install_dir"
+    add_script_ldc "$install_dir"
     echo "Parsing the latest version ..."
     local URL=https://github.com/legendu-net/icon/releases
     local VERSION=$(basename $(curl -sL -o /dev/null -w %{url_effective} $URL/latest))
@@ -38,17 +40,18 @@ function install_icon() {
     echo "Downloading icon ..."
     curl -sSL $URL/download/$VERSION/icon-$VERSION-$(uname)-${ARCH}.tar.gz -o /tmp/icon.tar.gz
     echo "Installing icon ..."
-    tar zxf /tmp/icon.tar.gz -C /usr/local/bin/
-    chmod +x /usr/local/bin/icon
+    tar zxf /tmp/icon.tar.gz -C "$install_dir"
+    chmod +x "$install_dir/icon"
 }
 
 function add_script_ldc() {
-    echo "Creating script /usr/local/bin/ldc ..."
-    cat << EOF > /usr/local/bin/ldc
+    local install_dir=$1
+    echo "Creating script $install_dir/ldc ..."
+    cat << EOF > "$install_dir/ldc"
 #/usr/bin/env bash
 icon ldc \$@
 EOF
-    chmod +x /usr/local/bin/ldc
+    chmod +x "$install_dir/ldc"
 }
 
 if [[ "${BASH_SOURCE[0]}" == "" || "${BASH_SOURCE[0]}" == "$0" ]]; then
