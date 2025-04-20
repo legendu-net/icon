@@ -214,6 +214,10 @@ func GetCurrentUser() *user.User {
 }
 
 func sudo(runWithSudo string) string {
+	_, err := exec.LookPath("sudo")
+	if err != nil {
+		return ""
+	}
 	runWithSudo = strings.TrimSpace(runWithSudo)
 	if runWithSudo != "" {
 		RunCmd("sudo " + runWithSudo)
