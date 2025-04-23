@@ -1,9 +1,11 @@
 {pkgs, ...}: {
   channel = "stable-24.11";
-  packages = [
-    pkgs.neovim
-    pkgs.rm-improved
-    pkgs.go
+  packages = with pkgs; [
+    neovim
+    ripgrep
+    rm-improved
+    bat
+    go
   ];
   env = {};
   idx = {
