@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"os"
+
 	"github.com/spf13/cobra"
 	"legendu.net/icon/cmd/ai"
 	"legendu.net/icon/cmd/bigdata"
@@ -12,17 +14,12 @@ import (
 	"legendu.net/icon/cmd/network"
 	"legendu.net/icon/cmd/shell"
 	"legendu.net/icon/cmd/virtualization"
-	"os"
 )
 
 var rootCmd = &cobra.Command{
 	Use:              "icon",
 	Short:            "Install and configure tools.",
 	TraverseChildren: true,
-	/*
-		Run: func(cmd *cobra.Command, args []string) {
-		},
-	*/
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -56,7 +53,6 @@ func init() {
 	rootCmd.AddCommand(dev.PytypeCmd)
 	rootCmd.AddCommand(ide.NeovimCmd)
 	rootCmd.AddCommand(ide.HelixCmd)
-	rootCmd.AddCommand(ide.SpaceVimCmd)
 	rootCmd.AddCommand(ide.FirenvimCmd)
 	rootCmd.AddCommand(ide.VscodeCmd)
 	rootCmd.AddCommand(ai.PyTorchCmd)

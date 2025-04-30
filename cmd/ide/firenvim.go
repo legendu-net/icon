@@ -13,7 +13,6 @@ import (
 func firenvim(cmd *cobra.Command, args []string) {
 	if utils.GetBoolFlag(cmd, "install") {
 		Neovim(true, true, false, "-y")
-		SpaceVim(true, utils.GetCommandPrefix(true, map[string]uint32{}), "-y", true, true, true, false, false, "", "python3 -m pip install --user")
 		network.InstallChromeExtension("egpjdkipkomnmjhjmdamaniclmdlobbo", "Firenvim")
 		utils.RunCmd(`nvim --headless +"call firenvim#install(0)" +qall`)
 		switch runtime.GOOS {
