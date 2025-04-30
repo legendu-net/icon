@@ -4,7 +4,6 @@ import (
 	"embed"
 	"io"
 	"io/fs"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -47,7 +46,7 @@ func GetFileMode(file string) fs.FileMode {
 }
 
 func copyFile(sourceFile string, destinationFile string) {
-	input, err := ioutil.ReadFile(sourceFile)
+	input, err := os.ReadFile(sourceFile)
 	if err != nil {
 		log.Fatal("ERROR - ", err)
 	}
@@ -151,7 +150,7 @@ func HttpGetAsBytes(url string) []byte {
 		log.Fatal(err)
 	}
 	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -166,7 +165,7 @@ func HttpGetAsString(url string) string {
 }
 
 func CreateTempDir(pattern string) string {
-	dir, err := ioutil.TempDir("", pattern)
+	dir, err := os.MkdirTemp("", pattern)
 	if err != nil {
 		log.Fatal("ERROR - ", err)
 	}
@@ -247,10 +246,7 @@ func GetCommandPrefix(forceSudo bool, pathPerms map[string]uint32) string {
 
 func ExistsPath(path string) bool {
 	_, err := os.Stat(path)
-	if os.IsNotExist(err) {
-		return false
-	}
-	return true
+	return !os.IsNotExist(err)
 }
 
 func ExistsDir(path string) bool {
@@ -386,10 +382,10 @@ func AppendToTextFile(path string, text string, checkExistence bool) {
 		return
 	}
 	f, err := os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o644)
-	defer f.Close()
 	if err != nil {
 		log.Fatal("ERROR - ", err)
 	}
+	defer f.Close()
 	_, err = f.WriteString(text)
 	if err != nil {
 		log.Fatal("ERROR - ", err)
