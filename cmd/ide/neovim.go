@@ -26,7 +26,7 @@ func Neovim(install bool, config bool, uninstall bool, yes_s string) {
 			if utils.IsDebianUbuntuSeries() {
 				if utils.IsUbuntuSeries() {
 					command := utils.Format(`{prefix} apt-get update && {prefix} apt-get install {yes_s} gnupg \
-						&& {prefix} add-apt-repository {yes_s} ppa:neovim-ppa/stable`, map[string]string{
+						&& {prefix} add-apt-repository {yes_s} ppa:neovim-ppa/unstable`, map[string]string{
 						"prefix": utils.GetCommandPrefix(
 							true,
 							map[string]uint32{},
