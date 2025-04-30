@@ -56,6 +56,8 @@ func Neovim(install bool, config bool, uninstall bool, yes_s string) {
 		}
 	}
 	if config {
+		utils.MkdirAll("~/.config/nvim", 0o700)
+		utils.RunCmd("git clone https://github.com/legendu-net/nvim ~/.config/nvim")
 	}
 	if uninstall {
 		switch runtime.GOOS {

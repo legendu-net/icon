@@ -410,7 +410,13 @@ func ConfigBash() {
 	ConfigShellPath(bashConfigFile)
 	AppendToTextFile(
 		bashConfigFile,
-		"export EDITOR=vim\n",
+		`
+if which nvim > /dev/null; then
+	export EDITOR=nvim
+else
+	export EDITOR=vim
+fi
+`,
 		true,
 	)
 	if runtime.GOOS == "linux" {
