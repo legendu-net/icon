@@ -58,7 +58,9 @@ func Neovim(install bool, config bool, uninstall bool, yes_s string) {
 	}
 	if config {
 		dir := "~/.config/nvim"
-		utils.MkdirAll(utils.NormalizePath(dir), 0o700)
+		dir_go := utils.NormalizePath(dir)
+		utils.RemoveAll(dir_go)
+		utils.MkdirAll(dir_go, 0o700)
 		utils.RunCmd("git clone https://github.com/legendu-net/nvim " + dir)
 	}
 	if uninstall {
