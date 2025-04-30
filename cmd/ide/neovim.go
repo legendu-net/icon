@@ -1,9 +1,10 @@
 package ide
 
 import (
+	"runtime"
+
 	"github.com/spf13/cobra"
 	"legendu.net/icon/utils"
-	"runtime"
 )
 
 // Install and configure neovim.
@@ -56,8 +57,9 @@ func Neovim(install bool, config bool, uninstall bool, yes_s string) {
 		}
 	}
 	if config {
-		utils.MkdirAll("~/.config/nvim", 0o700)
-		utils.RunCmd("git clone https://github.com/legendu-net/nvim ~/.config/nvim")
+		dir := "~/.config/nvim"
+		utils.MkdirAll(utils.NormalizePath(dir), 0o700)
+		utils.RunCmd("git clone https://github.com/legendu-net/nvim " + dir)
 	}
 	if uninstall {
 		switch runtime.GOOS {

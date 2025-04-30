@@ -22,6 +22,7 @@ import (
 	"periph.io/x/host/v3/distro"
 )
 
+
 //go:embed data
 var data embed.FS
 
@@ -76,6 +77,14 @@ func CopyDir(sourceDir string, destinationDir string) {
 			}
 		}
 	}
+}
+
+// NormalizePath expands the leading '~' in a path to the user's home directory.
+func NormalizePath(path string) string {
+	if strings.HasPrefix(path, "~") {
+		return filepath.Join(UserHomeDir(), path[1:])
+	}
+	return path
 }
 
 func Chmod(path string, mode fs.FileMode) {
