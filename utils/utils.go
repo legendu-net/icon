@@ -20,7 +20,6 @@ import (
 	"github.com/shirou/gopsutil/mem"
 	"github.com/spf13/cobra"
 	"golang.org/x/sys/unix"
-	"legendu.net/icon/utils"
 	"periph.io/x/host/v3/distro"
 )
 
@@ -439,7 +438,7 @@ fi
 // @param paths: Absolute paths to add into PATH.
 // @param config_file: The path of a shell's configuration file.
 func ConfigShellPath(config_file string) {
-	if utils.GetHostPlatform() == "idx" {
+	if GetHostPlatform() == "idx" {
 		return
 	}
 	text := ReadFileAsString(config_file)
