@@ -22,7 +22,6 @@ import (
 	"periph.io/x/host/v3/distro"
 )
 
-
 //go:embed data
 var data embed.FS
 
