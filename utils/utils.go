@@ -157,13 +157,26 @@ func HttpGetAsBytes(url string) []byte {
 	if err != nil {
 		log.Fatal(err)
 	}
+	if resp.StatusCode > 399 {
+		log.Fatal(
+			"HTTP request got an error response with the status code ", 
+			resp.StatusCode,
+			"\n",
+			"x-ratelimit-limit: ",
+			resp.Header.Get("x-ratelimit-limit"),
+			"\n",
+			"x-ratelimit-remaining: ",
+			resp.Header.Get("x-ratelimit-remaining"),
+			"\n",
+			"x-ratelimit-reset: ",
+			resp.Header.Get("x-ratelimit-reset"),
+			"\n",
+		)
+	}
 	defer resp.Body.Close()
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		log.Fatal(err)
-	}
-	if resp.StatusCode > 399 {
-		log.Fatal("HTTP request got an error response with the status code ", resp.StatusCode)
 	}
 	return body
 }
