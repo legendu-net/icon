@@ -11,7 +11,9 @@ import (
 	"os/user"
 	"path/filepath"
 	"runtime"
+	"strconv"
 	"strings"
+	"time"
 
 	"github.com/elliotchance/orderedmap/v2"
 	"github.com/shirou/gopsutil/cpu"
@@ -157,13 +159,26 @@ func HttpGetAsBytes(url string) []byte {
 	if err != nil {
 		log.Fatal(err)
 	}
+	if resp.StatusCode > 399 {
+		log.Fatal(
+			"HTTP request got an error response with the status code ",
+			resp.StatusCode,
+			"\n",
+			"x-ratelimit-limit: ",
+			resp.Header.Get("x-ratelimit-limit"),
+			"\n",
+			"x-ratelimit-remaining: ",
+			resp.Header.Get("x-ratelimit-remaining"),
+			"\n",
+			"x-ratelimit-reset: ",
+			time.Unix(ParseInt(resp.Header.Get("x-ratelimit-reset")), 0).Local(),
+			"\n",
+		)
+	}
 	defer resp.Body.Close()
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		log.Fatal(err)
-	}
-	if resp.StatusCode > 399 {
-		log.Fatal("HTTP request got an error response with the status code ", resp.StatusCode)
 	}
 	return body
 }
@@ -734,4 +749,12 @@ func GetHostPlatform() string {
 		log.Fatal(err)
 	}
 	return h.Platform
+}
+
+func ParseInt(str string) int64 {
+	i, err := strconv.ParseInt(str, 10, 64)
+	if err != nil {
+		log.Fatal("Error converting string to int64: %v\n", err)
+	}
+	return i
 }
