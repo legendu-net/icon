@@ -11,9 +11,9 @@ import (
 	"os/user"
 	"path/filepath"
 	"runtime"
+	"strconv"
 	"strings"
 	"time"
-	"strconv"
 
 	"github.com/elliotchance/orderedmap/v2"
 	"github.com/shirou/gopsutil/cpu"
@@ -161,7 +161,7 @@ func HttpGetAsBytes(url string) []byte {
 	}
 	if resp.StatusCode > 399 {
 		log.Fatal(
-			"HTTP request got an error response with the status code ", 
+			"HTTP request got an error response with the status code ",
 			resp.StatusCode,
 			"\n",
 			"x-ratelimit-limit: ",
