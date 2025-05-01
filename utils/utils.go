@@ -12,6 +12,8 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+	"time"
+	"strconv"
 
 	"github.com/elliotchance/orderedmap/v2"
 	"github.com/shirou/gopsutil/cpu"
@@ -169,7 +171,7 @@ func HttpGetAsBytes(url string) []byte {
 			resp.Header.Get("x-ratelimit-remaining"),
 			"\n",
 			"x-ratelimit-reset: ",
-			resp.Header.Get("x-ratelimit-reset"),
+			time.Unix(ParseInt(resp.Header.Get("x-ratelimit-reset")), 0).Local(),
 			"\n",
 		)
 	}
@@ -747,4 +749,12 @@ func GetHostPlatform() string {
 		log.Fatal(err)
 	}
 	return h.Platform
+}
+
+func ParseInt(str string) int64 {
+	i, err := strconv.ParseInt(str, 10, 64)
+	if err != nil {
+		log.Fatal("Error converting string to int64: %v\n", err)
+	}
+	return i
 }
