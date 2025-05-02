@@ -154,14 +154,26 @@ func Format(cmd string, hmap map[string]string) string {
 	return cmd
 }
 
-func HttpGetAsBytes(url string) []byte {
+func HttpGetAsBytes(url string, retry int8, initial_waiting_seconds int32) []byte {
 	resp, err := http.Get(url)
 	if err != nil {
-		log.Fatal(err)
+		if retry > 0 {
+			time.Sleep(time.Duration(initial_waiting_seconds) * time.Second)
+			return HttpGetAsBytes(url, retry-1, initial_waiting_seconds * 2)
+		}
+		log.Fatal("The HTTP GET request on the URL ", url, " got the following error:\n", err)
 	}
 	if resp.StatusCode > 399 {
+		if resp.Header.Get("x-ratelimit-remaining") == "0" {
+			time.Sleep(time.Until(time.Unix(ParseInt(resp.Header.Get("x-ratelimit-reset")) + 10, 0)))
+			return HttpGetAsBytes(url, retry, initial_waiting_seconds)
+		}
+		if retry > 0 {
+			time.Sleep(time.Duration(initial_waiting_seconds) * time.Second)
+			return HttpGetAsBytes(url, retry-1, initial_waiting_seconds * 2)
+		}
 		log.Fatal(
-			"HTTP request got an error response with the status code ",
+			"The HTTP GET request on the URL ", url, " got an error response with the status code ",
 			resp.StatusCode,
 			"\n",
 			"x-ratelimit-limit: ",
@@ -178,13 +190,17 @@ func HttpGetAsBytes(url string) []byte {
 	defer resp.Body.Close()
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatal(err)
+		if retry > 0 {
+			time.Sleep(time.Duration(initial_waiting_seconds) * time.Second)
+			return HttpGetAsBytes(url, retry-1, initial_waiting_seconds * 2)
+		}
+		log.Fatal("Reading the response body of the http GET request on the url ", url, " got the following error:\n", err)
 	}
 	return body
 }
 
-func HttpGetAsString(url string) string {
-	return string(HttpGetAsBytes(url))
+func HttpGetAsString(url string, retry int8, initial_waiting_seconds int32) string {
+	return string(HttpGetAsBytes(url, retry, initial_waiting_seconds))
 }
 
 func CreateTempDir(pattern string) string {

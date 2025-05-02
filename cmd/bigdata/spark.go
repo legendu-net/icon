@@ -18,7 +18,7 @@ import (
 // Get the latest version of Spark.
 func getVersion() string {
 	log.Printf("Parsing the latest version of Spark ...")
-	html := utils.HttpGetAsString("https://spark.apache.org/downloads.html")
+	html := utils.HttpGetAsString("https://spark.apache.org/downloads.html", 3, 120)
 	re := regexp.MustCompile(`Latest Release \(Spark (\d.\d.\d)\)`)
 	for _, line := range strings.Split(html, "\n") {
 		match := re.FindString(line)
