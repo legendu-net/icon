@@ -212,7 +212,6 @@ func CopyEmbedFile(sourceFile string, destinationFile string, mode os.FileMode, 
 // @param info            A boolean flag indicating if a message should be logged after the copy.
 //
 // @example CopyEmbedFileToDir("data/example.txt", "/tmp/", 0644, true) // Copies example.txt to /tmp/example.txt
-//
 func CopyEmbedFileToDir(sourceFile string, destinationDir string, mode os.FileMode, info bool) {
 	destinationFile := filepath.Join(destinationDir, filepath.Base(sourceFile))
 	CopyEmbedFile(sourceFile, destinationFile, mode, info)
@@ -230,7 +229,6 @@ func CopyEmbedFileToDir(sourceFile string, destinationDir string, mode os.FileMo
 // @param env Optional environment variables to set for the command execution.
 //
 // @example RunCmd("ls -l", "MY_VAR=myvalue") // Runs the ls -l command with an additional environment variable.
-//
 func RunCmd(cmd string, env ...string) {
 	var command *exec.Cmd
 	switch runtime.GOOS {
@@ -264,7 +262,6 @@ func RunCmd(cmd string, env ...string) {
 // @return The formatted command string with placeholders replaced by their values.
 //
 // @example Format("Hello, {name}!", map[string]string{"name": "World"}) // Returns "Hello, World!"
-//
 func Format(cmd string, hmap map[string]string) string {
 	for key, val := range hmap {
 		cmd = strings.ReplaceAll(cmd, "{"+key+"}", val)
@@ -310,18 +307,18 @@ func HttpGetAsBytes(url string, retry int8, initial_waiting_seconds int32) []byt
 	if err != nil {
 		if retry > 0 {
 			time.Sleep(time.Duration(initial_waiting_seconds) * time.Second)
-			return HttpGetAsBytes(url, retry-1, initial_waiting_seconds * 2)
+			return HttpGetAsBytes(url, retry-1, initial_waiting_seconds*2)
 		}
 		log.Fatal("The HTTP GET request on the URL ", url, " got the following error:\n", err)
 	}
 	if resp.StatusCode > 399 {
 		if resp.Header.Get("x-ratelimit-remaining") == "0" {
-			time.Sleep(time.Until(time.Unix(ParseInt(resp.Header.Get("x-ratelimit-reset")) + 10, 0)))
+			time.Sleep(time.Until(time.Unix(ParseInt(resp.Header.Get("x-ratelimit-reset"))+10, 0)))
 			return HttpGetAsBytes(url, retry, initial_waiting_seconds)
 		}
 		if retry > 0 {
 			time.Sleep(time.Duration(initial_waiting_seconds) * time.Second)
-			return HttpGetAsBytes(url, retry-1, initial_waiting_seconds * 2)
+			return HttpGetAsBytes(url, retry-1, initial_waiting_seconds*2)
 		}
 		log.Fatal(
 			"The HTTP GET request on the URL ", url, " got an error response with the status code ",
@@ -343,7 +340,7 @@ func HttpGetAsBytes(url string, retry int8, initial_waiting_seconds int32) []byt
 	if err != nil {
 		if retry > 0 {
 			time.Sleep(time.Duration(initial_waiting_seconds) * time.Second)
-			return HttpGetAsBytes(url, retry-1, initial_waiting_seconds * 2)
+			return HttpGetAsBytes(url, retry-1, initial_waiting_seconds*2)
 		}
 		log.Fatal("Reading the response body of the http GET request on the url ", url, " got the following error:\n", err)
 	}
@@ -373,7 +370,6 @@ func HttpGetAsBytes(url string, retry int8, initial_waiting_seconds int32) []byt
 //	This function is a wrapper around HttpGetAsBytes and provides a string-based interface to the HTTP response body.
 //	Please refer to the documentation of HttpGetAsBytes for more detailed information about the retry and rate limiting
 //	logic employed.
-//
 func HttpGetAsString(url string, retry int8, initial_waiting_seconds int32) string {
 	return string(HttpGetAsBytes(url, retry, initial_waiting_seconds))
 }
@@ -423,7 +419,6 @@ func CreateTempDir(pattern string) string {
 //	path := DownloadFile("http://example.com/file.zip", "file.zip", false)
 //	// Process the file at 'path'
 //	// If useTempDir is false, the file will be in current directory.
-//
 func DownloadFile(url string, name string, useTempDir bool) string {
 	var out *os.File
 	var err error
@@ -632,7 +627,6 @@ func ExistsDir(path string) bool {
 //
 // @example
 // if ExistsFile("/tmp/myfile.txt") { ... }
-//
 func ExistsFile(path string) bool {
 	stat, err := os.Stat(path)
 	if os.IsNotExist(err) {
@@ -654,7 +648,6 @@ func ExistsFile(path string) bool {
 //	if cwd == "/home/user/project" {
 //	  // ...
 //	}
-//
 func Getwd() string {
 	cwd, err := os.Getwd()
 	if err != nil {
@@ -676,7 +669,6 @@ func Getwd() string {
 //
 //	homeDir := UserHomeDir()
 //	fmt.Println("Current user's home directory:", homeDir)
-//
 func UserHomeDir() string {
 	home, err := os.UserHomeDir()
 	if err != nil {
@@ -697,7 +689,6 @@ func UserHomeDir() string {
 //
 //	RemoveAll("/tmp/mydir") // Removes /tmp/mydir and all its contents.
 //	RemoveAll("/tmp/myfile.txt") // Removes /tmp/myfile.txt.
-//
 func RemoveAll(path string) {
 	err := os.RemoveAll(path)
 	if err != nil {
@@ -741,7 +732,6 @@ func GetBoolFlag(cmd *cobra.Command, flag string) bool {
 //
 //	i := GetIntFlag(myCmd, "myFlag")
 //	// i contains the value of the --myFlag flag
-//
 func GetIntFlag(cmd *cobra.Command, flag string) int {
 	i, err := cmd.Flags().GetInt(flag)
 	if err != nil {
@@ -940,7 +930,6 @@ func WriteTextFile(path string, text string, perm fs.FileMode) {
 //
 //	ReplacePattern("/tmp/myfile.txt", "old_text", "new_text")
 //	// Replaces all occurrences of "old_text" with "new_text" in /tmp/myfile.txt.
-//
 func ReplacePattern(path string, pattern string, repl string) {
 	text := ReadFileAsString(path)
 	text = strings.ReplaceAll(text, pattern, repl)
@@ -971,16 +960,15 @@ func ReplacePattern(path string, pattern string, repl string) {
 //
 // @remarks
 //
-//	If `checkExistence` is true, the `text` is trimmed using `strings.TrimSpace`
-//	before checking for its existence in the file. This ensures that leading and
-//	trailing spaces do not prevent a match.
+//		If `checkExistence` is true, the `text` is trimmed using `strings.TrimSpace`
+//		before checking for its existence in the file. This ensures that leading and
+//		trailing spaces do not prevent a match.
 //
-//	If the `text` does not exists and it is required to append it,
-//  the file is opened with `os.O_APPEND|os.O_CREATE|os.O_WRONLY` flags and with
-//  a permission mode of `0o644` (rw-r--r--).
+//		If the `text` does not exists and it is required to append it,
+//	 the file is opened with `os.O_APPEND|os.O_CREATE|os.O_WRONLY` flags and with
+//	 a permission mode of `0o644` (rw-r--r--).
 //
-//  if the text already exists, it does nothing.
-//
+//	 if the text already exists, it does nothing.
 func AppendToTextFile(path string, text string, checkExistence bool) {
 	if checkExistence {
 		fileContent := ""
@@ -1016,7 +1004,6 @@ func AppendToTextFile(path string, text string, checkExistence bool) {
 //	bashConfigFile := GetBashConfigFile()
 //	// On Linux, bashConfigFile will be something like "/home/user/.bashrc"
 //	// On macOS, it will be something like "/Users/user/.bash_profile"
-//
 func GetBashConfigFile() string {
 	home := UserHomeDir()
 	file := ".bash_profile"
@@ -1165,7 +1152,6 @@ func CpuInfo() []cpu.InfoStat {
 //
 //	yesFlag := BuildYesFlag(myCmd)
 //	// If the --yes flag is present and set to true, yesFlag will be "-y".
-//
 func BuildYesFlag(cmd *cobra.Command) string {
 	return IfElseString(GetBoolFlag(cmd, "yes"), "-y", "")
 }
@@ -1185,7 +1171,6 @@ func BuildYesFlag(cmd *cobra.Command) string {
 //
 //	uninstallCmd := BuildPipUninstall(myCmd)
 //	// If --python is set to "/usr/bin/python3", uninstallCmd will be "/usr/bin/python3 -m pip uninstall"
-//
 func BuildPipUninstall(cmd *cobra.Command) string {
 	python := GetStringFlag(cmd, "python")
 	return Format("{python} -m pip uninstall", map[string]string{
@@ -1216,16 +1201,15 @@ func BuildPipUninstall(cmd *cobra.Command) string {
 //
 // @remarks
 //
-//	The `PIP_BREAK_SYSTEM_PACKAGES=1` environment variable is set to allow for
-//	the installation of packages that might conflict with system packages.
-//	This is considered an unsafe practice, be cautious when using this function.
+//		The `PIP_BREAK_SYSTEM_PACKAGES=1` environment variable is set to allow for
+//		the installation of packages that might conflict with system packages.
+//		This is considered an unsafe practice, be cautious when using this function.
 //
-//  The extra-pip-options must be separated by comma.
+//	 The extra-pip-options must be separated by comma.
 //
-//  The python executable should be added to the PATH.
+//	 The python executable should be added to the PATH.
 //
-//  If the python executable is not found, it returns "".
-//
+//	 If the python executable is not found, it returns "".
 func BuildPipInstall(cmd *cobra.Command) string {
 	python := GetStringFlag(cmd, "python")
 	_, err := exec.LookPath(python)
@@ -1282,7 +1266,6 @@ func ExistsCommand(cmd string) bool {
 // @example
 //
 //	MkdirAll("/tmp/mydir/subdir", 0755) // Creates /tmp/mydir/subdir with permissions 0755.
-//
 func MkdirAll(path string, perm os.FileMode) {
 	err := os.MkdirAll(path, perm)
 	if err != nil {
@@ -1327,7 +1310,6 @@ func AddPythonFlags(cmd *cobra.Command) {
 //	} else {
 //	  fmt.Println("Not running on Linux")
 //	}
-//
 func IsLinux() bool {
 	switch runtime.GOOS {
 	case "linux":
@@ -1378,7 +1360,6 @@ func GetLinuxDistId() string {
 //	} else {
 //	  fmt.Println("Not running on Ubuntu")
 //	}
-//
 func IsUbuntu() bool {
 	return GetLinuxDistId() == "ubuntu"
 }
@@ -1398,7 +1379,6 @@ func IsUbuntu() bool {
 //	} else {
 //	  fmt.Println("Not running on Debian")
 //	}
-//
 func IsDebian() bool {
 	return GetLinuxDistId() == "debian"
 }
@@ -1419,7 +1399,6 @@ func IsDebian() bool {
 //	} else {
 //	  fmt.Println("Not running a Debian-based distribution")
 //	}
-//
 func IsDebianSeries() bool {
 	ids := []string{
 		"debian",
@@ -1607,6 +1586,7 @@ func BrewInstallSafe(pkgs []string) {
 // @example
 //
 //	if IsSocket("/var/run/docker.sock") { ... }
+//
 // Check if a file is a socket.
 func IsSocket(path string) bool {
 	fileInfo, err := os.Stat(path)
