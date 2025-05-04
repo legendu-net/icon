@@ -7,6 +7,8 @@
     ripgrep
     rm-improved
     bat
+    fzf
+    util-linux
     go
   ];
   env = {};

@@ -22,10 +22,16 @@ func bashIt(cmd *cobra.Command, args []string) {
 	}
 	if utils.GetBoolFlag(cmd, "config") {
 		utils.ConfigBash()
+		configBashIt()
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
 		utils.RunCmd("~/.bash_it/uninstall.sh && rm -rf ~/.bash_it/")
 	}
+}
+
+func configBashIt() {
+	dir := utils.NormalizePath("~/.bash_it/plugins")
+	utils.CopyEmbedFileToDir("data/bash-it/custom.plugins.bash", dir, 0600, true)
 }
 
 var BashItCmd = &cobra.Command{

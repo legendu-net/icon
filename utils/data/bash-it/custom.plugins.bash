@@ -1,0 +1,78 @@
+function _fzf.cs.usage {
+    cat << EOF
+Search for a directory using fzf, cd into it, and run ls.
+Syntax: fzf.cs [-h] [dir]
+Args:
+    dir: The directory (default to .) under which to search for sub directories.
+EOF
+}
+
+function fzf.cs {
+  if [[ "$1" == "-h" || "$1" == "--help" ]]; then
+    _fzf.cs.usage
+    return 0
+  fi
+  local dir=.
+  if [[ $# > 0 ]]; then
+    dir="$@"
+  fi
+  cd "$(find $dir \( -type d ! -readable -prune \) -o -type d -print0 | fzf --read0)"
+  ls
+}
+
+function _fzf.bat.usage {
+    cat << EOF
+Search for files using fzf and preview it using bat.
+Syntax: fzf.bat [-h] [dir]
+Args:
+    dir: The directory (default to .) under which to search for files.
+EOF
+}
+
+function fzf.bat {
+  if [[ "$1" == "-h" || "$1" == "--help" ]]; then
+    _fzf.bat.usage
+    return 0
+  fi
+  local dir=.
+  if [[ $# > 0 ]]; then
+    dir="$@"
+  fi
+  find $dir \( -type f ! -readable -prune \) -o -type f -print0 | \
+    fzf --read0 --preview 'bat --color=always {}'
+}
+
+function _fzf.ripgrep.nvim.usage {
+    cat << EOF
+Leverage fzf as the UI to search for files by content using ripgrep, \
+preview it using bat, and open selections using NeoVim.
+Syntax: fzf.ripgrep.nvim [-h] [dir]
+Args:
+    dir: The directory (default to .) under which to search for files.
+EOF
+}
+
+function fzf.ripgrep.nvim (
+  if [[ "$1" == "-h" || "$1" == "--help" ]]; then
+    _fzf.ripgrep.nvim.usage
+    return 0
+  fi
+  local dir=.
+  if [[ $# > 0 ]]; then
+    dir="$@"
+  fi
+  RELOAD="reload:rg --column --color=always --smart-case {q} $dir || :"
+  OPENER='if [[ $FZF_SELECT_COUNT -eq 0 ]]; then
+            nvim {1} +{2}     # No selection. Open the current line in Vim.
+          else
+            nvim +cw -q {+f}  # Build quickfix list for the selected items.
+          fi'
+  fzf --disabled --ansi --multi \
+      --bind "start:$RELOAD" --bind "change:$RELOAD" \
+      --bind "enter:become:$OPENER" \
+      --bind "ctrl-o:execute:$OPENER" \
+      --bind 'alt-a:select-all,alt-d:deselect-all,ctrl-/:toggle-preview' \
+      --delimiter : \
+      --preview 'bat --style=full --color=always --highlight-line {2} {1}' \
+      --preview-window '~4,+{2}+4/3,<80(up)' \
+)
