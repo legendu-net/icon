@@ -20,6 +20,9 @@ function fzf.cs {
   ls
 }
 
+alias fcs=fzf.cs
+alias fcd=fzf.cs
+
 function _fzf.bat.usage {
     cat << EOF
 Search for files using fzf and preview it using bat.
@@ -41,6 +44,8 @@ function fzf.bat {
   find $dir \( -type f ! -readable -prune \) -o -type f -print0 | \
     fzf --read0 --preview 'bat --color=always {}'
 }
+
+alias fbat=fzf.bat
 
 function _fzf.ripgrep.nvim.usage {
     cat << EOF
@@ -76,3 +81,6 @@ function fzf.ripgrep.nvim (
       --preview 'bat --style=full --color=always --highlight-line {2} {1}' \
       --preview-window '~4,+{2}+4/3,<80(up)' \
 )
+  
+alias fvim=fzf.ripgrep.vim
+alias frgvim=fzf.ripgrep.vim
