@@ -16,6 +16,43 @@ import (
 	"legendu.net/icon/cmd/virtualization"
 )
 
+var completionCmd = &cobra.Command{
+	Use:   "completion [bash|zsh|fish]",
+	Short: "Generate completion script",
+	Long: `To load completions:
+
+Bash:
+
+$ icon completion bash > /etc/bash_completion.d/icon
+
+Zsh:
+
+# If your autocomplete is enabled in zshrc...
+$ echo "autoload -U compinit; compinit" >> ~/.zshrc
+# Then to load completions for each session, execute once:
+$ icon completion zsh > "${fpath[1]}/_icon"
+
+Fish:
+
+$ icon completion fish > ~/.config/fish/completions/icon.fish
+`,
+	DisableFlagsInUseLine: true,
+	Args:                  cobra.ExactValidArgs(1),
+	ValidArgs:             []string{"bash", "zsh", "fish"},
+	Run: func(cmd *cobra.Command, args []string) {
+		switch args[0] {
+		case "bash":
+			cmd.Root().GenBashCompletion(os.Stdout)
+		case "zsh":
+			cmd.Root().GenZshCompletion(os.Stdout)
+		case "fish":
+			cmd.Root().GenFishCompletion(os.Stdout, true)
+		case "powershell":
+			cmd.Root().GenPowerShellCompletion(os.Stdout)
+		}
+	},
+}
+
 var rootCmd = &cobra.Command{
 	Use:              "icon",
 	Short:            "Install and configure tools.",
@@ -60,4 +97,5 @@ func init() {
 	rootCmd.AddCommand(virtualization.DockerCmd)
 	rootCmd.AddCommand(misc.KeepassXCCmd)
 	rootCmd.AddCommand(filesystem.RipCmd)
+	rootCmd.AddCommand(completionCmd)
 }
