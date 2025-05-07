@@ -41,8 +41,9 @@ function fzf.bat {
   if [[ $# > 0 ]]; then
     dir="$@"
   fi
-  find $dir \( -type f ! -readable -prune \) -o -type f -print0 | \
-    fzf --read0 --preview 'bat --color=always {}'
+  o="$(find $dir \( -type f ! -readable -prune \) -o -type f -print0 | \
+    fzf --read0 --preview 'bat --color=always {}')"
+  echo $o
 }
 
 alias fbat=fzf.bat
@@ -79,8 +80,7 @@ function fzf.ripgrep.nvim (
       --bind 'alt-a:select-all,alt-d:deselect-all,ctrl-/:toggle-preview' \
       --delimiter : \
       --preview 'bat --style=full --color=always --highlight-line {2} {1}' \
-      --preview-window '~4,+{2}+4/3,<80(up)' \
+      --preview-window '~4,+{2}+4/3,<80(up)'
 )
   
-alias fvim=fzf.ripgrep.vim
-alias frgvim=fzf.ripgrep.vim
+alias frgvim=fzf.ripgrep.nvim
