@@ -30,8 +30,8 @@ func bashIt(cmd *cobra.Command, args []string) {
 }
 
 func configBashIt() {
-	dir := utils.NormalizePath("~/.bash_it/plugins")
-	utils.CopyEmbedFileToDir("data/bash-it/custom.plugins.bash", dir, 0600, true)
+	utils.CopyEmbedFileToDir("data/bash-it/custom.plugins.bash", utils.NormalizePath("~/.bash_it/plugins"), 0600, true)
+	utils.CopyEmbedFileToDir("data/bash-it/custom.aliases.bash", utils.NormalizePath("~/.bash_it/aliases"), 0600, true)
 }
 
 var BashItCmd = &cobra.Command{

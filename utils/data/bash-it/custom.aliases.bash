@@ -1,0 +1,2 @@
+alias blog=./blog.py
+

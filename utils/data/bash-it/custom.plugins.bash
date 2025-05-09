@@ -1,3 +1,19 @@
+function _cs.usage() {
+    cat << EOF
+Enter a directory and display its content.
+Syntax: cs dir
+EOF
+}
+
+function cs() {
+    if [ "$1" == "-h" ]; then
+        _cs.usage
+        return 0
+    fi
+    cd "$@" 
+    ls --color=auto
+}
+
 function _fzf.cs.usage {
     cat << EOF
 Search for a directory using fzf, cd into it, and run ls.
