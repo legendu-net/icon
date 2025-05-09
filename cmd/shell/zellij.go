@@ -25,10 +25,10 @@ func zellij(cmd *cobra.Command, args []string) {
 		)
 		dir_bin := utils.NormalizePath(utils.GetStringFlag(cmd, "bin-dir"))
 		command := utils.Format(`{prefix} tar -zxvf {file} -C {dir_bin}`, map[string]string{
-			"file": file,
+			"file":    file,
 			"dir_bin": dir_bin,
 			"prefix": utils.GetCommandPrefix(false, map[string]uint32{
-				dir_bin:       unix.W_OK | unix.R_OK,
+				dir_bin: unix.W_OK | unix.R_OK,
 			}),
 		})
 		utils.RunCmd(command)
