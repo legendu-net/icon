@@ -28,6 +28,7 @@ def gen_completion_script_ldc() -> None:
     print("Generate completion script for ldc...")
     completely = 'docker run --rm -it --user $(id -u):$(id -g) --volume "$PWD:/app" dannyben/completely'
     cmd = f"""{completely} preview > completely.bash \
+        && dos2unix completely.bash \
         && mv completely.bash ../utils/data/bash-it/ldc.completion.bash
         """
     sp.run(cmd, shell=True, check=True)

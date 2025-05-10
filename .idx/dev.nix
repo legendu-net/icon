@@ -11,6 +11,7 @@
     util-linux
     go
     uv
+    dos2unix
   ];
   env = {};
   services.docker.enable = true;
