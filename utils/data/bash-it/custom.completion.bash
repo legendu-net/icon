@@ -1,2 +1,2 @@
-. ./icon.completion.bash
-. ./ldc.completion.bash
+. ~/.bash_it/completion/icon.completion.bash
+. ~/.bash_it/completion/ldc.completion.bash

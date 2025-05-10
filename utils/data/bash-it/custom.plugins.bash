@@ -10,7 +10,11 @@ function cs() {
         _cs.usage
         return 0
     fi
-    cd "$@" 
+    local dir="$@"
+    if [[ -f "$dir" ]]; then
+      dir="$(dirname "$dir")"
+    fi
+    cd "$dir" 
     ls --color=auto
 }
 
