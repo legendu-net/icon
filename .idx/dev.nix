@@ -10,8 +10,10 @@
     fzf
     util-linux
     go
+    uv
   ];
   env = {};
+  services.docker.enable = true;
   idx = {
     # check extensions on https://open-vsx.org/
     extensions = [

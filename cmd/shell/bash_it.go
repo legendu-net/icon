@@ -1,9 +1,10 @@
 package shell
 
 import (
+	"path/filepath"
+
 	"github.com/spf13/cobra"
 	"legendu.net/icon/utils"
-	"path/filepath"
 )
 
 // Install bash-it, a community Bash framework.
@@ -29,9 +30,25 @@ func bashIt(cmd *cobra.Command, args []string) {
 	}
 }
 
+func copyBashitConfigFiles(files []string, dir string) {
+	for _, file := range files {
+		utils.CopyEmbedFileToDir(file, dir, 0600, true)
+	}
+}
+
 func configBashIt() {
-	utils.CopyEmbedFileToDir("data/bash-it/custom.plugins.bash", utils.NormalizePath("~/.bash_it/plugins"), 0600, true)
-	utils.CopyEmbedFileToDir("data/bash-it/custom.aliases.bash", utils.NormalizePath("~/.bash_it/aliases"), 0600, true)
+	copyBashitConfigFiles([]string{
+		"data/bash-it/custom.plugins.bash",
+	}, utils.NormalizePath("~/.bash_it/plugins"))
+	copyBashitConfigFiles(
+		[]string{"data/bash-it/custom.aliases.bash"},
+		utils.NormalizePath("~/.bash_it/aliases"))
+	copyBashitConfigFiles(
+		[]string{
+			"data/bash-it/icon.completion.bash",
+			"data/bash-it/ldc.completion.bash",
+			"data/bash-it/custom.completion.bash",
+		}, utils.NormalizePath("~/.bash_it/completion"))
 }
 
 var BashItCmd = &cobra.Command{
