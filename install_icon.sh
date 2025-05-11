@@ -37,11 +37,14 @@ function install_icon() {
             return 2
             ;;
     esac
-    echo "Downloading icon ..."
-    curl -sSL $URL/download/$VERSION/icon-$VERSION-$(uname)-${ARCH}.tar.gz -o /tmp/icon.tar.gz
+    local url_download=$URL/download/$VERSION/icon-$VERSION-$(uname)-${ARCH}.tar.gz
+    local output=/tmp/icon_$(date +%Y%m%d%H%M%S).tar.gz
+    echo "Downloading $url_download to $output ..."
+    curl -sSL $url_download -o $output
     echo "Installing icon ..."
-    tar zxf /tmp/icon.tar.gz -C "$install_dir"
+    tar -zxvf $output -C "$install_dir"
     chmod +x "$install_dir/icon"
+    echo "icon has been installed successfully."
 }
 
 function add_script_ldc() {
