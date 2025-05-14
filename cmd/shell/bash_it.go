@@ -38,6 +38,9 @@ func copyBashitConfigFiles(files []string, dir string) {
 
 func configBashIt() {
 	copyBashitConfigFiles([]string{
+		"data/bash-it/custom.bash",
+	}, utils.NormalizePath("~/.bash_it/lib"))
+	copyBashitConfigFiles([]string{
 		"data/bash-it/custom.plugins.bash",
 	}, utils.NormalizePath("~/.bash_it/plugins"))
 	copyBashitConfigFiles(
