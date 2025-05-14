@@ -15,6 +15,10 @@ function cs() {
       dir="$(dirname "$dir")"
     fi
     cd "$dir" 
+    if [[ "$?" != 0 ]]; then
+      echo "Failed to cd into $dir!"
+      return $?
+    fi
     ls --color=auto
 }
 
