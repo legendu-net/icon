@@ -65,7 +65,7 @@ function fzf.bat {
   if [[ $# > 0 ]]; then
     dir="$@"
   fi
-  o="$(find $dir \( -type f ! -readable -prune \) -o -type f -print0 | \
+  o="$(find $dir -type f -readable -print0 | \
     fzf --read0 --preview 'bat --color=always {}')"
   echo $o
 }
