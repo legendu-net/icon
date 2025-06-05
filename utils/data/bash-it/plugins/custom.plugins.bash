@@ -108,3 +108,25 @@ function fzf.ripgrep.nvim (
 )
   
 alias frgvim=fzf.ripgrep.nvim
+
+function _fzf.history.usage {
+    cat << EOF
+Search for files using fzf and preview it using bat.
+Syntax: fzf.bat [-h] [dir]
+Args:
+    dir: The directory (default to .) under which to search for files.
+EOF
+}
+
+function fzf.history {
+  if [[ "$1" == "-h" || "$1" == "--help" ]]; then
+    _fzf.history.usage
+    return 0
+  fi
+  local command=$(fc -ln 1 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | fzf | vipe)
+  echo $command
+  eval "$command"
+}
+
+alias fhist=fzf.history
+alias fh=fzf.history
