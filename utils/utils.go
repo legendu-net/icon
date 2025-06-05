@@ -27,11 +27,11 @@ import (
 //go:embed data
 var data embed.FS
 
-// ReadEmbedFile reads a file embedded in the data directory.
+// ReadEmbeddedFile reads a file embedded in the data directory.
 //
 // @param path The relative path to the file within the embedded data directory.
 // @return The content of the file as a byte slice.
-func ReadEmbedFile(path string) []byte {
+func ReadEmbeddedFile(path string) []byte {
 	bytes, err := data.ReadFile(path)
 	if err != nil {
 		log.Fatal("ERROR - ", err)
@@ -39,14 +39,14 @@ func ReadEmbedFile(path string) []byte {
 	return bytes
 }
 
-// ReadEmbedFileAsString reads a file embedded in the data directory and returns its content as a string.
+// ReadEmbeddedFileAsString reads a file embedded in the data directory and returns its content as a string.
 //
-// This function utilizes the ReadEmbedFile function to fetch the file content and then converts it to a string.
+// This function utilizes the ReadEmbeddedFile function to fetch the file content and then converts it to a string.
 //
 // @param name The relative path to the file within the embedded data directory.
 // @return The content of the file as a string.
-func ReadEmbedFileAsString(name string) string {
-	return string(ReadEmbedFile(name))
+func ReadEmbeddedFileAsString(name string) string {
+	return string(ReadEmbeddedFile(name))
 }
 
 // GetFileMode retrieves the file mode (permissions) of a given file.
@@ -72,7 +72,7 @@ func GetFileMode(file string) fs.FileMode {
 //
 // @param sourceFile      The path to the source file.
 // @param destinationFile The path to the destination file where the source file will be copied.
-func copyFile(sourceFile string, destinationFile string) {
+func CopyFile(sourceFile string, destinationFile string) {
 	input, err := os.ReadFile(sourceFile)
 	if err != nil {
 		log.Fatal("ERROR - ", err)
@@ -91,16 +91,13 @@ func copyFile(sourceFile string, destinationFile string) {
 // @param destinationDir The path to the destination directory where the source file will be copied.
 func copyFileToDir(sourceFile string, destinationDir string) {
 	destinationFile := filepath.Join(destinationDir, filepath.Base(sourceFile))
-	copyFile(sourceFile, destinationFile)
+	CopyFile(sourceFile, destinationFile)
 }
 
 // CopyDir recursively copies a source directory to a destination directory.
 //
-// This function first checks if the destination directory exists. If it doesn't,
-// it creates it with the same permissions as the source directory. Then, it iterates
-// through all entries in the source directory. If an entry is a subdirectory, it
-// recursively calls CopyDir to copy that subdirectory. If an entry is a file and not
-// a socket, it calls the copyFile function to copy that file.
+// The destination directory is created with the same permission as the source directory
+// if it does not already exist. This function behaves similar to the Linux command `cp -r`.
 //
 // @param sourceDir      The path to the source directory.
 // @param destinationDir The path to the destination directory where the source directory
@@ -118,8 +115,38 @@ func CopyDir(sourceDir string, destinationDir string) {
 		} else {
 			sourceFile := filepath.Join(sourceDir, entry.Name())
 			if !IsSocket(sourceFile) {
-				copyFile(sourceFile, filepath.Join(destinationDir, entry.Name()))
+				CopyFile(sourceFile, filepath.Join(destinationDir, entry.Name()))
 			}
+		}
+	}
+}
+
+// CopyEmbeddedDir recursively copies an embedded source directory to a destination directory.
+//
+// The destination directory is created with the permission 700 if it does not already exist.
+// This function behaves similar to the Linux command `cp -r`.
+//
+// @param sourceDir      The path to the source directory.
+// @param destinationDir The path to the destination directory where the source directory
+// @param info           Whether to log messages.
+//
+//	and its contents will be copied.
+func CopyEmbeddedDir(sourceDir string, destinationDir string, info bool) {
+	if !ExistsDir(destinationDir) {
+		MkdirAll(destinationDir, 0o700)
+	}
+	entries, err := data.ReadDir(sourceDir)
+	if err != nil {
+		log.Fatal("ERROR - ", err)
+	}
+	for _, entry := range entries {
+		if entry.IsDir() {
+			srcDir := filepath.Join(sourceDir, entry.Name())
+			dstDir := filepath.Join(destinationDir, entry.Name())
+			CopyEmbeddedDir(srcDir, dstDir, info)
+		} else {
+			sourceFile := filepath.Join(sourceDir, entry.Name())
+			CopyEmbeddedFile(sourceFile, filepath.Join(destinationDir, entry.Name()), 0o600, info)
 		}
 	}
 }
@@ -169,7 +196,7 @@ func Chmod600(path string) {
 	}
 }
 
-// CopyEmbedFile copies an embedded file to a destination file path.
+// CopyEmbeddedFile copies an embedded file to a destination file path.
 //
 // This function reads an embedded file, specified by sourceFile, and copies its contents
 // to the destinationFile. It also handles the creation of any necessary directories in
@@ -182,9 +209,9 @@ func Chmod600(path string) {
 // @param mode            The desired file mode (permissions) of the destination file.
 // @param info            A boolean flag. If true, a message will be logged after the file is copied.
 //
-// @example CopyEmbedFile("data/example.txt", "/tmp/example.txt", 0644, true)
-func CopyEmbedFile(sourceFile string, destinationFile string, mode os.FileMode, info bool) {
-	bytes := ReadEmbedFile(sourceFile)
+// @example CopyEmbeddedFile("data/example.txt", "/tmp/example.txt", 0644, true)
+func CopyEmbeddedFile(sourceFile string, destinationFile string, mode os.FileMode, info bool) {
+	bytes := ReadEmbeddedFile(sourceFile)
 	dir := filepath.Dir(destinationFile)
 	if !ExistsPath(dir) {
 		err := os.MkdirAll(dir, 0o700)
@@ -199,11 +226,11 @@ func CopyEmbedFile(sourceFile string, destinationFile string, mode os.FileMode, 
 	}
 }
 
-// CopyEmbedFileToDir copies an embedded file to a directory.
+// CopyEmbeddedFileToDir copies an embedded file to a directory.
 //
 // This function copies a file from the embedded data to a specified directory.
 // It combines the given directory with the base name of the source file to create
-// the full path of the destination file. Then it calls the CopyEmbedFile to copy
+// the full path of the destination file. Then it calls the CopyEmbeddedFile to copy
 // the source file to the newly created destination file.
 //
 // @param sourceFile      The relative path of the source file within the embedded data directory.
@@ -211,10 +238,10 @@ func CopyEmbedFile(sourceFile string, destinationFile string, mode os.FileMode, 
 // @param mode            The file mode (permissions) to set for the destination file.
 // @param info            A boolean flag indicating if a message should be logged after the copy.
 //
-// @example CopyEmbedFileToDir("data/example.txt", "/tmp/", 0644, true) // Copies example.txt to /tmp/example.txt
-func CopyEmbedFileToDir(sourceFile string, destinationDir string, mode os.FileMode, info bool) {
+// @example CopyEmbeddedFileToDir("data/example.txt", "/tmp/", 0644, true) // Copies example.txt to /tmp/example.txt
+func CopyEmbeddedFileToDir(sourceFile string, destinationDir string, mode os.FileMode, info bool) {
 	destinationFile := filepath.Join(destinationDir, filepath.Base(sourceFile))
-	CopyEmbedFile(sourceFile, destinationFile, mode, info)
+	CopyEmbeddedFile(sourceFile, destinationFile, mode, info)
 }
 
 // RunCmd executes a command in the terminal.

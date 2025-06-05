@@ -17,7 +17,7 @@ func jupyter_book(cmd *cobra.Command, args []string) {
 	}
 	if utils.GetBoolFlag(cmd, "config") {
 		srcFile := "jupyter-book/_config.yml"
-		utils.CopyEmbedFileToDir(srcFile, ".", 0o600, true)
+		utils.CopyEmbeddedFileToDir(srcFile, ".", 0o600, true)
 		log.Printf("%s is copied to the current directory.", srcFile)
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
