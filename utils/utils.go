@@ -1043,27 +1043,8 @@ func GetBashConfigFile() string {
 // ConfigBash configures the Bash shell environment.
 //
 // This function performs the following configurations to the Bash shell:
-//
-//   - Retrieves the appropriate Bash configuration file path using GetBashConfigFile().
-//   - Calls ConfigShellPath() to configure the shell's PATH environment variable.
-//   - Appends a block of code to the Bash configuration file to set the default
-//     editor to either `nvim` (if available) or `vim` (as a fallback).
-//   - If the operating system is Linux, it also appends a block of code to
-//     ~/.bash_profile to source in ~/.bashrc, ensuring that any configurations
-//     in ~/.bashrc are loaded.
-//
-// The function uses AppendToTextFile() to add the code blocks to the respective
-// files, with the `checkExistence` flag set to true to avoid adding duplicate
-// content. If any errors occur during file operations, the function will
-// terminate with a fatal log message.
-//
-// @example
-//
-//	ConfigBash() // Configures the Bash shell environment by setting the editor
-//	             // and sourcing in ~/.bashrc on Linux.
-//
-// @remarks
-// The function does nothing if it fail to retreive the bash config file.
+//   - configure the shell's PATH environment variable smartly
+//   - set the environment variables VISUAL and EDITOR to nvim with a fallback to vim.
 func ConfigBash() {
 	bashConfigFile := GetBashConfigFile()
 	ConfigShellPath(bashConfigFile)
@@ -1071,8 +1052,10 @@ func ConfigBash() {
 		bashConfigFile,
 		`
 if which nvim > /dev/null; then
+	export VISUAL=nvim
 	export EDITOR=nvim
 else
+	export VISUAL=vim
 	export EDITOR=vim
 fi
 `,
