@@ -20,7 +20,7 @@ func pytype(cmd *cobra.Command, args []string) {
 	if utils.GetBoolFlag(cmd, "config") {
 		srcFile := "data/pytype/pyproject.toml"
 		var srcMap orderedmap.OrderedMap[string, any]
-		toml.Unmarshal(utils.ReadEmbedFile(srcFile), &srcMap)
+		toml.Unmarshal(utils.ReadEmbeddedFile(srcFile), &srcMap)
 		destFile := filepath.Join(utils.GetStringFlag(cmd, "dest-dir"), "pyproject.toml")
 		var destMap orderedmap.OrderedMap[string, any]
 		if utils.ExistsFile(destFile) {

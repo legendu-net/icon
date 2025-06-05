@@ -40,7 +40,7 @@ function fzf.cs {
   if [[ $# > 0 ]]; then
     dir="$@"
   fi
-  cd "$(find $dir \( -type d ! -readable -prune \) -o -type d -print0 | fzf --read0)"
+  cd "$(find $dir -type d -print0 2> /dev/null | fzf --read0)"
   ls
 }
 
@@ -65,7 +65,7 @@ function fzf.bat {
   if [[ $# > 0 ]]; then
     dir="$@"
   fi
-  o="$(find $dir -type f -readable -print0 | \
+  o="$(find $dir -type f -print0 2> /dev/null | \
     fzf --read0 --preview 'bat --color=always {}')"
   echo $o
 }
