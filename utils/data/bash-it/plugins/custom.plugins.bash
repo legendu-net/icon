@@ -47,6 +47,7 @@ function fzf.cs {
 alias fcs=fzf.cs
 alias fcd=fzf.cs
 
+
 function _fzf.bat.usage {
     cat << EOF
 Search for files using fzf and preview it using bat.
@@ -65,12 +66,13 @@ function fzf.bat {
   if [[ $# > 0 ]]; then
     dir="$@"
   fi
-  o="$(find $dir -type f -print0 2> /dev/null | \
-    fzf --read0 --preview 'bat --color=always {}')"
+  o="$(find $dir -type f -print0 2> /dev/null | fzf --read0 --preview 'bat --color=always {}')"
   echo $o
+  nvim $o
 }
 
 alias fbat=fzf.bat
+
 
 function _fzf.ripgrep.nvim.usage {
     cat << EOF
@@ -109,6 +111,7 @@ function fzf.ripgrep.nvim (
   
 alias frgvim=fzf.ripgrep.nvim
 
+
 function _fzf.history.usage {
     cat << EOF
 Search for files using fzf and preview it using bat.
@@ -130,3 +133,4 @@ function fzf.history {
 
 alias fhist=fzf.history
 alias fh=fzf.history
+
