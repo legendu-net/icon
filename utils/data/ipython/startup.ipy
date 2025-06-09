@@ -158,7 +158,9 @@ def o(path: str) -> None:
             cmd = f"{file} {path} &"
             os.system(cmd)
         case _:
-            raise NotImplementedError(f"The magic %o is not implemented for {sys.platform}!")
+            raise NotImplementedError(
+                f"The magic %o is not implemented for {sys.platform}!"
+            )
 
 
 def set_path_env() -> None:
