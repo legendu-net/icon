@@ -1,7 +1,6 @@
-import platform
 from pathlib import Path
+import sys
 
-PLATFORM = platform.platform().lower()
 c = get_config()
 c.AliasManager.user_aliases = [
     ("cpi", "cp -ir"),
@@ -225,51 +224,52 @@ c.AliasManager.user_aliases = [
     ("wget.p", "proxychains wget"),
     ("wget.p4", "proxychains4 wget"),
 ]
-if "darwin" in PLATFORM or "macos" in PLATFORM:
-    c.AliasManager.user_aliases.extend(
-        [
-            ("md5sum", "md5 -r"),
-            (
-                "ffmpeg.record_screen",
-                "ffmpeg -f avfoundation -i '1' -pix_fmt yuv420p -r 25 $(date +%m%d%H%M%S).mp4"
-            ),
-            (
-                "record_screen",
-                "ffmpeg -f avfoundation -i '1' -pix_fmt yuv420p -r 25 $(date +%m%d%H%M%S).mp4"
-            ),
-            ("umount", "diskutil umount"),
-            ("unmount", "diskutil umount"),
-            ("top.cpu", "top -o cpu"),
-            ("top.mem", "top -o mem"),
-        ]
-    )
-elif "win" in PLATFORM:
-    c.AliasManager.user_aliases.extend(
-        [
-            ("which", "Get-command"),
-            (
-                "jlab.launch",
-                'python3 -m jupyterlab --allow-root --ip="0.0.0.0" --port=8888 --no-browser --notebook-dir="%cd%"'
-            ),
-            (
-                "jupyterlab.launch",
-                'python3 -m jupyterlab --allow-root --ip="0.0.0.0" --port=8888 --no-browser --notebook-dir="%cd%"'
-            ),
-        ]
-    )
-else:
-    c.AliasManager.user_aliases.extend(
-        [
-            (
-                "ffmpeg.record_screen",
-                "ffmpeg -f x11grab -r 25 -s cif -i :0.0 $(date +%m%d%H%M%S).mp4"
-            ),
-            (
-                "record_screen",
-                "ffmpeg -f x11grab -r 25 -s cif -i :0.0 $(date +%m%d%H%M%S).mp4"
-            ),
-            ("top.cpu", "top"),
-            ("top.mem", "top -o %MEM"),
-        ]
-    )
+match sys.platform():
+    case "darwin": 
+        c.AliasManager.user_aliases.extend(
+            [
+                ("md5sum", "md5 -r"),
+                (
+                    "ffmpeg.record_screen",
+                    "ffmpeg -f avfoundation -i '1' -pix_fmt yuv420p -r 25 $(date +%m%d%H%M%S).mp4"
+                ),
+                (
+                    "record_screen",
+                    "ffmpeg -f avfoundation -i '1' -pix_fmt yuv420p -r 25 $(date +%m%d%H%M%S).mp4"
+                ),
+                ("umount", "diskutil umount"),
+                ("unmount", "diskutil umount"),
+                ("top.cpu", "top -o cpu"),
+                ("top.mem", "top -o mem"),
+            ]
+        )
+    case "win32":
+        c.AliasManager.user_aliases.extend(
+            [
+                ("which", "Get-command"),
+                (
+                    "jlab.launch",
+                    'python3 -m jupyterlab --allow-root --ip="0.0.0.0" --port=8888 --no-browser --notebook-dir="%cd%"'
+                ),
+                (
+                    "jupyterlab.launch",
+                    'python3 -m jupyterlab --allow-root --ip="0.0.0.0" --port=8888 --no-browser --notebook-dir="%cd%"'
+                ),
+            ]
+        )
+    case _:
+        c.AliasManager.user_aliases.extend(
+            [
+                (
+                    "ffmpeg.record_screen",
+                    "ffmpeg -f x11grab -r 25 -s cif -i :0.0 $(date +%m%d%H%M%S).mp4"
+                ),
+                (
+                    "record_screen",
+                    "ffmpeg -f x11grab -r 25 -s cif -i :0.0 $(date +%m%d%H%M%S).mp4"
+                ),
+                ("top.cpu", "top"),
+                ("top.mem", "top -o %MEM"),
+            ]
+        )
 c.IPCompleter.use_jedi = False

@@ -157,6 +157,8 @@ def o(path: str) -> None:
                 raise FileNotFoundError("No valid file manager is found!")
             cmd = f"{file} {path} &"
             os.system(cmd)
+        case _:
+            raise NotImplementedError(f"The magic %o is not implemented for {sys.platform}!")
 
 
 def set_path_env() -> None:

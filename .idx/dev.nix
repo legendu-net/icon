@@ -5,6 +5,7 @@
     moreutils
     bash-completion
     gitui
+    delta
     neovim
     ripgrep
     rm-improved
