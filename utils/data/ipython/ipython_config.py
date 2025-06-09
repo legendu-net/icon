@@ -1,7 +1,6 @@
-import platform
 from pathlib import Path
+import sys
 
-PLATFORM = platform.platform().lower()
 c = get_config()
 c.AliasManager.user_aliases = [
     ("cpi", "cp -ir"),
@@ -13,110 +12,6 @@ c.AliasManager.user_aliases = [
     (
         "docker.httpd",
         "docker run --hostname httpd -dit -p 80:80 -v $(pwd):/usr/local/apache2/htdocs/ httpd"
-    ),
-    (
-        "docker.jupyterhub_ds",
-        "docker run -d --hostname jupyterhub-ds --log-opt max-size=50m -p 8000:8000 -p 5006:5006 -e DOCKER_USER=$(id -un) -e DOCKER_USER_ID=$(id -u) -e DOCKER_PASSWORD=$(id -un) -e DOCKER_GROUP_ID=$(id -g) -e DOCKER_ADMIN_USER=$(id -un) -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):/workdir -v $(dirname $HOME):/home_host dclong/jupyterhub-ds /scripts/sys/init.sh"
-    ),
-    (
-        "docker.jupyterhub_ds.next",
-        "docker run -d --hostname jupyterhub-ds --log-opt max-size=50m -p 8000:8000 -p 5006:5006 -e DOCKER_USER=$(id -un) -e DOCKER_USER_ID=$(id -u) -e DOCKER_PASSWORD=$(id -un) -e DOCKER_GROUP_ID=$(id -g) -e DOCKER_ADMIN_USER=$(id -un) -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):/workdir -v $(dirname $HOME):/home_host dclong/jupyterhub-ds:next /scripts/sys/init.sh"
-    ),
-    (
-        "docker.jupyterhub_ds.linux",
-        "docker run -d --hostname jupyterhub-ds --log-opt max-size=50m --memory=$(($(head -n 1 /proc/meminfo | awk '{print $2}') * 4 / 5))k --cpus=$(($(nproc) - 1)) -p 8000:8000 -p 5006:5006 -e DOCKER_USER=$(id -un) -e DOCKER_USER_ID=$(id -u) -e DOCKER_PASSWORD=$(id -un) -e DOCKER_GROUP_ID=$(id -g) -e DOCKER_ADMIN_USER=$(id -un) -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):/workdir -v $(dirname $HOME):/home_host dclong/jupyterhub-ds /scripts/sys/init.sh"
-    ),
-    (
-        "docker.jupyterhub_ds.linux.next",
-        "docker run -d --hostname jupyterhub-ds --log-opt max-size=50m --memory=$(($(head -n 1 /proc/meminfo | awk '{print $2}') * 4 / 5))k --cpus=$(($(nproc) - 1)) -p 8000:8000 -p 5006:5006 -e DOCKER_USER=$(id -un) -e DOCKER_USER_ID=$(id -u) -e DOCKER_PASSWORD=$(id -un) -e DOCKER_GROUP_ID=$(id -g) -e DOCKER_ADMIN_USER=$(id -un) -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):/workdir -v $(dirname $HOME):/home_host dclong/jupyterhub-ds:next /scripts/sys/init.sh"
-    ),
-    (
-        "docker.vscode_server",
-        "docker run -d --hostname vscode-server --log-opt max-size=50m -p 8080:8080 -e DOCKER_USER=$(id -un) -e DOCKER_USER_ID=$(id -u) -e DOCKER_PASSWORD=$(id -un) -e DOCKER_GROUP_ID=$(id -g) -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):/workdir -v $(dirname $HOME):/home_host dclong/vscode-server /scripts/sys/init.sh"
-    ),
-    (
-        "docker.vscode_server.next",
-        "docker run -d --hostname vscode-server --log-opt max-size=50m -p 8080:8080 -e DOCKER_USER=$(id -un) -e DOCKER_USER_ID=$(id -u) -e DOCKER_PASSWORD=$(id -un) -e DOCKER_GROUP_ID=$(id -g) -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):/workdir -v $(dirname $HOME):/home_host dclong/vscode-server:next /scripts/sys/init.sh"
-    ),
-    (
-        "docker.vscode_server.linux",
-        "docker run -d --hostname vscode-server --log-opt max-size=50m --memory=$(($(head -n 1 /proc/meminfo | awk '{print $2}') * 4 / 5))k --cpus=$(($(nproc) - 1)) -p 8080:8080 -e DOCKER_USER=$(id -un) -e DOCKER_USER_ID=$(id -u) -e DOCKER_PASSWORD=$(id -un) -e DOCKER_GROUP_ID=$(id -g) -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):/workdir -v $(dirname $HOME):/home_host dclong/vscode-server /scripts/sys/init.sh"
-    ),
-    (
-        "docker.vscode_server.linux.next",
-        "docker run -d --hostname vscode-server --log-opt max-size=50m --memory=$(($(head -n 1 /proc/meminfo | awk '{print $2}') * 4 / 5))k --cpus=$(($(nproc) - 1)) -p 8080:8080 -e DOCKER_USER=$(id -un) -e DOCKER_USER_ID=$(id -u) -e DOCKER_PASSWORD=$(id -un) -e DOCKER_GROUP_ID=$(id -g) -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):/workdir -v $(dirname $HOME):/home_host dclong/vscode-server:next /scripts/sys/init.sh"
-    ),
-    (
-        "docker.tensorboard",
-        "docker run -d --hostname tensorboard --log-opt max-size=50m -p 6006:6006 -e DOCKER_USER=$(id -un) -e DOCKER_USER_ID=$(id -u) -e DOCKER_PASSWORD=$(id -un) -e DOCKER_GROUP_ID=$(id -g) -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):/workdir -v $(dirname $HOME):/home_host dclong/tensorboard /scripts/sys/init.sh"
-    ),
-    (
-        "docker.tensorboard.next",
-        "docker run -d --hostname tensorboard --log-opt max-size=50m -p 6006:6006 -e DOCKER_USER=$(id -un) -e DOCKER_USER_ID=$(id -u) -e DOCKER_PASSWORD=$(id -un) -e DOCKER_GROUP_ID=$(id -g) -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):/workdir -v $(dirname $HOME):/home_host dclong/tensorboard:next /scripts/sys/init.sh"
-    ),
-    (
-        "docker.tensorboard.linux",
-        "docker run -d --hostname tensorboard --log-opt max-size=50m --memory=$(($(head -n 1 /proc/meminfo | awk '{print $2}') * 4 / 5))k --cpus=$(($(nproc) - 1)) -p 6006:6006 -e DOCKER_USER=$(id -un) -e DOCKER_USER_ID=$(id -u) -e DOCKER_PASSWORD=$(id -un) -e DOCKER_GROUP_ID=$(id -g) -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):/workdir -v $(dirname $HOME):/home_host dclong/tensorboard /scripts/sys/init.sh"
-    ),
-    (
-        "docker.tensorboard.linux.next",
-        "docker run -d --hostname tensorboard --log-opt max-size=50m --memory=$(($(head -n 1 /proc/meminfo | awk '{print $2}') * 4 / 5))k --cpus=$(($(nproc) - 1)) -p 6006:6006 -e DOCKER_USER=$(id -un) -e DOCKER_USER_ID=$(id -u) -e DOCKER_PASSWORD=$(id -un) -e DOCKER_GROUP_ID=$(id -g) -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):/workdir -v $(dirname $HOME):/home_host dclong/tensorboard:next /scripts/sys/init.sh"
-    ),
-    (
-        "docker.jupyterhub_jdk",
-        "docker run -d --hostname jupyterhub-jdk --log-opt max-size=50m -p 8000:8000 -e DOCKER_USER=$(id -un) -e DOCKER_USER_ID=$(id -u) -e DOCKER_PASSWORD=$(id -un) -e DOCKER_GROUP_ID=$(id -g) -e DOCKER_ADMIN_USER=$(id -un) -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):/workdir -v $(dirname $HOME):/home_host dclong/jupyterhub-jdk /scripts/sys/init.sh"
-    ),
-    (
-        "docker.jupyterhub_jdk.next",
-        "docker run -d --hostname jupyterhub-jdk --log-opt max-size=50m -p 8000:8000 -e DOCKER_USER=$(id -un) -e DOCKER_USER_ID=$(id -u) -e DOCKER_PASSWORD=$(id -un) -e DOCKER_GROUP_ID=$(id -g) -e DOCKER_ADMIN_USER=$(id -un) -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):/workdir -v $(dirname $HOME):/home_host dclong/jupyterhub-jdk:next /scripts/sys/init.sh"
-    ),
-    (
-        "docker.jupyterhub_almond",
-        "docker run -d --hostname jupyterhub-almond --log-opt max-size=50m -p 8000:8000 -e DOCKER_USER=$(id -un) -e DOCKER_USER_ID=$(id -u) -e DOCKER_PASSWORD=$(id -un) -e DOCKER_GROUP_ID=$(id -g) -e DOCKER_ADMIN_USER=$(id -un) -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):/workdir -v $(dirname $HOME):/home_host dclong/jupyterhub-almond /scripts/sys/init.sh"
-    ),
-    (
-        "docker.jupyterhub_almond.next",
-        "docker run -d --hostname jupyterhub-almond --log-opt max-size=50m -p 8000:8000 -e DOCKER_USER=$(id -un) -e DOCKER_USER_ID=$(id -u) -e DOCKER_PASSWORD=$(id -un) -e DOCKER_GROUP_ID=$(id -g) -e DOCKER_ADMIN_USER=$(id -un) -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):/workdir -v $(dirname $HOME):/home_host dclong/jupyterhub-almond:next /scripts/sys/init.sh"
-    ),
-    (
-        "docker.jupyterhub",
-        "docker run -d --hostname jupyterhub --log-opt max-size=50m -p 8000:8000 -e DOCKER_USER=$(id -un) -e DOCKER_USER_ID=$(id -u) -e DOCKER_PASSWORD=$(id -un) -e DOCKER_GROUP_ID=$(id -g) -e DOCKER_ADMIN_USER=$(id -un) -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):/workdir -v $(dirname $HOME):/home_host dclong/jupyterhub /scripts/sys/init.sh"
-    ),
-    (
-        "docker.jupyterhub.next",
-        "docker run -d --hostname jupyterhub --log-opt max-size=50m -p 8000:8000 -e DOCKER_USER=$(id -un) -e DOCKER_USER_ID=$(id -u) -e DOCKER_PASSWORD=$(id -un) -e DOCKER_GROUP_ID=$(id -g) -e DOCKER_ADMIN_USER=$(id -un) -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):/workdir -v $(dirname $HOME):/home_host dclong/jupyterhub:next /scripts/sys/init.sh"
-    ),
-    (
-        "docker.jupyterhub_pytorch",
-        "docker run -d --hostname jupyterhub-pytorch --log-opt max-size=50m -p 8000:8000 --dns 8.8.8.8 --dns 8.8.4.4 --gpus all -e DOCKER_USER=$(id -un) -e DOCKER_USER_ID=$(id -u) -e DOCKER_PASSWORD=$(id -un) -e DOCKER_GROUP_ID=$(id -g) -e DOCKER_ADMIN_USER=$(id -un) -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):/workdir -v $(dirname $HOME):/home_host dclong/jupyterhub-pytorch /scripts/sys/init.sh"
-    ),
-    (
-        "docker.jupyterhub_pytorch.next",
-        "docker run -d --hostname jupyterhub-pytorch --log-opt max-size=50m -p 8000:8000 --dns 8.8.8.8 --dns 8.8.4.4 --gpus all -e DOCKER_USER=$(id -un) -e DOCKER_USER_ID=$(id -u) -e DOCKER_PASSWORD=$(id -un) -e DOCKER_GROUP_ID=$(id -g) -e DOCKER_ADMIN_USER=$(id -un) -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):/workdir -v $(dirname $HOME):/home_host dclong/jupyterhub-pytorch:next /scripts/sys/init.sh"
-    ),
-    (
-        "docker.jupyterhub_pytorch.linux",
-        "docker run -d --hostname jupyterhub-pytorch --log-opt max-size=50m --memory=$(($(head -n 1 /proc/meminfo | awk '{print $2}') * 4 / 5))k --cpus=$(($(nproc) - 1)) -p 8000:8000 --dns 8.8.8.8 --dns 8.8.4.4 --gpus all -e DOCKER_USER=$(id -un) -e DOCKER_USER_ID=$(id -u) -e DOCKER_PASSWORD=$(id -un) -e DOCKER_GROUP_ID=$(id -g) -e DOCKER_ADMIN_USER=$(id -un) -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):/workdir -v $(dirname $HOME):/home_host dclong/jupyterhub-pytorch /scripts/sys/init.sh"
-    ),
-    (
-        "docker.jupyterhub_pytorch.linux.next",
-        "docker run -d --hostname jupyterhub-pytorch --log-opt max-size=50m --memory=$(($(head -n 1 /proc/meminfo | awk '{print $2}') * 4 / 5))k --cpus=$(($(nproc) - 1)) -p 8000:8000 --dns 8.8.8.8 --dns 8.8.4.4 --gpus all -e DOCKER_USER=$(id -un) -e DOCKER_USER_ID=$(id -u) -e DOCKER_PASSWORD=$(id -un) -e DOCKER_GROUP_ID=$(id -g) -e DOCKER_ADMIN_USER=$(id -un) -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):/workdir -v $(dirname $HOME):/home_host dclong/jupyterhub-pytorch:next /scripts/sys/init.sh"
-    ),
-    (
-        "docker.jupyterlab",
-        "docker run -d --hostname jupyterlab --log-opt max-size=50m -p 8888:8888 -e DOCKER_USER=$(id -un) -e DOCKER_USER_ID=$(id -u) -e DOCKER_PASSWORD=$(id -un) -e DOCKER_GROUP_ID=$(id -g) -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):/workdir -v $(dirname $HOME):/home_host dclong/jupyterlab /scripts/sys/init.sh"
-    ),
-    (
-        "docker.jupyterlab.next",
-        "docker run -d --hostname jupyterlab --log-opt max-size=50m -p 8888:8888 -e DOCKER_USER=$(id -un) -e DOCKER_USER_ID=$(id -u) -e DOCKER_PASSWORD=$(id -un) -e DOCKER_GROUP_ID=$(id -g) -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):/workdir -v $(dirname $HOME):/home_host dclong/jupyterlab:next /scripts/sys/init.sh"
-    ),
-    (
-        "docker.jupyterlab.linux",
-        "docker run -d --hostname jupyterlab --log-opt max-size=50m --memory=$(($(head -n 1 /proc/meminfo | awk '{print $2}') * 4 / 5))k --cpus=$(($(nproc) - 1)) -p 8888:8888 -e DOCKER_USER=$(id -un) -e DOCKER_USER_ID=$(id -u) -e DOCKER_PASSWORD=$(id -un) -e DOCKER_GROUP_ID=$(id -g) -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):/workdir -v $(dirname $HOME):/home_host dclong/jupyterlab /scripts/sys/init.sh"
-    ),
-    (
-        "docker.jupyterlab.linux.next",
-        "docker run -d --hostname jupyterlab --log-opt max-size=50m --memory=$(($(head -n 1 /proc/meminfo | awk '{print $2}') * 4 / 5))k --cpus=$(($(nproc) - 1)) -p 8888:8888 -e DOCKER_USER=$(id -un) -e DOCKER_USER_ID=$(id -u) -e DOCKER_PASSWORD=$(id -un) -e DOCKER_GROUP_ID=$(id -g) -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):/workdir -v $(dirname $HOME):/home_host dclong/jupyterlab:next /scripts/sys/init.sh"
     ),
     # find
     ("find.aux", "find . -type f -iname '*.aux'"),
@@ -329,51 +224,52 @@ c.AliasManager.user_aliases = [
     ("wget.p", "proxychains wget"),
     ("wget.p4", "proxychains4 wget"),
 ]
-if "darwin" in PLATFORM or "macos" in PLATFORM:
-    c.AliasManager.user_aliases.extend(
-        [
-            ("md5sum", "md5 -r"),
-            (
-                "ffmpeg.record_screen",
-                "ffmpeg -f avfoundation -i '1' -pix_fmt yuv420p -r 25 $(date +%m%d%H%M%S).mp4"
-            ),
-            (
-                "record_screen",
-                "ffmpeg -f avfoundation -i '1' -pix_fmt yuv420p -r 25 $(date +%m%d%H%M%S).mp4"
-            ),
-            ("umount", "diskutil umount"),
-            ("unmount", "diskutil umount"),
-            ("top.cpu", "top -o cpu"),
-            ("top.mem", "top -o mem"),
-        ]
-    )
-elif "win" in PLATFORM:
-    c.AliasManager.user_aliases.extend(
-        [
-            ("which", "Get-command"),
-            (
-                "jlab.launch",
-                'python3 -m jupyterlab --allow-root --ip="0.0.0.0" --port=8888 --no-browser --notebook-dir="%cd%"'
-            ),
-            (
-                "jupyterlab.launch",
-                'python3 -m jupyterlab --allow-root --ip="0.0.0.0" --port=8888 --no-browser --notebook-dir="%cd%"'
-            ),
-        ]
-    )
-else:
-    c.AliasManager.user_aliases.extend(
-        [
-            (
-                "ffmpeg.record_screen",
-                "ffmpeg -f x11grab -r 25 -s cif -i :0.0 $(date +%m%d%H%M%S).mp4"
-            ),
-            (
-                "record_screen",
-                "ffmpeg -f x11grab -r 25 -s cif -i :0.0 $(date +%m%d%H%M%S).mp4"
-            ),
-            ("top.cpu", "top"),
-            ("top.mem", "top -o %MEM"),
-        ]
-    )
+match sys.platform():
+    case "darwin": 
+        c.AliasManager.user_aliases.extend(
+            [
+                ("md5sum", "md5 -r"),
+                (
+                    "ffmpeg.record_screen",
+                    "ffmpeg -f avfoundation -i '1' -pix_fmt yuv420p -r 25 $(date +%m%d%H%M%S).mp4"
+                ),
+                (
+                    "record_screen",
+                    "ffmpeg -f avfoundation -i '1' -pix_fmt yuv420p -r 25 $(date +%m%d%H%M%S).mp4"
+                ),
+                ("umount", "diskutil umount"),
+                ("unmount", "diskutil umount"),
+                ("top.cpu", "top -o cpu"),
+                ("top.mem", "top -o mem"),
+            ]
+        )
+    case "win32":
+        c.AliasManager.user_aliases.extend(
+            [
+                ("which", "Get-command"),
+                (
+                    "jlab.launch",
+                    'python3 -m jupyterlab --allow-root --ip="0.0.0.0" --port=8888 --no-browser --notebook-dir="%cd%"'
+                ),
+                (
+                    "jupyterlab.launch",
+                    'python3 -m jupyterlab --allow-root --ip="0.0.0.0" --port=8888 --no-browser --notebook-dir="%cd%"'
+                ),
+            ]
+        )
+    case _:
+        c.AliasManager.user_aliases.extend(
+            [
+                (
+                    "ffmpeg.record_screen",
+                    "ffmpeg -f x11grab -r 25 -s cif -i :0.0 $(date +%m%d%H%M%S).mp4"
+                ),
+                (
+                    "record_screen",
+                    "ffmpeg -f x11grab -r 25 -s cif -i :0.0 $(date +%m%d%H%M%S).mp4"
+                ),
+                ("top.cpu", "top"),
+                ("top.mem", "top -o %MEM"),
+            ]
+        )
 c.IPCompleter.use_jedi = False

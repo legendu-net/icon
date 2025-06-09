@@ -1,9 +1,11 @@
 {pkgs, ...}: {
   channel = "stable-24.11";
   packages = with pkgs; [
+    ncurses
     moreutils
     bash-completion
     gitui
+    delta
     neovim
     ripgrep
     rm-improved

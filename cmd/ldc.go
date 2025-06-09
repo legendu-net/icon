@@ -20,6 +20,7 @@ func getDockerImagePort(imageName string) int {
 			"jupyterhub": 8000,
 			"gitpod":     8000,
 			"vscode":     8080,
+			"tensorboard":     6006,
 		}
 		for prefix, port := range ports {
 			if strings.HasPrefix(imageName, prefix) {
