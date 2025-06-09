@@ -1,4 +1,3 @@
-from pathlib import Path
 import sys
 
 c = get_config()
@@ -11,7 +10,7 @@ c.AliasManager.user_aliases = [
     # docker
     (
         "docker.httpd",
-        "docker run --hostname httpd -dit -p 80:80 -v $(pwd):/usr/local/apache2/htdocs/ httpd"
+        "docker run --hostname httpd -dit -p 80:80 -v $(pwd):/usr/local/apache2/htdocs/ httpd",
     ),
     # find
     ("find.aux", "find . -type f -iname '*.aux'"),
@@ -36,14 +35,14 @@ c.AliasManager.user_aliases = [
     ("find.ds_store", "find . -name .DS_Store"),
     (
         "find.data",
-        "find . -type f -iname '*.xls' -o -iname '*.xlsx' -o -iname '*.csv' -o -iname '*.tsv'"
+        "find . -type f -iname '*.xls' -o -iname '*.xlsx' -o -iname '*.csv' -o -iname '*.tsv'",
     ),
     ("find.dvi", "find . -type f -iname '*.dvi'"),
     ("find.dir", "find . -type d"),
     ("find.eps", "find . -type f -iname '*.eps'"),
     (
         "find.excel",
-        "find . -type f -iname '*.xls' -o -iname '*.xlsx' -o -iname '*.xlsm'"
+        "find . -type f -iname '*.xls' -o -iname '*.xlsx' -o -iname '*.xlsm'",
     ),
     ("find.file", "find . -type f"),
     ("find.folder", "find.dir"),
@@ -79,7 +78,7 @@ c.AliasManager.user_aliases = [
     ("find.mov", "find . -type f -iname '*.mov'"),
     (
         "find.media",
-        "find . -type f -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.mp3' -o -iname '*.avi' -o -iname '*.mkv' -o -iname '*.mov' -o -iname '*.mp4' -o -iname '*.wmv'"
+        "find . -type f -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.mp3' -o -iname '*.avi' -o -iname '*.mkv' -o -iname '*.mov' -o -iname '*.mp4' -o -iname '*.wmv'",
     ),
     ("find.pig", "find . -type f -iname '*.pig'"),
     ("find.pdf", "find . -type f -iname '*.pdf'"),
@@ -89,7 +88,7 @@ c.AliasManager.user_aliases = [
     ("find.ppt", "find . -type f -iname '*.ppt' -o -iname '*.pptx'"),
     (
         "find.py",
-        "find . -type f -iname '*.py' -not -path '*/.venv/*' -not -path '*/venv/*' -not -path '*/.ipynb_checkpoints/*'"
+        "find . -type f -iname '*.py' -not -path '*/.venv/*' -not -path '*/venv/*' -not -path '*/.ipynb_checkpoints/*'",
     ),
     ("find.r", "find . -type f -iname '*.r'"),
     ("find.rdata", "find . -type f -iname '*.rdata'"),
@@ -108,12 +107,12 @@ c.AliasManager.user_aliases = [
     ("find.sync", "find . -name '*.!sync'"),
     (
         "find.spreadsheet",
-        "find . -type f -iname '*.xls' -o -iname '*.xlsx' -o -iname '*.csv'"
+        "find . -type f -iname '*.xls' -o -iname '*.xlsx' -o -iname '*.csv'",
     ),
     ("find.txt", "find . -type f -iname '*.txt'"),
     (
         "find.textemp",
-        "find . -type f -iname '*.dvi' -o -iname '*.log' -o -iname '*.aux' -o -iname '*.lof' -o -iname '*.log' -o -iname '*.toc' -o -iname '*.bbl' -o -iname '*.blg' -o -iname '*.synctex.gz' -o -iname '*.nav' -o -iname '*.snm' -o -iname '*.vrb' -o -iname '*.out'"
+        "find . -type f -iname '*.dvi' -o -iname '*.log' -o -iname '*.aux' -o -iname '*.lof' -o -iname '*.log' -o -iname '*.toc' -o -iname '*.bbl' -o -iname '*.blg' -o -iname '*.synctex.gz' -o -iname '*.nav' -o -iname '*.snm' -o -iname '*.vrb' -o -iname '*.out'",
     ),
     ("find.tar.gz", "find . -name '*.tar.gz'"),
     ("find.tsv", "find . -type f -iname '*.tsv'"),
@@ -121,7 +120,7 @@ c.AliasManager.user_aliases = [
     ("find.tilde", "find . -name '*~'"),
     (
         "find.video",
-        "find . -type f  -iname '*.avi' -o -iname '*.mkv' -o -iname '*.mov' -o -iname '*.mp4' -o -iname '*.wmv'"
+        "find . -type f  -iname '*.avi' -o -iname '*.mkv' -o -iname '*.mov' -o -iname '*.mp4' -o -iname '*.wmv'",
     ),
     ("find.word", "find . -type f -iname '*.doc' -o -iname '*.docx' -o iname"),
     ("find.word", "find . -type f -iname '*.doc' -o -iname '*.docx'"),
@@ -129,7 +128,7 @@ c.AliasManager.user_aliases = [
     # git
     (
         "git.submodule",
-        "git submodule init && git submodule update --recursive --remote"
+        "git submodule init && git submodule update --recursive --remote",
     ),
     ("git.modified", r"git status | grep 'modified:' | sed 's/^\s*modified:\s*//'"),
     ("git.deleted", r"git status | grep 'deleted:' | sed 's/^\s*deleted:\s*//'"),
@@ -143,7 +142,7 @@ c.AliasManager.user_aliases = [
     # ls
     (
         "ls.media",
-        "ls *.jpg *.jpeg *.png *.mp3 *.avi *.mkv *.mov *.mp4 *.wmv *.webm 2> /dev/null"
+        "ls *.jpg *.jpeg *.png *.mp3 *.avi *.mkv *.mov *.mp4 *.wmv *.webm 2> /dev/null",
     ),
     ("ls.excel", "ls *.xls *.xlsx"),
     ("ls.word", "ls *.doc *.docx"),
@@ -158,13 +157,13 @@ c.AliasManager.user_aliases = [
     # mount
     (
         "mount.ntfs.sdb1",
-        "sudo mount -o uid=$(whoami),gid=$(whoami),fmask=0137,dmask=0027 /dev/sdb1"
+        "sudo mount -o uid=$(whoami),gid=$(whoami),fmask=0137,dmask=0027 /dev/sdb1",
     ),
     ("mount.sdb1", "sudo mount /dev/sdb1"),
     ("umount.sdb1", "sudo umount /dev/sdb1"),
     (
         "mount.ntfs.sdc1",
-        "sudo mount -o uid=$(whoami),gid=$(whoami),fmask=0137,dmask=0027 /dev/sdc1"
+        "sudo mount -o uid=$(whoami),gid=$(whoami),fmask=0137,dmask=0027 /dev/sdc1",
     ),
     ("mount.sdc1", "sudo mount /dev/sdc1"),
     ("umount.sdc1", "sudo umount /dev/sdc1"),
@@ -172,35 +171,35 @@ c.AliasManager.user_aliases = [
     ("mount.sr0", "sudo mount -t iso9660 -o ro /dev/sr0"),
     (
         "mount.downloads",
-        "sudo mount -t nfs -o nfsvers=3 192.168.0.8:$HOME/downloads mnt/nfsshare/"
+        "sudo mount -t nfs -o nfsvers=3 192.168.0.8:$HOME/downloads mnt/nfsshare/",
     ),
     (
         "mount.vboxsf",
-        "sudo mount -t vboxsf -o uid=$(whoami),gid=$(whoami),fmask=177,dmask=077"
+        "sudo mount -t vboxsf -o uid=$(whoami),gid=$(whoami),fmask=177,dmask=077",
     ),
     (
         "mount.vboxsf.hh",
-        "sudo mount -t vboxsf -o uid=$(whoami),gid=$(whoami),fmask=177,dmask=077 host_home"
+        "sudo mount -t vboxsf -o uid=$(whoami),gid=$(whoami),fmask=177,dmask=077 host_home",
     ),
     (
         "mount.vboxsf.cdrive",
-        "sudo mount -t vboxsf -o uid=$(whoami),gid=$(whoami),fmask=177,dmask=077 cdrive ${HOME}/cdrive"
+        "sudo mount -t vboxsf -o uid=$(whoami),gid=$(whoami),fmask=177,dmask=077 cdrive ${HOME}/cdrive",
     ),
     (
         "mount.vboxsf.ddrive",
-        "sudo mount -t vboxsf -o uid=$(whoami),gid=$(whoami),fmask=177,dmask=077 ddrive ${HOME}/ddrive"
+        "sudo mount -t vboxsf -o uid=$(whoami),gid=$(whoami),fmask=177,dmask=077 ddrive ${HOME}/ddrive",
     ),
     (
         "mount.vboxsf.edrive",
-        "sudo mount -t vboxsf -o uid=$(whoami),gid=$(whoami),fmask=177,dmask=077 edrive ${HOME}/edrive"
+        "sudo mount -t vboxsf -o uid=$(whoami),gid=$(whoami),fmask=177,dmask=077 edrive ${HOME}/edrive",
     ),
     (
         "mount.vboxsf.fdrive",
-        "sudo mount -t vboxsf -o uid=$(whoami),gid=$(whoami),fmask=177,dmask=077 fdrive ${HOME}/fdrive"
+        "sudo mount -t vboxsf -o uid=$(whoami),gid=$(whoami),fmask=177,dmask=077 fdrive ${HOME}/fdrive",
     ),
     (
         "mount.vboxsf.gdrive",
-        "sudo mount -t vboxsf -o uid=$(whoami),gid=$(whoami),fmask=177,dmask=077 gdrive ${HOME}/gdrive"
+        "sudo mount -t vboxsf -o uid=$(whoami),gid=$(whoami),fmask=177,dmask=077 gdrive ${HOME}/gdrive",
     ),
     ("ps.ssh", "ps -wwfaux | grep -i ssh"),
     ("ps.python", "ps -wwfaux | grep -i python"),
@@ -208,7 +207,7 @@ c.AliasManager.user_aliases = [
     ("ps.jupyter", "ps -wwfaux | grep -i jupyter"),
     (
         "rm.ipynb_checkpoints",
-        "find . -type d -name '*.ipynb_checkpoints*' -print0 | xargs -0 rm -rf"
+        "find . -type d -name '*.ipynb_checkpoints*' -print0 | xargs -0 rm -rf",
     ),
     ("rsync.progress", "rsync -avh --info=progress2"),
     ("rsync.progress.pc", "proxychains rsync -avh --info=progress2"),
@@ -225,17 +224,17 @@ c.AliasManager.user_aliases = [
     ("wget.p4", "proxychains4 wget"),
 ]
 match sys.platform():
-    case "darwin": 
+    case "darwin":
         c.AliasManager.user_aliases.extend(
             [
                 ("md5sum", "md5 -r"),
                 (
                     "ffmpeg.record_screen",
-                    "ffmpeg -f avfoundation -i '1' -pix_fmt yuv420p -r 25 $(date +%m%d%H%M%S).mp4"
+                    "ffmpeg -f avfoundation -i '1' -pix_fmt yuv420p -r 25 $(date +%m%d%H%M%S).mp4",
                 ),
                 (
                     "record_screen",
-                    "ffmpeg -f avfoundation -i '1' -pix_fmt yuv420p -r 25 $(date +%m%d%H%M%S).mp4"
+                    "ffmpeg -f avfoundation -i '1' -pix_fmt yuv420p -r 25 $(date +%m%d%H%M%S).mp4",
                 ),
                 ("umount", "diskutil umount"),
                 ("unmount", "diskutil umount"),
@@ -249,11 +248,11 @@ match sys.platform():
                 ("which", "Get-command"),
                 (
                     "jlab.launch",
-                    'python3 -m jupyterlab --allow-root --ip="0.0.0.0" --port=8888 --no-browser --notebook-dir="%cd%"'
+                    'python3 -m jupyterlab --allow-root --ip="0.0.0.0" --port=8888 --no-browser --notebook-dir="%cd%"',
                 ),
                 (
                     "jupyterlab.launch",
-                    'python3 -m jupyterlab --allow-root --ip="0.0.0.0" --port=8888 --no-browser --notebook-dir="%cd%"'
+                    'python3 -m jupyterlab --allow-root --ip="0.0.0.0" --port=8888 --no-browser --notebook-dir="%cd%"',
                 ),
             ]
         )
@@ -262,11 +261,11 @@ match sys.platform():
             [
                 (
                     "ffmpeg.record_screen",
-                    "ffmpeg -f x11grab -r 25 -s cif -i :0.0 $(date +%m%d%H%M%S).mp4"
+                    "ffmpeg -f x11grab -r 25 -s cif -i :0.0 $(date +%m%d%H%M%S).mp4",
                 ),
                 (
                     "record_screen",
-                    "ffmpeg -f x11grab -r 25 -s cif -i :0.0 $(date +%m%d%H%M%S).mp4"
+                    "ffmpeg -f x11grab -r 25 -s cif -i :0.0 $(date +%m%d%H%M%S).mp4",
                 ),
                 ("top.cpu", "top"),
                 ("top.mem", "top -o %MEM"),
