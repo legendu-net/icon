@@ -223,7 +223,7 @@ c.AliasManager.user_aliases = [
     ("wget.p", "proxychains wget"),
     ("wget.p4", "proxychains4 wget"),
 ]
-match sys.platform():
+match sys.platform:
     case "darwin":
         c.AliasManager.user_aliases.extend(
             [
