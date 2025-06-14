@@ -14,6 +14,9 @@ function cs() {
     if [[ -f "$dir" ]]; then
       dir="$(dirname "$dir")"
     fi
+    if [[ "$dir" == "" ]]; then
+      dir="$HOME"
+    fi
     cd "$dir" 
     if [[ "$?" != 0 ]]; then
       echo "Failed to cd into $dir!"
