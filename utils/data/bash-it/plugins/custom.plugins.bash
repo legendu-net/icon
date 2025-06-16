@@ -14,6 +14,9 @@ function cs() {
     if [[ -f "$dir" ]]; then
       dir="$(dirname "$dir")"
     fi
+    if [[ "$dir" == "" ]]; then
+      dir="$HOME"
+    fi
     cd "$dir" 
     if [[ "$?" != 0 ]]; then
       echo "Failed to cd into $dir!"
@@ -40,7 +43,7 @@ function fzf.cs {
   if [[ $# > 0 ]]; then
     dir="$@"
   fi
-  cd "$(find $dir -type d -print0 2> /dev/null | fzf --read0)"
+  cd "$(fdfind --type d --print0 . $dir | fzf --read0)"
   ls
 }
 
@@ -66,7 +69,7 @@ function fzf.bat {
   if [[ $# > 0 ]]; then
     dir="$@"
   fi
-  o="$(find $dir -type f -print0 2> /dev/null | fzf --read0 --preview 'bat --color=always {}')"
+  o="$(fdfind --type f --print0 . $dir | fzf --read0 --preview 'bat --color=always {}')"
   echo $o
   nvim $o
 }
