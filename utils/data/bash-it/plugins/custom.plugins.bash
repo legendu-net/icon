@@ -131,6 +131,7 @@ function fzf.history {
   fi
   local command=$(fc -ln 1 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | fzf | vipe)
   echo $command
+  history -s "$command"
   eval "$command"
 }
 
