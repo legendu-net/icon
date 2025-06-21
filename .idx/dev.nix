@@ -2,6 +2,7 @@
   channel = "stable-24.11";
   packages = with pkgs; [
     ncurses
+    fd
     moreutils
     bash-completion
     gitui
