@@ -36,7 +36,7 @@ EOF
 
 function _check_fdfind {
   if [[ "$(which fdfind)" == "" ]]; then
-    echo "fd-find executable is not found! Please install it first!"
+    echo -e "\nfd-find executable is not found! Please install it first!"
     return 1
   fi
 }
@@ -46,7 +46,7 @@ function fzf.cs {
     _fzf.cs.usage
     return 0
   fi
-  _check_fdfind
+  _check_fdfind || return 1
   local dir=.
   if [[ $# > 0 ]]; then
     dir="$@"
@@ -73,7 +73,7 @@ function fzf.bat {
     _fzf.bat.usage
     return 0
   fi
-  _check_fdfind
+  _check_fdfind || return 1
   local dir=.
   if [[ $# > 0 ]]; then
     dir="$@"
