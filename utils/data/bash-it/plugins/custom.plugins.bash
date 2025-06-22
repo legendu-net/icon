@@ -34,9 +34,20 @@ Args:
 EOF
 }
 
+function _get_fd_executable {
+  case "$(cat /etc/os-release | grep '^ID=')" in
+      "ID=ubuntu" | "ID=debian" | "ID=pop" | "ID=Deepin" | "ID=fedora" | "ID=\"rhel\"")
+        echo "fdfind"
+        ;;
+      *)
+        echo "fd"
+        ;;
+  esac
+}
+
 function _check_fdfind {
-  if [[ "$(which fdfind)" == "" ]]; then
-    echo -e "\nfd-find executable is not found! Please install it first!"
+  if [[ "$(which $1)" == "" ]]; then
+    echo -e "\n$1 executable is not found! Please install it first!"
     return 1
   fi
 }
@@ -46,12 +57,13 @@ function fzf.cs {
     _fzf.cs.usage
     return 0
   fi
-  _check_fdfind || return 1
+  local fd=$(_get_fd_executable)
+  _check_fdfind $fd || return 1
   local dir=.
   if [[ $# > 0 ]]; then
     dir="$@"
   fi
-  cd "$(fdfind --type d --print0 . $dir | fzf --read0)"
+  cd "$($fd --type d --print0 . $dir | fzf --read0)"
   ls
 }
 
@@ -73,12 +85,13 @@ function fzf.bat {
     _fzf.bat.usage
     return 0
   fi
-  _check_fdfind || return 1
+  local fd=$(_get_fd_executable)
+  _check_fdfind $fd || return 1
   local dir=.
   if [[ $# > 0 ]]; then
     dir="$@"
   fi
-  o="$(fdfind --type f --print0 . $dir | fzf --read0 --preview 'bat --color=always {}')"
+  o="$($fd --type f --print0 . $dir | fzf --read0 --preview 'bat --color=always {}')"
   echo $o
   nvim $o
 }
