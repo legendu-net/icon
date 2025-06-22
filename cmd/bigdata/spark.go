@@ -30,7 +30,7 @@ func getSparkVersion() string {
 }
 
 // Get the recommended downloading URL for Spark.
-func getSparkDownloadUrl(sparkVersion string, hadoopVersion string) string {
+func getSparkDownloadUrl(sparkVersion string, hadoopVersion string) (string, string) {
 	url := "https://www.apache.org/dyn/closer.lua/spark/spark-%s/spark-%s-bin-hadoop%s%s.tgz"
 	suffix := ""
 	if sparkVersion >= "4.0.0" {
@@ -51,7 +51,8 @@ func getSparkDownloadUrl(sparkVersion string, hadoopVersion string) string {
 	}
 	html := string(body)
 	html = html[strings.Index(html, "<strong>")+8:]
-	return html[:strings.Index(html, "</strong>")]
+	url = html[:strings.Index(html, "</strong>")]
+	return url, url[strings.LastIndex(url, "/")+1:strings.LastIndex(url, ".")]
 }
 
 // Install and configure Spark.
@@ -74,14 +75,14 @@ func spark(cmd *cobra.Command, args []string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	sparkHdp := fmt.Sprintf("spark-%s-bin-hadoop%s", sparkVersion, hadoopVersion)
+	url, sparkHdp := getSparkDownloadUrl(sparkVersion, hadoopVersion)
 	sparkHome := filepath.Join(dir, sparkHdp)
 	// install Spark
 	prefix := utils.GetCommandPrefix(false, map[string]uint32{
 		dir: unix.W_OK | unix.R_OK,
 	})
 	if utils.GetBoolFlag(cmd, "install") {
-		sparkTgz := utils.DownloadFile(getSparkDownloadUrl(sparkVersion, hadoopVersion), "spark_*.tgz", true)
+		sparkTgz := utils.DownloadFile(url, "spark.tgz", true)
 		log.Printf("Installing Spark into the directory %s ...\n", sparkHome)
 		switch runtime.GOOS {
 		case "windows":
