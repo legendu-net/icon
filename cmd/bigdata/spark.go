@@ -2,10 +2,10 @@ package bigdata
 
 import (
 	//"embed"
+	"io"
 	"fmt"
 	"github.com/spf13/cobra"
 	"golang.org/x/sys/unix"
-	"io"
 	"legendu.net/icon/utils"
 	"log"
 	"net/http"
@@ -30,15 +30,28 @@ func getSparkVersion() string {
 }
 
 // Get the recommended downloading URL for Spark.
-func getSparkDownloadUrl(sparkVersion string, hadoopVersion string, connect bool) string {
+func getSparkDownloadUrl(sparkVersion string, hadoopVersion string) string {
 	url := "https://www.apache.org/dyn/closer.lua/spark/spark-%s/spark-%s-bin-hadoop%s%s.tgz"
 	suffix := ""
 	if sparkVersion >= "4.0.0" {
-		if connect {
-			suffix = "-connect"
-		}
+		suffix = "-connect"
 	}
-	return fmt.Sprintf(url, sparkVersion, sparkVersion, hadoopVersion, suffix)
+	url = fmt.Sprintf(url, sparkVersion, sparkVersion, hadoopVersion, suffix)
+	resp, err := http.Get(url)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
+	if resp.StatusCode > 399 {
+		log.Fatal("HTTP request got an error response with the status code ", resp.StatusCode)
+	}
+	html := string(body)
+	html = html[strings.Index(html, "<strong>")+8:]
+	return html[:strings.Index(html, "</strong>")]
 }
 
 // Install and configure Spark.
@@ -56,11 +69,6 @@ func spark(cmd *cobra.Command, args []string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	// use Spark connect or not
-	connect, err := cmd.Flags().GetBool("connect")
-	if err != nil {
-		log.Fatal(err)
-	}
 	// installation location
 	dir, err := cmd.Flags().GetString("directory")
 	if err != nil {
@@ -73,7 +81,7 @@ func spark(cmd *cobra.Command, args []string) {
 		dir: unix.W_OK | unix.R_OK,
 	})
 	if utils.GetBoolFlag(cmd, "install") {
-		sparkTgz := utils.DownloadFile(getSparkDownloadUrl(sparkVersion, hadoopVersion, connect), "spark_*.tgz", true)
+		sparkTgz := utils.DownloadFile(getSparkDownloadUrl(sparkVersion, hadoopVersion), "spark_*.tgz", true)
 		log.Printf("Installing Spark into the directory %s ...\n", sparkHome)
 		switch runtime.GOOS {
 		case "windows":
@@ -162,7 +170,6 @@ func init() {
 	*/
 	SparkCmd.Flags().String("spark-version", "4.0.0", "The version of Spark version to install.")
 	SparkCmd.Flags().String("hadoop-version", "3", "The version of Spark version to install.")
-	SparkCmd.Flags().Bool("connect", true, "Install Spark Connect if supported.")
 	SparkCmd.Flags().StringP("directory", "d", "/opt", "The directory to install Spark.")
 	SparkCmd.Flags().BoolP("install", "i", false, "Install Spark.")
 	SparkCmd.Flags().BoolP("uninstall", "u", false, "Uninstall Spark.")
