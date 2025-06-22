@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"golang.org/x/sys/unix"
-	"io/ioutil"
+	"io"
 	"legendu.net/icon/utils"
 	"log"
 	"net/http"
@@ -16,7 +16,7 @@ import (
 )
 
 // Get the latest version of Spark.
-func getVersion() string {
+func getSparkVersion() string {
 	log.Printf("Parsing the latest version of Spark ...")
 	html := utils.HttpGetAsString("https://spark.apache.org/downloads.html", 3, 120)
 	re := regexp.MustCompile(`Latest Release \(Spark (\d.\d.\d)\)`)
@@ -26,27 +26,19 @@ func getVersion() string {
 			return match
 		}
 	}
-	return ""
+	return "4.0.0"
 }
 
 // Get the recommended downloading URL for Spark.
-func getSparkDownloadUrl(sparkVersion string, hadoopVersion string) string {
-	// TODO: substitute Spark/Hadoop versions
-	resp, err := http.Get("https://www.apache.org/dyn/closer.lua/spark/spark-3.3.0/spark-3.3.0-bin-hadoop3.tgz")
-	if err != nil {
-		log.Fatal(err)
+func getSparkDownloadUrl(sparkVersion string, hadoopVersion string, connect bool) string {
+	url := "https://www.apache.org/dyn/closer.lua/spark/spark-%s/spark-%s-bin-hadoop%s%s.tgz"
+	suffix := ""
+	if sparkVersion >= "4.0.0" {
+		if connect {
+			suffix = "-connect"
+		}
 	}
-	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Fatal(err)
-	}
-	if resp.StatusCode > 399 {
-		log.Fatal("HTTP request got an error response with the status code ", resp.StatusCode)
-	}
-	html := string(body)
-	html = html[strings.Index(html, "<strong>")+8:]
-	return html[:strings.Index(html, "</strong>")]
+	return fmt.Sprintf(url, sparkVersion, sparkVersion, hadoopVersion, suffix)
 }
 
 // Install and configure Spark.
@@ -56,20 +48,19 @@ func spark(cmd *cobra.Command, args []string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	if sparkVersion == "" {
-		sparkVersion = getVersion()
-	}
+	//if sparkVersion == "" {
+	//	sparkVersion = getSparkVersion()
+	//}
 	// get Hadoop version
-	hadoopVersion := "3"
-	/*
-			hadoopVersion, err := cmd.Flags().GetString("hadoop-version")
-			if err != nil {
-				log.Fatal(err)
-			}
-		    if hadoopVersion == "" {
-		        hadoopVersion = getVersion()
-			}
-	*/
+	hadoopVersion, err := cmd.Flags().GetString("hadoop-version")
+	if err != nil {
+		log.Fatal(err)
+	}
+	// use Spark connect or not
+	connect, err := cmd.Flags().GetBool("connect")
+	if err != nil {
+		log.Fatal(err)
+	}
 	// installation location
 	dir, err := cmd.Flags().GetString("directory")
 	if err != nil {
@@ -82,7 +73,7 @@ func spark(cmd *cobra.Command, args []string) {
 		dir: unix.W_OK | unix.R_OK,
 	})
 	if utils.GetBoolFlag(cmd, "install") {
-		sparkTgz := utils.DownloadFile("https://archive.apache.org/dist/spark/spark-3.3.0/spark-3.3.0-bin-hadoop3.tgz", "spark_*.tgz", true)
+		sparkTgz := utils.DownloadFile(getSparkDownloadUrl(sparkVersion, hadoopVersion, connect), "spark_*.tgz", true)
 		log.Printf("Installing Spark into the directory %s ...\n", sparkHome)
 		switch runtime.GOOS {
 		case "windows":
@@ -169,8 +160,9 @@ func init() {
 	           "which containing SQL code for creating tables."
 	   )
 	*/
-	SparkCmd.Flags().String("spark-version", "3.3.0", "The version of Spark version to install.")
-	SparkCmd.Flags().String("hadoop-version", "3.2", "The version of Spark version to install.")
+	SparkCmd.Flags().String("spark-version", "4.0.0", "The version of Spark version to install.")
+	SparkCmd.Flags().String("hadoop-version", "3", "The version of Spark version to install.")
+	SparkCmd.Flags().Bool("connect", true, "Install Spark Connect if supported.")
 	SparkCmd.Flags().StringP("directory", "d", "/opt", "The directory to install Spark.")
 	SparkCmd.Flags().BoolP("install", "i", false, "Install Spark.")
 	SparkCmd.Flags().BoolP("uninstall", "u", false, "Uninstall Spark.")
