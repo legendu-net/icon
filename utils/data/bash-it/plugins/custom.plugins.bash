@@ -1,11 +1,11 @@
-function _cs.usage() {
+function _cs.usage {
     cat << EOF
 Enter a directory and display its content.
 Syntax: cs dir
 EOF
 }
 
-function cs() {
+function cs {
     if [ "$1" == "-h" ]; then
         _cs.usage
         return 0
@@ -109,7 +109,7 @@ Args:
 EOF
 }
 
-function fzf.ripgrep.nvim (
+function fzf.ripgrep.nvim {
   if [[ "$1" == "-h" || "$1" == "--help" ]]; then
     _fzf.ripgrep.nvim.usage
     return 0
@@ -132,7 +132,7 @@ function fzf.ripgrep.nvim (
       --delimiter : \
       --preview 'bat --style=full --color=always --highlight-line {2} {1}' \
       --preview-window '~4,+{2}+4/3,<80(up)'
-)
+}
   
 alias frgvim=fzf.ripgrep.nvim
 
