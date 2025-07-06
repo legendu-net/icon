@@ -151,7 +151,7 @@ function fzf.history {
     _fzf.history.usage
     return 0
   fi
-  local command=$(fc -ln 1 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | fzf | vipe)
+  local command=$(HISTTIMEFORMAT="" history | sed -E 's/^[ ]*[0-9]+[ ]*//' | fzf | vipe)
   echo $command
   history -s "$command"
   eval "$command"
