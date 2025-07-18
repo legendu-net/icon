@@ -63,7 +63,7 @@ function fzf.cs {
   if [[ $# > 0 ]]; then
     dir="$@"
   fi
-  cd "$($fd --type d --print0 . $dir | fzf --read0)"
+  cd "$($fd --type d --print0 --hidden . $dir | fzf --read0)"
   ls
 }
 
@@ -91,7 +91,7 @@ function fzf.bat {
   if [[ $# > 0 ]]; then
     dir="$@"
   fi
-  o="$($fd --type f --print0 . $dir | fzf --read0 --preview 'bat --color=always {}')"
+  o="$($fd --type f --print0 --hidden . $dir | fzf --read0 --preview 'bat --color=always {}')"
   echo $o
   nvim $o
 }
