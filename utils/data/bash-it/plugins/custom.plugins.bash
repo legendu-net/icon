@@ -91,7 +91,7 @@ function fzf.bat {
   if [[ $# > 0 ]]; then
     dir="$@"
   fi
-  o="$($fd --type f --print0 --hidden . $dir | fzf --read0 --preview 'bat --color=always {}')"
+  o="$($fd --type f --print0 --hidden . $dir | fzf -m --read0 --preview 'bat --color=always {}')"
   echo $o
   nvim $o
 }
@@ -124,14 +124,14 @@ function fzf.ripgrep.nvim {
           else
             nvim +cw -q {+f}  # Build quickfix list for the selected items.
           fi'
-  fzf --disabled --ansi --multi \
-      --bind "start:$RELOAD" --bind "change:$RELOAD" \
-      --bind "enter:become:$OPENER" \
+  fzf -m --disabled --ansi --multi \
+      --bind "home:$RELOAD" --bind "change:$RELOAD" \
+      --bind "enter:execute:$OPENER" \
       --bind "ctrl-o:execute:$OPENER" \
       --bind 'alt-a:select-all,alt-d:deselect-all,ctrl-/:toggle-preview' \
       --delimiter : \
       --preview 'bat --style=full --color=always --highlight-line {2} {1}' \
-      --preview-window '~4,+{2}+4/3,<80(up)'
+      --preview-window 'right:40%'
 }
   
 alias frgvim=fzf.ripgrep.nvim
@@ -151,7 +151,7 @@ function fzf.history {
     _fzf.history.usage
     return 0
   fi
-  local command=$(HISTTIMEFORMAT="" history | sed -E 's/^[ ]*[0-9]+[ ]*//' | fzf | vipe)
+  local command=$(HISTTIMEFORMAT="" history | sed -E 's/^[ ]*[0-9]+[ ]*//' | fzf -m | vipe)
   echo $command
   history -s "$command"
   eval "$command"
