@@ -1,6 +1,6 @@
 function _fzf_bat_usage
   echo "Search for files (previewing in bat) using fzf and edit them in NeoVim.
-Syntax: fzf.bat [-h] [dir]
+Syntax: fzf_bat [-h] [dir]
 Args:
   dir: The directory (default to .) under which to search for files.
 "
@@ -21,9 +21,8 @@ function fzf_bat
       set search_path "$argv"
     end
 
-    # capture the output of fzf
-    set -g o ($fd --type f --print0 --hidden . "$search_path" | fzf -m --read0 --preview 'bat --color=always {}')
-    echo $o
-    nvim $o
+    set -l files ($fd --type f --print0 --hidden . "$search_path" | fzf -m --read0 --preview 'bat --color=always {}')
+    history append "nvim $files"
+    nvim $files
 end
 

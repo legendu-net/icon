@@ -1,6 +1,7 @@
 {pkgs, ...}: {
-  channel = "stable-24.11";
+  channel = "stable-25.05";
   packages = with pkgs; [
+    fish
     ncurses
     fd
     moreutils
