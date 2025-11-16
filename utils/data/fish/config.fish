@@ -1,7 +1,15 @@
 if status is-interactive
-    # Commands to run in interactive sessions can go here
     set -g EDITOR nvim
     set -g VISUAL nvim
+
+    set fish_user_paths $HOME/*/bin/ \
+        $HOME/.*/bin/ \
+        $HOME/Library/Python/3.*/bin/ \
+        /usr/local/*/bin/ \
+        /opt/*/bin/
+
+    abbr --add ... cd ../..
+    abbr --add .... cd ../../..
     abbr --add mvi mv -i
     abbr --add cpi cp -ir
     abbr --add blog ./blog.py
@@ -12,3 +20,4 @@ if status is-interactive
     abbr --add fhist fzf_history
     abbr --add fh fzf_history
 end
+

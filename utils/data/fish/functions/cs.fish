@@ -13,7 +13,7 @@ function cs
 
     set -l dir "$argv"
     if test -f "$dir"
-      set dir (dirname "$dir")
+      set dir (path dirname "$dir")
     end
     if test "$dir" = ""
       set dir "$HOME"

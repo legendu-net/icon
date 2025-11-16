@@ -13,15 +13,15 @@ function trace_dir_upwards
 
     set -l dir "$argv[1]"
     set -l name "$argv[2]"
-    set -l stem (basename "$dir")
+    set -l stem (path basename "$dir")
 
     while test "$stem" != "$name"
         if contains -- "$stem" "/" ""
             echo -e "$name is not found in $argv[1]!\n"
             return 1
         end
-        set dir (dirname "$dir")
-        set stem (basename "$dir")
+        set dir (path dirname "$dir")
+        set stem (path basename "$dir")
     end
 
     echo "$dir"
