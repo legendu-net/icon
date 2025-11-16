@@ -2,10 +2,9 @@
   channel = "stable-25.05";
   packages = with pkgs; [
     fish
+    less
     ncurses
     fd
-    moreutils
-    bash-completion
     gitui
     delta
     neovim
