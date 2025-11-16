@@ -80,5 +80,4 @@ func init() {
 	HyperCmd.Flags().BoolP("config", "c", false, "Configure the Hyper terminal.")
 	HyperCmd.Flags().BoolP("yes", "y", false, "Automatically yes to prompt questions.")
 	HyperCmd.Flags().StringP("version", "v", "", "The version of the release.")
-	// rootCmd.AddCommand(HyperCmd)
 }

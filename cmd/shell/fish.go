@@ -1,7 +1,6 @@
 package shell
 
 import (
-	"path/filepath"
 	"runtime"
 
 	"github.com/spf13/cobra"
@@ -66,5 +65,5 @@ func init() {
 	FishCmd.Flags().BoolP("install", "i", false, "If specified, install the fish shell.")
 	FishCmd.Flags().Bool("uninstall", false, "If specified, uninstall the fish shell.")
 	FishCmd.Flags().BoolP("config", "c", false, "If specified, configure the fish shell.")
-	// rootCmd.AddCommand(bashItCmd)
+	FishCmd.Flags().StringP("version", "v", "", "The version of the release.")
 }
