@@ -586,6 +586,34 @@ _icon_firenvim()
     noun_aliases=()
 }
 
+_icon_fish()
+{
+    last_command="icon_fish"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--config")
+    flags+=("-c")
+    flags+=("--install")
+    flags+=("-i")
+    flags+=("--uninstall")
+    flags+=("--version=")
+    two_word_flags+=("--version")
+    two_word_flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
 _icon_ganymede()
 {
     last_command="icon_ganymede"
@@ -1349,6 +1377,7 @@ _icon_root_command()
         command_aliases+=("fvim")
         aliashash["fvim"]="firenvim"
     fi
+    commands+=("fish")
     commands+=("ganymede")
     if [[ -z "${BASH_VERSION:-}" || "${BASH_VERSINFO[0]:-}" -gt 3 ]]; then
         command_aliases+=("gmd")

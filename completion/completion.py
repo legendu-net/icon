@@ -18,18 +18,20 @@ def build_project() -> None:
 
 def gen_completion_script_icon() -> None:
     print("Generate completion script for icon...")
-    cmd = f"""cd {SCRIPT_DIR.parent} && \
-        ./icon completion bash > utils/data/bash-it/icon.completion.bash
+    cmd = f"""cd {SCRIPT_DIR.parent} \
+        && ./icon completion bash > utils/data/bash-it/completion/icon.completion.bash \
+        && ./icon completion fish > utils/data/fish/completions/icon.fish
         """
     sp.run(cmd, shell=True, check=True)
 
 
 def gen_completion_script_ldc() -> None:
     print("Generate completion script for ldc...")
-    completely = 'docker run --rm -it --user $(id -u):$(id -g) --volume "$PWD:/app" dannyben/completely'
-    cmd = f"""{completely} preview > completely.bash \
-        && dos2unix completely.bash \
-        && mv completely.bash ../utils/data/bash-it/ldc.completion.bash
+    cmd = f"""cd {SCRIPT_DIR.parent} \
+        && crazy-complete --input-type=yaml bash completion/ldc.yaml \
+            > utils/data/bash-it/completion/ldc.completion.bash \
+        && crazy-complete --input-type=yaml fish completion/ldc.yaml \
+            > utils/data/fish/completions/ldc.fish
         """
     sp.run(cmd, shell=True, check=True)
 
