@@ -19,5 +19,6 @@ if status is-interactive
     abbr --add frgvim fzf_ripgrep_nvim
     abbr --add fhist fzf_history
     abbr --add fh fzf_history
+    abbr --add zat zellij attach (zellij ls -s | fzf)
 end
 
