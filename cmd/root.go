@@ -79,6 +79,7 @@ func init() {
 	rootCmd.AddCommand(shell.AlacrittyCmd)
 	rootCmd.AddCommand(shell.AtuinCmd)
 	rootCmd.AddCommand(shell.BashItCmd)
+	rootCmd.AddCommand(shell.FishCmd)
 	rootCmd.AddCommand(shell.HyperCmd)
 	rootCmd.AddCommand(shell.NushellCmd)
 	rootCmd.AddCommand(shell.ZellijCmd)

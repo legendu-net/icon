@@ -1687,24 +1687,6 @@ func UpdateMap(map1 orderedmap.OrderedMap[string, any], map2 orderedmap.OrderedM
 
 // BuildKernelOSKeywords constructs a list of keywords based on kernel architecture and operating system.
 //
-// This function takes a map of keywords and returns a list of strings. The keywords are selected
-// based on the current kernel architecture and operating system, as well as some specific OS series.
-//
-// It first adds keywords related to the "common" category. Then, it checks the kernel architecture:
-//   - If the architecture is "x86_64", it appends keywords from the "x86_64" category if present.
-//   - If the architecture is "arm64" or "aarch64", it appends keywords from the "arm64" category if present.
-//
-// Next, it checks the operating system:
-//   - If the OS is "darwin" (macOS), it appends keywords from the "darwin" category if present.
-//   - If the OS is "linux", it appends keywords from the "linux" category if present, and
-//     then checks for specific Linux distributions:
-//     - If the OS belongs to the Debian/Ubuntu series, it appends keywords from the "DebianUbuntuSeries" category if present.
-//     - If the OS belongs to the Fedora series, it appends keywords from the "FedoraSeries" category if present.
-//     - Otherwise, it appends keywords from the "OtherLinux" category if present.
-//
-// If any error occurs while retrieving the kernel information, the function will terminate
-// with a fatal log message.
-//
 // @param keywords A map where keys are keyword categories and values are lists of keywords.
 //
 // @return A slice of strings representing the combined list of keywords.
