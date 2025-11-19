@@ -1,7 +1,9 @@
 package ide
 
 import (
+	"fmt"
 	"runtime"
+	"time"
 
 	"github.com/spf13/cobra"
 	"legendu.net/icon/utils"
@@ -59,9 +61,15 @@ func Neovim(install bool, config bool, uninstall bool, yes_s string) {
 	if config {
 		dir := "~/.config/nvim"
 		dir_go := utils.NormalizePath(dir)
-		utils.RemoveAll(dir_go)
+
+		if utils.ExistsDir(dir_go) {
+			dir_go_bak := dir_go + "_" + time.Now().Format(time.RFC3339)
+			utils.RenameDir(dir_go, dir_go_bak)
+			fmt.Printf("%s has been backed up to %s.\n", dir_go, dir_go_bak)
+		}
+
 		utils.MkdirAll(dir_go, 0o700)
-		utils.RunCmd("git clone https://github.com/legendu-net/nvim " + dir)
+		utils.RunCmd("git clone https://github.com/legendu-net/AstroNvim_template " + dir)
 	}
 	if uninstall {
 		switch runtime.GOOS {

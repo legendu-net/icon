@@ -2,10 +2,10 @@ package bigdata
 
 import (
 	//"embed"
-	"io"
 	"fmt"
 	"github.com/spf13/cobra"
 	"golang.org/x/sys/unix"
+	"io"
 	"legendu.net/icon/utils"
 	"log"
 	"net/http"
@@ -52,7 +52,7 @@ func getSparkDownloadUrl(sparkVersion string, hadoopVersion string) (string, str
 	html := string(body)
 	html = html[strings.Index(html, "<strong>")+8:]
 	url = html[:strings.Index(html, "</strong>")]
-	return url, url[strings.LastIndex(url, "/")+1:strings.LastIndex(url, ".")]
+	return url, url[strings.LastIndex(url, "/")+1 : strings.LastIndex(url, ".")]
 }
 
 // Install and configure Spark.

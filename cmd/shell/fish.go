@@ -28,9 +28,9 @@ func fish(cmd *cobra.Command, args []string) {
 		case "linux":
 			file := downloadFishFromGitHub(utils.GetStringFlag(cmd, "version"))
 			command := utils.Format(`{prefix} tar --xz -xvf {file} -C /usr/bin/`, map[string]string{
-					"prefix": utils.GetCommandPrefix(true, map[string]uint32{}),
-					"file":   file,
-				})
+				"prefix": utils.GetCommandPrefix(true, map[string]uint32{}),
+				"file":   file,
+			})
 			utils.RunCmd(command)
 		case "darwin":
 			utils.RunCmd("brew install fish")
@@ -44,8 +44,8 @@ func fish(cmd *cobra.Command, args []string) {
 		switch runtime.GOOS {
 		case "linux":
 			command := utils.Format(`{prefix} rm /usr/bin/fish`, map[string]string{
-					"prefix": utils.GetCommandPrefix(true, map[string]uint32{}),
-				})
+				"prefix": utils.GetCommandPrefix(true, map[string]uint32{}),
+			})
 			utils.RunCmd(command)
 		case "darwin":
 			utils.RunCmd("brew uninstall fish")
@@ -58,7 +58,7 @@ var FishCmd = &cobra.Command{
 	Use:     "fish",
 	Aliases: []string{},
 	Short:   "Install and configure the fish shell.",
-	Run: fish,
+	Run:     fish,
 }
 
 func init() {

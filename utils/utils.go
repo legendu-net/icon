@@ -1783,3 +1783,11 @@ func ParseInt(str string) int64 {
 	}
 	return i
 }
+
+func RenameDir(originalDir string, newDir string) {
+	err := os.Rename(originalDir, newDir)
+	if err != nil {
+		log.Fatal(err)
+	}
+	//fmt.Println("Directory renamed successfully")
+}
