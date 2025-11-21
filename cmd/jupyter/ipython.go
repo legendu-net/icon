@@ -1,9 +1,10 @@
 package jupyter
 
 import (
+	"path/filepath"
+
 	"github.com/spf13/cobra"
 	"legendu.net/icon/utils"
-	"path/filepath"
 )
 
 // Install and configure IPython.

@@ -1,9 +1,10 @@
 package filesystem
 
 import (
+	"runtime"
+
 	"github.com/spf13/cobra"
 	"legendu.net/icon/utils"
-	"runtime"
 )
 
 // Install and configure rip (rm-improved).

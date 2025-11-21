@@ -9,13 +9,10 @@ jobs:
   golangci:
     name: lint
     runs-on: ubuntu-latest
+    container:
+      image: golangci/golangci-lint:v2.6.2-alpine
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
-        with:
-          go-version: '1.18' # Use the Go version from go.mod
-          cache: true
-      - name: golangci-lint
-        uses: golangci/golangci-lint-action@v3
-        with:
-          version: v1.55.2 # Specify a recent stable version
+      - uses: actions/checkout@v5
+      - name: golangci-lint fmt
+        run: |
+          golangci-lint fmt -d

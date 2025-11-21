@@ -1,10 +1,11 @@
 package misc
 
 import (
-	"github.com/spf13/cobra"
-	"legendu.net/icon/utils"
 	"log"
 	"runtime"
+
+	"github.com/spf13/cobra"
+	"legendu.net/icon/utils"
 )
 
 // Install and configure the KeepassXC terminal.

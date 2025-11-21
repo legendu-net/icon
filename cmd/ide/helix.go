@@ -1,9 +1,10 @@
 package ide
 
 import (
+	"runtime"
+
 	"github.com/spf13/cobra"
 	"legendu.net/icon/utils"
-	"runtime"
 )
 
 // Install and configure helix.

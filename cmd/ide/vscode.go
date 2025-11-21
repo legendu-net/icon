@@ -1,11 +1,12 @@
 package ide
 
 import (
-	"github.com/spf13/cobra"
-	"legendu.net/icon/utils"
 	"log"
 	"path/filepath"
 	"runtime"
+
+	"github.com/spf13/cobra"
+	"legendu.net/icon/utils"
 )
 
 // Install and configure Visual Studio Code.
