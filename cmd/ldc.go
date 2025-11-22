@@ -16,11 +16,11 @@ func getDockerImagePort(imageName string) int {
 	if strings.HasPrefix(imageName, "dclong/") {
 		imageName = imageName[7:]
 		ports := map[string]int{
-			"jupyterlab": 8888,
-			"jupyterhub": 8000,
-			"gitpod":     8000,
-			"vscode":     8080,
-			"tensorboard":     6006,
+			"jupyterlab":  8888,
+			"jupyterhub":  8000,
+			"gitpod":      8000,
+			"vscode":      8080,
+			"tensorboard": 6006,
 		}
 		for prefix, port := range ports {
 			if strings.HasPrefix(imageName, prefix) {

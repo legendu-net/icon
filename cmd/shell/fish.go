@@ -21,6 +21,19 @@ func downloadFishFromGitHub(version string) string {
 	return output
 }
 
+func generateCompletions() {
+	commands := [][2]string{
+		{"docker", "docker completion fish"},
+		{"icon", "icon completion fish"},
+	}
+	for _, command := range commands {
+		if utils.ExistsCommand(command[0]) {
+			script := "~/.config/fish/completions/" + command[0] + ".fish"
+			utils.RunCmd(command[1] + " > " + script)
+		}
+	}
+}
+
 // Install and config the fish shell.
 func fish(cmd *cobra.Command, args []string) {
 	if utils.GetBoolFlag(cmd, "install") {
@@ -28,9 +41,9 @@ func fish(cmd *cobra.Command, args []string) {
 		case "linux":
 			file := downloadFishFromGitHub(utils.GetStringFlag(cmd, "version"))
 			command := utils.Format(`{prefix} tar --xz -xvf {file} -C /usr/bin/`, map[string]string{
-					"prefix": utils.GetCommandPrefix(true, map[string]uint32{}),
-					"file":   file,
-				})
+				"prefix": utils.GetCommandPrefix(true, map[string]uint32{}),
+				"file":   file,
+			})
 			utils.RunCmd(command)
 		case "darwin":
 			utils.RunCmd("brew install fish")
@@ -38,14 +51,21 @@ func fish(cmd *cobra.Command, args []string) {
 		}
 	}
 	if utils.GetBoolFlag(cmd, "config") {
-		utils.CopyEmbeddedDir("data/fish", utils.NormalizePath("~/.config/fish"), true)
+		dir := "~/.config/fish"
+		dir_go := utils.NormalizePath(dir)
+		utils.BackupDir(dir_go, "")
+
+		utils.MkdirAll(dir_go, 0o700)
+		utils.RunCmd("git clone https://github.com/legendu-net/fish " + dir)
+
+		generateCompletions()
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
 		switch runtime.GOOS {
 		case "linux":
 			command := utils.Format(`{prefix} rm /usr/bin/fish`, map[string]string{
-					"prefix": utils.GetCommandPrefix(true, map[string]uint32{}),
-				})
+				"prefix": utils.GetCommandPrefix(true, map[string]uint32{}),
+			})
 			utils.RunCmd(command)
 		case "darwin":
 			utils.RunCmd("brew uninstall fish")
@@ -58,7 +78,7 @@ var FishCmd = &cobra.Command{
 	Use:     "fish",
 	Aliases: []string{},
 	Short:   "Install and configure the fish shell.",
-	Run: fish,
+	Run:     fish,
 }
 
 func init() {
