@@ -21,6 +21,19 @@ func downloadFishFromGitHub(version string) string {
 	return output
 }
 
+func generateCompletions() {
+	commands := [][2]string{
+		{"docker", "docker completion fish"},
+		{"icon", "icon completion fish"},
+	}
+	for _, command := range commands {
+		if utils.ExistsCommand(command[0]) {
+			script := "~/.config/fish/completions/" + command[0] + ".fish"
+			utils.RunCmd(command[1] + " > " + script)
+		}
+	}
+}
+
 // Install and config the fish shell.
 func fish(cmd *cobra.Command, args []string) {
 	if utils.GetBoolFlag(cmd, "install") {
@@ -38,7 +51,14 @@ func fish(cmd *cobra.Command, args []string) {
 		}
 	}
 	if utils.GetBoolFlag(cmd, "config") {
-		utils.CopyEmbeddedDir("data/fish", utils.NormalizePath("~/.config/fish"), true)
+		dir := "~/.config/fish"
+		dir_go := utils.NormalizePath(dir)
+		utils.BackupDir(dir_go, "")
+
+		utils.MkdirAll(dir_go, 0o700)
+		utils.RunCmd("git clone https://github.com/legendu-net/fish " + dir)
+
+		generateCompletions()
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
 		switch runtime.GOOS {
