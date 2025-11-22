@@ -16,15 +16,6 @@ def build_project() -> None:
     sp.run(cmd, shell=True, check=True)
 
 
-def gen_completion_script_icon() -> None:
-    print("Generate completion script for icon...")
-    cmd = f"""cd {SCRIPT_DIR.parent} \
-        && ./icon completion bash > utils/data/bash-it/completion/icon.completion.bash \
-        && ./icon completion fish > utils/data/fish/completions/icon.fish
-        """
-    sp.run(cmd, shell=True, check=True)
-
-
 def gen_completion_script_ldc() -> None:
     print("Generate completion script for ldc...")
     cmd = f"""cd {SCRIPT_DIR.parent} \
@@ -38,7 +29,6 @@ def gen_completion_script_ldc() -> None:
 
 def main() -> None:
     build_project()
-    gen_completion_script_icon()
     gen_completion_script_ldc()
 
 
