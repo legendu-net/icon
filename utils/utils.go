@@ -1679,6 +1679,25 @@ func UpdateMap(map1 orderedmap.OrderedMap[string, any], map2 orderedmap.OrderedM
 	}
 }
 
+func HostInfo() *host.InfoStat {
+	info, err := host.Info()
+	if err != nil {
+		log.Fatal(err)
+	}
+	return info
+}
+
+func HostKernelArch() string {
+	switch HostInfo().KernelArch {
+	case "x86_64", "amd64":
+		return "amd64"
+	case "arm64", "aarch64":
+		return "arm64"
+	default:
+		return "_other"
+	}
+}
+
 // BuildKernelOSKeywords constructs a list of keywords based on kernel architecture and operating system.
 //
 // @param keywords A map where keys are keyword categories and values are lists of keywords.
@@ -1689,7 +1708,7 @@ func UpdateMap(map1 orderedmap.OrderedMap[string, any], map2 orderedmap.OrderedM
 //
 //	keywords := map[string][]string{
 //		"common":             {"keyword1", "keyword2"},
-//		"x86_64":             {"x86_64_keyword"},
+//		"amd64":             {"amd64_keyword"},
 //		"arm64":              {"arm64_keyword"},
 //		"darwin":             {"darwin_keyword"},
 //		"linux":              {"linux_keyword"},
@@ -1702,51 +1721,29 @@ func UpdateMap(map1 orderedmap.OrderedMap[string, any], map2 orderedmap.OrderedM
 
 func BuildKernelOSKeywords(keywords map[string][]string) []string {
 	kwds := keywords["common"]
-	info, err := host.Info()
-	if err != nil {
-		log.Fatal(err)
+	k, found := keywords[HostKernelArch()]
+	if found {
+		kwds = append(kwds, k...)
 	}
-	switch info.KernelArch {
-	case "x86_64":
-		x86_64, found := keywords["x86_64"]
-		if found {
-			kwds = append(kwds, x86_64...)
-		}
-	case "arm64", "aarch64":
-		arm64, found := keywords["arm64"]
-		if found {
-			kwds = append(kwds, arm64...)
-		}
-	default:
+	k, found = keywords[runtime.GOOS]
+	if found {
+		kwds = append(kwds, k...)
 	}
-	switch runtime.GOOS {
-	case "darwin":
-		darwin, found := keywords["darwin"]
+	if IsDebianUbuntuSeries() {
+		debianUbuntuSeries, found := keywords["DebianUbuntuSeries"]
 		if found {
-			kwds = append(kwds, darwin...)
+			kwds = append(kwds, debianUbuntuSeries...)
 		}
-	case "linux":
-		linux, found := keywords["linux"]
+	} else if IsFedoraSeries() {
+		fedoraSeries, found := keywords["FedoraSeries"]
 		if found {
-			kwds = append(kwds, linux...)
+			kwds = append(kwds, fedoraSeries...)
 		}
-		if IsDebianUbuntuSeries() {
-			debianUbuntuSeries, found := keywords["DebianUbuntuSeries"]
-			if found {
-				kwds = append(kwds, debianUbuntuSeries...)
-			}
-		} else if IsFedoraSeries() {
-			fedoraSeries, found := keywords["FedoraSeries"]
-			if found {
-				kwds = append(kwds, fedoraSeries...)
-			}
-		} else {
-			otherLinux, found := keywords["OtherLinux"]
-			if found {
-				kwds = append(kwds, otherLinux...)
-			}
+	} else {
+		otherLinux, found := keywords["OtherLinux"]
+		if found {
+			kwds = append(kwds, otherLinux...)
 		}
-	default:
 	}
 	return kwds
 }

@@ -16,8 +16,9 @@ func downloadFishFromGitHub(version string) string {
 	output := "/tmp/_fish_shell.tar.xz"
 	network.DownloadGitHubRelease("fish-shell/fish-shell", version, map[string][]string{
 		"common":             {"fish", "tar.xz"},
-		"x86_64":             {"x86_64"},
+		"amd64":              {"x86_64"},
 		"arm64":              {"aarch64"},
+		"linux":              {"linux"},
 		"DebianUbuntuSeries": {},
 		"FedoraSeries":       {},
 		"OtherLinux":         {},
