@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"log"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -42,13 +43,25 @@ $ icon completion fish > ~/.config/fish/completions/icon.fish
 	Run: func(cmd *cobra.Command, args []string) {
 		switch args[0] {
 		case "bash":
-			cmd.Root().GenBashCompletion(os.Stdout)
+			err := cmd.Root().GenBashCompletion(os.Stdout)
+			if err != nil {
+				log.Fatalf("Failed to generate completion script for bash: %v", err)
+			}
 		case "zsh":
-			cmd.Root().GenZshCompletion(os.Stdout)
+			err := cmd.Root().GenZshCompletion(os.Stdout)
+			if err != nil {
+				log.Fatalf("Failed to generate completion script for bash: %v", err)
+			}
 		case "fish":
-			cmd.Root().GenFishCompletion(os.Stdout, true)
+			err := cmd.Root().GenFishCompletion(os.Stdout, true)
+			if err != nil {
+				log.Fatalf("Failed to generate completion script for bash: %v", err)
+			}
 		case "powershell":
-			cmd.Root().GenPowerShellCompletion(os.Stdout)
+			err := cmd.Root().GenPowerShellCompletion(os.Stdout)
+			if err != nil {
+				log.Fatalf("Failed to generate completion script for bash: %v", err)
+			}
 		}
 	},
 }

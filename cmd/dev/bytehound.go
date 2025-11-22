@@ -16,7 +16,7 @@ func bytehound(cmd *cobra.Command, args []string) {
 		case "linux":
 			network.DownloadGitHubRelease("koute/bytehound", "", map[string][]string{
 				"common": {"bytehound", "tgz"},
-				"x86_64": {"x86_64"},
+				"amd64":  {"x86_64"},
 				"linux":  {"linux", "gnu"},
 			}, []string{}, "/tmp/bytehound.tar.gz")
 			command := utils.Format(`mkdir -p ~/.local/bin && tar -zxvf /tmp/bytehound.tar.gz -C ~/.local/bin \

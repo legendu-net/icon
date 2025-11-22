@@ -6,7 +6,6 @@ import (
 	"path/filepath"
 	"regexp"
 	"runtime"
-	"strings"
 
 	"github.com/spf13/cobra"
 	"golang.org/x/sys/unix"
@@ -27,6 +26,33 @@ func getGolangVersion() string {
 	return re.FindStringSubmatch(html)[1]
 }
 
+func installGoLang(prefix string) {
+	url := utils.Format("https://go.dev/dl/go{ver}.{os}-{arch}.tar.gz", map[string]string{
+		"ver":  getGolangVersion(),
+		"os":   runtime.GOOS,
+		"arch": utils.HostKernelArch(),
+	})
+	goTgz := utils.DownloadFile(url, "go_*.tar.gz", true)
+	cmd := utils.Format(`{prefix} rm -rf /usr/local/go \
+				&& {prefix} tar -C /usr/local/ -xzf {goTgz}\
+				&& {prefix} rm -rf /usr/local/go/pkg/*/cmd`,
+		map[string]string{
+			"prefix": prefix,
+			"goTgz":  goTgz,
+		},
+	)
+	utils.RunCmd(cmd)
+}
+
+func installGoLangCiLint(prefix string) {
+	script := "https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh"
+	cmd := utils.Format(`curl -sSfL {script} | {prefix} sh -s -- -b /usr/local/bin`, map[string]string{
+		"script": script,
+		"prefix": prefix,
+	})
+	utils.RunCmd(cmd)
+}
+
 // Install and configure Golang.
 func golang(cmd *cobra.Command, args []string) {
 	prefix := utils.GetCommandPrefix(false, map[string]uint32{
@@ -36,27 +62,9 @@ func golang(cmd *cobra.Command, args []string) {
 	})
 	if utils.GetBoolFlag(cmd, "install") {
 		switch runtime.GOOS {
-		case "windows":
-		case "darwin":
-			utils.BrewInstallSafe([]string{"go"})
-		case "linux":
-			ver := getGolangVersion()
-			url := strings.ReplaceAll("https://go.dev/dl/go{ver}.linux-amd64.tar.gz", "{ver}", ver)
-			goTgz := utils.DownloadFile(url, "go_*.tar.gz", true)
-			cmd := utils.Format(`{prefix} rm -rf /usr/local/go \
-						&& {prefix} tar -C /usr/local/ -xzf {goTgz}\
-						&& {prefix} rm -rf /usr/local/go/pkg/*/cmd \
-							/usr/local/go/pkg/bootstrap \
-							/usr/local/go/pkg/obj \
-							/usr/local/go/pkg/tool/*/api \
-							/usr/local/go/pkg/tool/*/go_bootstrap \
-							/usr/local/go/src/cmd/dist/dist`,
-				map[string]string{
-					"prefix": prefix,
-					"goTgz":  goTgz,
-				},
-			)
-			utils.RunCmd(cmd)
+		case "darwin", "linux":
+			installGoLang(prefix)
+			installGoLangCiLint(prefix)
 		default:
 			log.Fatal("The OS ", runtime.GOOS, " is not supported!")
 		}
