@@ -2,7 +2,9 @@ package shell
 
 import (
 	"log"
+	"path/filepath"
 	"runtime"
+	"strings"
 
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
@@ -39,6 +41,38 @@ func generateCompletions() {
 	}
 }
 
+func generateCrazyCompletions() {
+	var uvx string
+	if utils.ExistsCommand("uvx") {
+		uvx = "uvx"
+	} else {
+		file := utils.NormalizePath("~/.local/bin/uvx")
+		if !utils.ExistsCommand(file) {
+			utils.RunCmd("icon uv -ic")
+		}
+		uvx = file
+	}
+	dir := "~/.config/fish/completions/"
+	dirCrazy := utils.NormalizePath(dir + "crazy_complete")
+	if utils.ExistsPath(dirCrazy) {
+		for _, entry := range utils.ReadDir(dirCrazy) {
+			fileName := entry.Name()
+			srcFile := filepath.Join(dirCrazy, fileName)
+			fileName = strings.TrimSuffix(fileName, filepath.Ext(fileName)) + ".fish"
+			destFile := dir + fileName
+			cmd := utils.Format(`{uvx} --with pyyaml \
+				--from git+https://github.com/dclong/crazy-complete \
+				crazy-complete --input-type=yaml fish {srcFile} > {destFile}`,
+				map[string]string{
+					"uvx":      uvx,
+					"srcFile":  srcFile,
+					"destFile": destFile,
+				})
+			utils.RunCmd(cmd)
+		}
+	}
+}
+
 // Install and config the fish shell.
 func fish(cmd *cobra.Command, args []string) {
 	if utils.GetBoolFlag(cmd, "install") {
@@ -64,6 +98,7 @@ func fish(cmd *cobra.Command, args []string) {
 		utils.RunCmd("git clone https://github.com/legendu-net/fish " + dir)
 
 		generateCompletions()
+		generateCrazyCompletions()
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
 		switch runtime.GOOS {

@@ -608,11 +608,6 @@ func GetCommandPrefix(forceSudo bool, pathPerms map[string]uint32) string {
 
 // ExistsPath checks if a file or directory exists at the specified path.
 //
-// This function utilizes os.Stat to get file information.
-// It returns true if a file or directory exists at the given path,
-// and false if the path does not exist or if there is an error during the
-// file stat operation other than "not exist".
-//
 // @param path The path to the file or directory.
 //
 // @return true if the file or directory exists, false otherwise.
