@@ -2,6 +2,7 @@ package utils
 
 import (
 	"embed"
+	"fmt"
 	"io"
 	"io/fs"
 	"log"
@@ -160,8 +161,11 @@ func CopyEmbeddedDir(sourceDir string, destinationDir string, info bool) {
 // @param path The path string to normalize.
 // @return The normalized path string.
 func NormalizePath(path string) string {
-	if strings.HasPrefix(path, "~") {
-		return filepath.Join(UserHomeDir(), path[1:])
+	if path == "~" {
+		return UserHomeDir()
+	}
+	if strings.HasPrefix(path, "~/") {
+		return filepath.Join(UserHomeDir(), path[2:])
 	}
 	return path
 }
@@ -1782,4 +1786,21 @@ func ParseInt(str string) int64 {
 		log.Fatalf("Error converting string to int64: %v\n", err)
 	}
 	return i
+}
+
+func RenameDir(originalDir string, newDir string) {
+	err := os.Rename(originalDir, newDir)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func BackupDir(originalDir string, backupDir string) {
+	if ExistsDir(originalDir) {
+		if backupDir == "" {
+			backupDir = filepath.Clean(originalDir) + "_" + time.Now().Format(time.RFC3339)
+		}
+		RenameDir(originalDir, backupDir)
+		fmt.Printf("%s has been backed up to %s.\n", originalDir, backupDir)
+	}
 }
