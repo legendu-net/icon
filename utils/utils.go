@@ -869,11 +869,6 @@ func ReadAllAsText(readCloser io.ReadCloser) string {
 
 // ReadFile reads the entire content of a file and returns it as a byte slice.
 //
-// This function opens the file specified by 'path' and reads all of its content.
-// It then returns the content as a slice of bytes. If there is an error during
-// the file reading process, such as the file not existing or permission issues,
-// the function will terminate with a fatal log message.
-//
 // @param path The path to the file to be read.
 //
 // @return The content of the file as a slice of bytes.

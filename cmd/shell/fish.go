@@ -1,9 +1,11 @@
 package shell
 
 import (
+	"log"
 	"runtime"
 
 	"github.com/spf13/cobra"
+	"gopkg.in/yaml.v3"
 	"legendu.net/icon/cmd/network"
 	"legendu.net/icon/utils"
 )
@@ -22,14 +24,17 @@ func downloadFishFromGitHub(version string) string {
 }
 
 func generateCompletions() {
-	commands := [][2]string{
-		{"docker", "docker completion fish"},
-		{"icon", "icon completion fish"},
+	dir := "~/.config/fish/completions/"
+	var cmdMap map[string]string
+	err := yaml.Unmarshal(utils.ReadFile(utils.NormalizePath(dir+"commands.yaml")), &cmdMap)
+	if err != nil {
+		log.Fatalf("Error unmarshaling data: %v", err)
 	}
-	for _, command := range commands {
-		if utils.ExistsCommand(command[0]) {
-			script := "~/.config/fish/completions/" + command[0] + ".fish"
-			utils.RunCmd(command[1] + " > " + script)
+
+	for cmd, cmdCompletion := range cmdMap {
+		if utils.ExistsCommand(cmd) {
+			script := dir + cmd + ".fish"
+			utils.RunCmd(cmdCompletion + " > " + script)
 		}
 	}
 }
