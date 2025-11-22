@@ -58,7 +58,10 @@ func assetNameContainKeywords(name string, keywords []string, keyworkdsExclude [
 func filterReleases(url string, constraint string) ReleaseInfo {
 	log.Printf("Extracting release from %s with the constraint %s", url, constraint)
 	var releases []ReleaseInfo
-	json.Unmarshal(utils.HttpGetAsBytes(url, 3, 120), &releases)
+	err := json.Unmarshal(utils.HttpGetAsBytes(url, 3, 120), &releases)
+	if err != nil {
+		log.Fatalf("Failed to parse TOML: %v", err)
+	}
 	c := version.NewConstrainGroupFromString(constraint)
 	for _, release := range releases {
 		if c.Match(release.TagName) {

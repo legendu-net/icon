@@ -21,11 +21,17 @@ func pytype(cmd *cobra.Command, args []string) {
 	if utils.GetBoolFlag(cmd, "config") {
 		srcFile := "data/pytype/pyproject.toml"
 		var srcMap orderedmap.OrderedMap[string, any]
-		toml.Unmarshal(utils.ReadEmbeddedFile(srcFile), &srcMap)
+		err := toml.Unmarshal(utils.ReadEmbeddedFile(srcFile), &srcMap)
+		if err != nil {
+			log.Fatalf("Failed to parse TOML: %v", err)
+		}
 		destFile := filepath.Join(utils.GetStringFlag(cmd, "dest-dir"), "pyproject.toml")
 		var destMap orderedmap.OrderedMap[string, any]
 		if utils.ExistsFile(destFile) {
-			toml.Unmarshal(utils.ReadFile(destFile), &destMap)
+			err := toml.Unmarshal(utils.ReadFile(destFile), &destMap)
+			if err != nil {
+				log.Fatalf("Failed to parse TOML: %v", err)
+			}
 			utils.UpdateMap(destMap, srcMap)
 		} else {
 			destMap = srcMap

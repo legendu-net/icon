@@ -69,7 +69,7 @@ func installSccache() {
 	file := filepath.Join(tmpdir, "sccache.tar.gz")
 	network.DownloadGitHubRelease("mozilla/sccache", "", map[string][]string{
 		"common": {"tar.gz"},
-		"x86_64": {"x86_64"},
+		"amd64":  {"x86_64"},
 		"arm64":  {"aarch64"},
 		"linux":  {"unknown", "linux", "musl"},
 		"darwin": {"apple", "darwin"},
@@ -89,7 +89,7 @@ func installCargoBinstall() {
 	file := filepath.Join(tmpdir, "cargo-binstall.tgz")
 	network.DownloadGitHubRelease("cargo-bins/cargo-binstall", "", map[string][]string{
 		"common": {"tgz"},
-		"x86_64": {"x86_64"},
+		"amd64":  {"x86_64"},
 		"arm64":  {"aarch64"},
 		"linux":  {"unknown", "linux", "gnu"},
 		"darwin": {"apple", "darwin"},

@@ -61,7 +61,7 @@ func installGitUi(cmd *cobra.Command) {
 			"common": {"tar.gz"},
 			"linux":  {"linux"},
 			"darwin": {"mac"},
-			"x86_64": {"musl"},
+			"amd64":  {"musl"},
 			"arm64":  {"aarch64"},
 		}, []string{}, file)
 		command := utils.Format(`{prefix} tar -zxvf {file} -C /usr/local/bin/`, map[string]string{
@@ -100,7 +100,7 @@ func installGitDelta(cmd *cobra.Command) {
 	file := filepath.Join(tmpdir, "git-delta.tar.gz")
 	network.DownloadGitHubRelease("dandavison/delta", "", map[string][]string{
 		"common": {},
-		"x86_64": {"x86_64"},
+		"amd64":  {"x86_64"},
 		"arm64":  {"aarch64"},
 		"linux":  {"linux", "gnu"},
 		"darwin": {"apple", "darwin"},
