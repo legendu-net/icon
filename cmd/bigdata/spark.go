@@ -1,18 +1,18 @@
 package bigdata
 
 import (
-	//"embed"
 	"fmt"
-	"github.com/spf13/cobra"
-	"golang.org/x/sys/unix"
 	"io"
-	"legendu.net/icon/utils"
 	"log"
 	"net/http"
 	"path/filepath"
 	"regexp"
 	"runtime"
 	"strings"
+
+	"github.com/spf13/cobra"
+	"golang.org/x/sys/unix"
+	"legendu.net/icon/utils"
 )
 
 // Get the latest version of Spark.

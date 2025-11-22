@@ -2,9 +2,10 @@ package bigdata
 
 import (
 	//"embed"
+	"path/filepath"
+
 	"github.com/spf13/cobra"
 	"legendu.net/icon/utils"
-	"path/filepath"
 )
 
 func linkArrowDbProfileFromHost() {

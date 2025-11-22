@@ -1,9 +1,10 @@
 package ai
 
 import (
+	"strings"
+
 	"github.com/spf13/cobra"
 	"legendu.net/icon/utils"
-	"strings"
 )
 
 // Install and configure PyTorch.

@@ -1,12 +1,13 @@
 package dev
 
 import (
+	"log"
+	"path/filepath"
+
 	"github.com/elliotchance/orderedmap/v2"
 	"github.com/pelletier/go-toml/v2"
 	"github.com/spf13/cobra"
 	"legendu.net/icon/utils"
-	"log"
-	"path/filepath"
 )
 
 // Install and configure pytype.
