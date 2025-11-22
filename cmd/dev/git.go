@@ -24,7 +24,7 @@ func getGitUserName(cmd *cobra.Command) string {
 	if utils.GetBoolFlag(cmd, "yes") {
 		return USER
 	}
-	fmt.Printf("Please enter the user name for Git: ")
+	fmt.Print("Please enter the user name for Git: ")
 	scanner := bufio.NewScanner(os.Stdin)
 	scanner.Scan()
 	err := scanner.Err()
@@ -42,7 +42,7 @@ func getGitUserEmail(cmd *cobra.Command) string {
 	if utils.GetBoolFlag(cmd, "yes") {
 		return USER + "@example.com"
 	}
-	fmt.Printf("Please enter the user email for Git: ")
+	fmt.Print("Please enter the user email for Git: ")
 	scanner := bufio.NewScanner(os.Stdin)
 	scanner.Scan()
 	err := scanner.Err()

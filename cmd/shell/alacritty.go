@@ -1,9 +1,10 @@
 package shell
 
 import (
+	"runtime"
+
 	"github.com/spf13/cobra"
 	"legendu.net/icon/utils"
-	"runtime"
 )
 
 // Install and configure the Alacritty terminal.
