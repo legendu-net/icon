@@ -2,7 +2,6 @@ package shell
 
 import (
 	"log"
-	"path/filepath"
 	"runtime"
 
 	"github.com/spf13/cobra"
@@ -55,7 +54,9 @@ func hyper(cmd *cobra.Command, args []string) {
 		utils.RunCmd("hyper i hyper-pane")
 		utils.RunCmd("hyper i hyperpower")
 		log.Printf("Hyper plugins hypercwd, hyper-search, hyper-pane and hyperpower are installed.\n")
-		utils.CopyEmbeddedFile("data/hyper/hyper.js", filepath.Join(utils.UserHomeDir(), ".hyper.js"), 0o600, true)
+		utils.CopyFile(
+			utils.NormalizePath("~/.config/icon-data/hyper/hyper.js"),
+			utils.NormalizePath("~/.hyper.js"))
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
 		switch runtime.GOOS {

@@ -78,7 +78,8 @@ func installGitUi(cmd *cobra.Command) {
 func configGitUiHelper(baseDir string) {
 	dstDir := filepath.Join(baseDir, "gitui/")
 	utils.MkdirAll(dstDir, 0o700)
-	utils.CopyEmbeddedFileToDir("data/git/gitui/key_bindings.ron", dstDir, 0o600, true)
+	utils.CopyFileToDir(
+		utils.NormalizePath("~/.config/icon-data/git/gitui/key_bindings.ron"), dstDir)
 }
 
 func configGitUi(cmd *cobra.Command) {
@@ -158,7 +159,8 @@ func configGitUser(cmd *cobra.Command) {
 func createGitConfig() {
 	home := utils.UserHomeDir()
 	gitConfig := filepath.Join(home, ".gitconfig")
-	utils.CopyEmbeddedFile("data/git/gitconfig", gitConfig, 0o600, true)
+	utils.CopyFile(
+		utils.NormalizePath("~/.config/icon-data/git/gitconfig"), gitConfig)
 }
 
 // Install and configure Git.
@@ -243,14 +245,14 @@ func configureGitIgnore(cmd *cobra.Command) {
 	if lang == "" {
 		return
 	}
-	srcFile := "data/git/gitignore_" + lang
+	srcFile := utils.NormalizePath("~/.config/icon-data/git/gitignore_" + lang)
 	dstDir := utils.GetStringFlag(cmd, "dest-dir")
 	dstFile := filepath.Join(dstDir, ".gitignore")
 	if utils.GetBoolFlag(cmd, "append") {
-		utils.AppendToTextFile(dstFile, utils.ReadEmbeddedFileAsString(srcFile), true)
+		utils.AppendToTextFile(dstFile, utils.ReadFileAsString(srcFile), true)
 		log.Printf("%s is appended into %s.", srcFile, dstFile)
 	} else {
-		utils.CopyEmbeddedFile(srcFile, dstFile, 0o600, true)
+		utils.CopyFile(srcFile, dstFile)
 	}
 }
 

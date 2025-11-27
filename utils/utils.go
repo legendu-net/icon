@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"embed"
 	"fmt"
 	"io"
 	"io/fs"
@@ -24,31 +23,6 @@ import (
 	"golang.org/x/sys/unix"
 	"periph.io/x/host/v3/distro"
 )
-
-//go:embed data
-var data embed.FS
-
-// ReadEmbeddedFile reads a file embedded in the data directory.
-//
-// @param path The relative path to the file within the embedded data directory.
-// @return The content of the file as a byte slice.
-func ReadEmbeddedFile(path string) []byte {
-	bytes, err := data.ReadFile(path)
-	if err != nil {
-		log.Fatal("ERROR - ", err)
-	}
-	return bytes
-}
-
-// ReadEmbeddedFileAsString reads a file embedded in the data directory and returns its content as a string.
-//
-// This function utilizes the ReadEmbeddedFile function to fetch the file content and then converts it to a string.
-//
-// @param name The relative path to the file within the embedded data directory.
-// @return The content of the file as a string.
-func ReadEmbeddedFileAsString(name string) string {
-	return string(ReadEmbeddedFile(name))
-}
 
 // GetFileMode retrieves the file mode (permissions) of a given file.
 //
@@ -83,14 +57,14 @@ func CopyFile(sourceFile string, destinationFile string) {
 	log.Printf("%s is copied to %s.\n", sourceFile, destinationFile)
 }
 
-// copyFileToDir copies a file from a source path to a destination directory.
+// CopyFileToDir copies a file from a source path to a destination directory.
 //
 // It constructs the destination file path by joining the destination directory
 // with the base name of the source file. Then it calls the copyFile function to perform the actual copy.
 //
 // @param sourceFile      The path to the source file.
 // @param destinationDir The path to the destination directory where the source file will be copied.
-func copyFileToDir(sourceFile string, destinationDir string) {
+func CopyFileToDir(sourceFile string, destinationDir string) {
 	destinationFile := filepath.Join(destinationDir, filepath.Base(sourceFile))
 	CopyFile(sourceFile, destinationFile)
 }
@@ -118,36 +92,6 @@ func CopyDir(sourceDir string, destinationDir string) {
 			if !IsSocket(sourceFile) {
 				CopyFile(sourceFile, filepath.Join(destinationDir, entry.Name()))
 			}
-		}
-	}
-}
-
-// CopyEmbeddedDir recursively copies an embedded source directory to a destination directory.
-//
-// The destination directory is created with the permission 700 if it does not already exist.
-// This function behaves similar to the Linux command `cp -r`.
-//
-// @param sourceDir      The path to the source directory.
-// @param destinationDir The path to the destination directory where the source directory
-// @param info           Whether to log messages.
-//
-//	and its contents will be copied.
-func CopyEmbeddedDir(sourceDir string, destinationDir string, info bool) {
-	if !ExistsDir(destinationDir) {
-		MkdirAll(destinationDir, 0o700)
-	}
-	entries, err := data.ReadDir(sourceDir)
-	if err != nil {
-		log.Fatal("ERROR - ", err)
-	}
-	for _, entry := range entries {
-		if entry.IsDir() {
-			srcDir := filepath.Join(sourceDir, entry.Name())
-			dstDir := filepath.Join(destinationDir, entry.Name())
-			CopyEmbeddedDir(srcDir, dstDir, info)
-		} else {
-			sourceFile := filepath.Join(sourceDir, entry.Name())
-			CopyEmbeddedFile(sourceFile, filepath.Join(destinationDir, entry.Name()), 0o600, info)
 		}
 	}
 }
@@ -200,66 +144,12 @@ func Chmod600(path string) {
 	}
 }
 
-// CopyEmbeddedFile copies an embedded file to a destination file path.
-//
-// This function reads an embedded file, specified by sourceFile, and copies its contents
-// to the destinationFile. It also handles the creation of any necessary directories in
-// the destination path. The file mode of the destination file is set according to the
-// specified mode parameter. Optionally, it can log a message indicating that the copy
-// operation has been completed.
-//
-// @param sourceFile      The relative path of the source file within the embedded data directory.
-// @param destinationFile The path where the source file will be copied to.
-// @param mode            The desired file mode (permissions) of the destination file.
-// @param info            A boolean flag. If true, a message will be logged after the file is copied.
-//
-// @example CopyEmbeddedFile("data/example.txt", "/tmp/example.txt", 0644, true)
-func CopyEmbeddedFile(sourceFile string, destinationFile string, mode os.FileMode, info bool) {
-	bytes := ReadEmbeddedFile(sourceFile)
-	dir := filepath.Dir(destinationFile)
-	if !ExistsPath(dir) {
-		err := os.MkdirAll(dir, 0o700)
-		if err != nil {
-			log.Fatal("ERROR - ", err)
-		}
-	}
-	WriteFile(destinationFile, bytes, 0o600)
-	Chmod(destinationFile, mode)
-	if info {
-		log.Printf("%s is copied to %s.\n", sourceFile, destinationFile)
-	}
-}
-
-// CopyEmbeddedFileToDir copies an embedded file to a directory.
-//
-// This function copies a file from the embedded data to a specified directory.
-// It combines the given directory with the base name of the source file to create
-// the full path of the destination file. Then it calls the CopyEmbeddedFile to copy
-// the source file to the newly created destination file.
-//
-// @param sourceFile      The relative path of the source file within the embedded data directory.
-// @param destinationDir  The path to the destination directory.
-// @param mode            The file mode (permissions) to set for the destination file.
-// @param info            A boolean flag indicating if a message should be logged after the copy.
-//
-// @example CopyEmbeddedFileToDir("data/example.txt", "/tmp/", 0644, true) // Copies example.txt to /tmp/example.txt
-func CopyEmbeddedFileToDir(sourceFile string, destinationDir string, mode os.FileMode, info bool) {
-	destinationFile := filepath.Join(destinationDir, filepath.Base(sourceFile))
-	CopyEmbeddedFile(sourceFile, destinationFile, mode, info)
-}
-
-// RunCmd executes a command in the terminal.
-//
-// This function executes a given command in the terminal based on the operating system.
-// On Windows, it uses PowerShell (pwsh), and on Linux and macOS, it uses Bash.
-// It also supports passing environment variables to the command and handles standard input,
-// standard output, and standard error. If an error occurs during the command execution,
-// the function will terminate with a fatal log.
+// RunCmd executes a command (using pwsh or bash based on the OS) in the terminal.
 //
 // @param cmd The command to execute as a string.
 // @param env Optional environment variables to set for the command execution.
 //
-// @example RunCmd("ls -l", "MY_VAR=myvalue") // Runs the ls -l command with an additional environment variable.
+// @example RunCmd("ls -l", "MY_VAR=myvalue")
 func RunCmd(cmd string, env ...string) {
 	var command *exec.Cmd
 	switch runtime.GOOS {
