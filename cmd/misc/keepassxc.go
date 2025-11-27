@@ -68,6 +68,5 @@ func init() {
 	KeepassXCCmd.Flags().Bool("uninstall", false, "Uninstall keepassxc terminal.")
 	KeepassXCCmd.Flags().BoolP("config", "c", false, "Configure the keepassxc terminal.")
 	KeepassXCCmd.Flags().BoolP("yes", "y", false, "Automatically yes to prompt questions.")
-	KeepassXCCmd.Flags().StringP("version", "v", "", "The version of the release.")
 	// rootCmd.AddCommand(keepassxcCmd)
 }
