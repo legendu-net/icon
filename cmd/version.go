@@ -7,7 +7,7 @@ import (
 )
 
 // Update icon.
-func version(cmd *cobra.Command, args []string) {
+func version(_ *cobra.Command, args []string) {
 	fmt.Println("0.29.0")
 }
 

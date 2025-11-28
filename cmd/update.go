@@ -6,8 +6,9 @@ import (
 )
 
 // Update icon.
-func update(cmd *cobra.Command, args []string) {
-	command := utils.Format("curl -sSL https://raw.githubusercontent.com/legendu-net/icon/main/install_icon.sh | {prefix} bash -", map[string]string{
+func update(_ *cobra.Command, args []string) {
+	command := utils.Format(`curl -sSL https://raw.githubusercontent.com/legendu-net/icon/main/install_icon.sh \
+			| {prefix} bash -`, map[string]string{
 		"prefix": utils.GetCommandPrefix(true, map[string]uint32{}),
 	})
 	utils.RunCmd(command)

@@ -23,7 +23,7 @@ func downloadHyperFromGitHub(version string) string {
 }
 
 // Install and configure the Hyper terminal.
-func hyper(cmd *cobra.Command, args []string) {
+func hyper(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "install") {
 		switch runtime.GOOS {
 		case "linux":

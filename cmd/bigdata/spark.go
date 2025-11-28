@@ -56,7 +56,7 @@ func getSparkDownloadUrl(sparkVersion string, hadoopVersion string) (string, str
 }
 
 // Install and configure Spark.
-func spark(cmd *cobra.Command, args []string) {
+func spark(cmd *cobra.Command, _ []string) {
 	// get Spark version
 	sparkVersion, err := cmd.Flags().GetString("spark-version")
 	if err != nil {

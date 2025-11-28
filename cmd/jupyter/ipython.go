@@ -26,10 +26,18 @@ func ipython(cmd *cobra.Command, args []string) {
 			utils.NormalizePath("~/.config/icon-data/ipython/startup.ipy"),
 			filepath.Join(profile_default, "startup/startup.ipy"))
 		utils.CopyFileToDir(
-			utils.NormalizePath("~/.config/icon-data/ipython/ipython_config.py"), 
+			utils.NormalizePath("~/.config/icon-data/ipython/ipython_config.py"),
 			profile_default)
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
+		command := utils.Format("{prefix} {pip_uninstall} ipython", map[string]string{
+			"prefix": utils.GetCommandPrefix(
+				utils.GetBoolFlag(cmd, "sudo"),
+				map[string]uint32{},
+			),
+			"pip_uninstall": utils.BuildPipUninstall(cmd),
+		})
+		utils.RunCmd(command)
 	}
 }
 

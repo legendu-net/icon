@@ -1235,9 +1235,8 @@ func GetLinuxDistId() string {
 	distId, found := m["ID"]
 	if found {
 		return distId
-	} else {
-		return ""
 	}
+	return ""
 }
 
 // IsUbuntu checks if the current Linux distribution is Ubuntu.
@@ -1433,9 +1432,8 @@ func IsFedoraSeries() bool {
 func IfElseString(b bool, t string, f string) string {
 	if b {
 		return t
-	} else {
-		return f
 	}
+	return f
 }
 
 // Using Homebrew to install packages

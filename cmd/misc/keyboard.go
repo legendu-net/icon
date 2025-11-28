@@ -14,7 +14,7 @@ import (
 )
 
 func readDefaultKeybindings(file string) []string {
-	defaultKeyBinding := [] string {
+	defaultKeyBinding := []string{
 		"{",
 	}
 	if utils.ExistsFile(file) {
@@ -44,15 +44,14 @@ func hasAnyPrefix(kb string, keyBindings map[string]string) bool {
 		}
 	}
 	return false
-
 }
 
 func removeDefaultKeyBindings(defaultKeyBindings []string, keyBindings map[string]string) []string {
 	j := 0
-    for i, kb := range defaultKeyBindings {
-    	if !hasAnyPrefix(kb, keyBindings) {
-   			defaultKeyBindings[j] = defaultKeyBindings[i]
-   			j++                     
+	for i, kb := range defaultKeyBindings {
+		if !hasAnyPrefix(kb, keyBindings) {
+			defaultKeyBindings[j] = defaultKeyBindings[i]
+			j++
 		}
 	}
 	return defaultKeyBindings[:j]
@@ -82,7 +81,7 @@ func ConfigDefaultKeybindings() {
 }
 
 // Configure keyboard.
-func keyboard(cmd *cobra.Command, args []string) {
+func keyboard(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "install") {
 		// nothing to install
 	}

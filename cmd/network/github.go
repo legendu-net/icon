@@ -14,9 +14,7 @@ import (
 // @param repo: The repo name of the project on GitHub.
 // return: The release URL of the project on GitHub.
 func GetReleaseUrl(repo string) string {
-	if strings.HasSuffix(repo, ".git") {
-		repo = repo[:len(repo)-4]
-	}
+	repo = strings.TrimSuffix(repo, ".git")
 	if strings.HasPrefix(repo, "https://api.") {
 		return repo
 	}

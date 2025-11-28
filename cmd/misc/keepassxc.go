@@ -9,7 +9,7 @@ import (
 )
 
 // Install and configure the KeepassXC terminal.
-func keepassxc(cmd *cobra.Command, args []string) {
+func keepassxc(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "install") {
 		switch runtime.GOOS {
 		case "linux":
