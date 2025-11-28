@@ -1,8 +1,6 @@
 package dev
 
 import (
-	"bufio"
-	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -13,44 +11,6 @@ import (
 	"legendu.net/icon/cmd/network"
 	"legendu.net/icon/utils"
 )
-
-var USER = utils.GetCurrentUser().Username
-
-func getGitUserName(cmd *cobra.Command) string {
-	user := utils.GetStringFlag(cmd, "user-name")
-	if user != "" {
-		return user
-	}
-	if utils.GetBoolFlag(cmd, "yes") {
-		return USER
-	}
-	fmt.Print("Please enter the user name for Git: ")
-	scanner := bufio.NewScanner(os.Stdin)
-	scanner.Scan()
-	err := scanner.Err()
-	if err != nil {
-		log.Fatal("ERROR - ", err)
-	}
-	return scanner.Text()
-}
-
-func getGitUserEmail(cmd *cobra.Command) string {
-	email := utils.GetStringFlag(cmd, "user-email")
-	if email != "" {
-		return email
-	}
-	if utils.GetBoolFlag(cmd, "yes") {
-		return USER + "@example.com"
-	}
-	fmt.Print("Please enter the user email for Git: ")
-	scanner := bufio.NewScanner(os.Stdin)
-	scanner.Scan()
-	err := scanner.Err()
-	if err != nil {
-		log.Fatal("ERROR - ", err)
-	}
-	return scanner.Text()
-}
 
 func installGitUi(cmd *cobra.Command) {
 	if utils.GetBoolFlag(cmd, "gitui") {
@@ -130,32 +90,6 @@ func configGitProxy(cmd *cobra.Command) {
 	}
 }
 
-func configGitBashCompletion(cmd *cobra.Command) {
-	switch runtime.GOOS {
-	case "darwin":
-		file := "/usr/local/etc/bash_completion.d/git-completion.bash"
-		script := utils.Format("\n# Git completion\n[ -f {file} ] &&  . {file}", map[string]string{
-			"file": file,
-		})
-		home := utils.UserHomeDir()
-		utils.AppendToTextFile(filepath.Join(home, ".bash_profile"), script, true)
-		log.Printf("Bash completion is enabled for Git.")
-	default:
-	}
-}
-
-func configGitUser(cmd *cobra.Command) {
-	// user.name and user.email
-	git := utils.GetStringFlag(cmd, "git")
-	command := utils.Format(`{git} config --global user.name "{name}" \
-		&& {git} config --global user.email "{email}"`, map[string]string{
-		"name":  getGitUserName(cmd),
-		"email": getGitUserEmail(cmd),
-		"git":   git,
-	})
-	utils.RunCmd(command)
-}
-
 func createGitConfig() {
 	home := utils.UserHomeDir()
 	gitConfig := filepath.Join(home, ".gitconfig")
@@ -202,8 +136,6 @@ func git(cmd *cobra.Command, args []string) {
 	if utils.GetBoolFlag(cmd, "config") {
 		network.SshClient(cmd, args)
 		createGitConfig()
-		configGitUser(cmd)
-		configGitBashCompletion(cmd)
 		configGitProxy(cmd)
 		configGitUi(cmd)
 	}
