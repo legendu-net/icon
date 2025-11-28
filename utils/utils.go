@@ -1160,7 +1160,7 @@ func ExistsCommand(cmd string) bool {
 //
 // @example
 //
-//	MkdirAll("/tmp/mydir/subdir", 0755) // Creates /tmp/mydir/subdir with permissions 0755.
+//	MkdirAll("/tmp/mydir/subdir", 0o755)
 func MkdirAll(path string, perm os.FileMode) {
 	err := os.MkdirAll(path, perm)
 	if err != nil {

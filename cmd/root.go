@@ -109,6 +109,7 @@ func init() {
 	rootCmd.AddCommand(bigdata.SparkCmd)
 	rootCmd.AddCommand(virtualization.DockerCmd)
 	rootCmd.AddCommand(misc.KeepassXCCmd)
+	rootCmd.AddCommand(misc.KeyboardCmd)
 	rootCmd.AddCommand(filesystem.RipCmd)
 	rootCmd.AddCommand(completionCmd)
 }
