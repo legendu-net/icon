@@ -125,7 +125,7 @@ func git(cmd *cobra.Command, args []string) {
 			installGitDelta(cmd)
 			installGitUi(cmd)
 		case "darwin":
-			utils.BrewInstallSafe([]string{"git", "git-lfs", "bash-completion@2"})
+			utils.BrewInstallSafe([]string{"git", "git-lfs"})
 		default:
 		}
 		command := utils.Format("{git} lfs install", map[string]string{
