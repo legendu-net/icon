@@ -10,6 +10,11 @@ import (
 // Pull data for icon from GitHub into ~/.config/icon-data.
 func data(cmd *cobra.Command, args []string) {
 	dir := "~/.config/icon-data"
+	if !utils.GetBoolFlag(cmd, "force") && utils.ExistsDir(dir+"/.git") {
+		fmt.Println("Using existing data in ~/.config/icon-data.")
+		return
+	}
+
 	utils.BackupDir(dir, "")
 	utils.MkdirAll(dir, 0o700)
 
@@ -31,5 +36,6 @@ var dataCmd = &cobra.Command{
 
 func init() {
 	dataCmd.Flags().StringP("git-url", "g", "git@github.com:legendu-net/icon-data.git", "The Git repo URL for icon-data.")
+	dataCmd.Flags().Bool("force", false, "Force pulling data if it alreay exists.")
 	rootCmd.AddCommand(dataCmd)
 }

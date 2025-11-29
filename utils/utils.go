@@ -527,7 +527,7 @@ func ExistsPath(path string) bool {
 // @example
 // if ExistsDir("/tmp/mydir") { ... }
 func ExistsDir(path string) bool {
-	stat, err := os.Stat(path)
+	stat, err := os.Stat(NormalizePath(path))
 	if os.IsNotExist(err) {
 		return false
 	}
