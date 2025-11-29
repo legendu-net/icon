@@ -1671,6 +1671,8 @@ func RenameDir(originalDir string, newDir string) {
 }
 
 func BackupDir(originalDir string, backupDir string) {
+	originalDir = NormalizePath(originalDir)
+	backupDir = NormalizePath(backupDir)
 	if ExistsDir(originalDir) {
 		if backupDir == "" {
 			backupDir = filepath.Clean(originalDir) + "_" + time.Now().Format(time.RFC3339)
