@@ -27,6 +27,6 @@ var updateCmd = &cobra.Command{
 }
 
 func init() {
-	dataCmd.Flags().StringP("install-dir", "d", "/usr/local/bin", "The directory for installing icon.")
+	updateCmd.Flags().StringP("install-dir", "d", "/usr/local/bin", "The directory for installing icon.")
 	rootCmd.AddCommand(updateCmd)
 }
