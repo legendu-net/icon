@@ -34,8 +34,7 @@ func installGoLang(prefix string) {
 	})
 	goTgz := utils.DownloadFile(url, "go_*.tar.gz", true)
 	cmd := utils.Format(`{prefix} rm -rf /usr/local/go \
-				&& {prefix} tar -C /usr/local/ -xzf {goTgz}\
-				&& {prefix} rm -rf /usr/local/go/pkg/*/cmd`,
+				&& {prefix} tar -C /usr/local/ -xzf {goTgz}`,
 		map[string]string{
 			"prefix": prefix,
 			"goTgz":  goTgz,
@@ -46,8 +45,15 @@ func installGoLang(prefix string) {
 
 func installGoLangCiLint(prefix string) {
 	script := "https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh"
-	cmd := utils.Format(`curl -sSfL {script} | {prefix} sh -s -- -b /usr/local/bin`, map[string]string{
+	cmd := utils.Format(`curl -sSfL {script} | {prefix} sh -s -- -b /usr/local/go/bin`, map[string]string{
 		"script": script,
+		"prefix": prefix,
+	})
+	utils.RunCmd(cmd)
+}
+
+func installGoPls(prefix string) {
+	cmd := utils.Format("{prefix} go install golang.org/x/tools/gopls@latest", map[string]string{
 		"prefix": prefix,
 	})
 	utils.RunCmd(cmd)
@@ -65,6 +71,7 @@ func golang(cmd *cobra.Command, args []string) {
 		case "darwin", "linux":
 			installGoLang(prefix)
 			installGoLangCiLint(prefix)
+			installGoPls(prefix)
 		default:
 			log.Fatal("The OS ", runtime.GOOS, " is not supported!")
 		}

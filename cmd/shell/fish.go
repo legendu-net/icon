@@ -29,7 +29,7 @@ func downloadFishFromGitHub(version string) string {
 func generateCompletions() {
 	dir := "~/.config/fish/completions/"
 	var cmdMap map[string]string
-	err := yaml.Unmarshal(utils.ReadFile(utils.NormalizePath(dir+"commands.yaml")), &cmdMap)
+	err := yaml.Unmarshal(utils.ReadFile(dir+"commands.yaml"), &cmdMap)
 	if err != nil {
 		log.Fatalf("Error unmarshaling data: %v", err)
 	}
@@ -47,7 +47,7 @@ func generateCrazyCompletions() {
 	if utils.ExistsCommand("uvx") {
 		uvx = "uvx"
 	} else {
-		file := utils.NormalizePath("~/.local/bin/uvx")
+		file := "~/.local/bin/uvx"
 		if !utils.ExistsCommand(file) {
 			utils.RunCmd("icon uv -ic")
 		}
@@ -92,11 +92,8 @@ func fish(cmd *cobra.Command, args []string) {
 	}
 	if utils.GetBoolFlag(cmd, "config") {
 		dir := "~/.config/fish"
-		dir_go := utils.NormalizePath(dir)
-		utils.BackupDir(dir_go, "")
-
-		utils.MkdirAll(dir_go, 0o700)
-		utils.RunCmd("git clone https://github.com/legendu-net/fish " + dir)
+		utils.BackupDir(dir, "")
+		utils.Symlink("~/.config/icon-data/fish", dir)
 
 		generateCompletions()
 		generateCrazyCompletions()

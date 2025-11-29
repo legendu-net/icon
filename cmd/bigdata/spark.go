@@ -56,7 +56,7 @@ func getSparkDownloadUrl(sparkVersion string, hadoopVersion string) (string, str
 }
 
 // Install and configure Spark.
-func spark(cmd *cobra.Command, args []string) {
+func spark(cmd *cobra.Command, _ []string) {
 	// get Spark version
 	sparkVersion, err := cmd.Flags().GetString("spark-version")
 	if err != nil {
@@ -116,7 +116,7 @@ func spark(cmd *cobra.Command, args []string) {
 				})
 			utils.RunCmd(cmd)
 			// spark-defaults.conf
-			text := utils.ReadEmbeddedFileAsString("data/spark/spark-defaults.conf")
+			text := utils.ReadFileAsString("~/.config/icon-data/spark/spark-defaults.conf")
 			cmd = utils.Format("echo '{conf}' | {prefix} tee {sparkDefaults} > /dev/null",
 				map[string]string{
 					"prefix":        prefix,

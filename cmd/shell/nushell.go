@@ -23,7 +23,7 @@ func downloadNushellFromGitHub(version string) string {
 }
 
 // Install nushell.
-func nushell(cmd *cobra.Command, args []string) {
+func nushell(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "install") {
 		switch runtime.GOOS {
 		case "windows":

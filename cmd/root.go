@@ -38,7 +38,7 @@ Fish:
 $ icon completion fish > ~/.config/fish/completions/icon.fish
 `,
 	DisableFlagsInUseLine: true,
-	Args:                  cobra.ExactValidArgs(1),
+	Args:                  cobra.MatchAll(cobra.ExactArgs(1), cobra.OnlyValidArgs),
 	ValidArgs:             []string{"bash", "zsh", "fish"},
 	Run: func(cmd *cobra.Command, args []string) {
 		switch args[0] {
@@ -109,6 +109,7 @@ func init() {
 	rootCmd.AddCommand(bigdata.SparkCmd)
 	rootCmd.AddCommand(virtualization.DockerCmd)
 	rootCmd.AddCommand(misc.KeepassXCCmd)
+	rootCmd.AddCommand(misc.KeyboardCmd)
 	rootCmd.AddCommand(filesystem.RipCmd)
 	rootCmd.AddCommand(completionCmd)
 }

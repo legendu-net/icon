@@ -8,7 +8,7 @@ import (
 )
 
 // Install and configure helix.
-func helix(cmd *cobra.Command, args []string) {
+func helix(cmd *cobra.Command, _ []string) {
 	Helix(
 		utils.GetBoolFlag(cmd, "install"),
 		utils.GetBoolFlag(cmd, "config"),
@@ -55,6 +55,7 @@ func Helix(install bool, config bool, uninstall bool, yes_s string) {
 		}
 	}
 	if config {
+		// later
 	}
 	if uninstall {
 		switch runtime.GOOS {

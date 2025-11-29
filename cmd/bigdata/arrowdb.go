@@ -16,12 +16,12 @@ func linkArrowDbProfileFromHost() {
 		if utils.ExistsFile(dstProfile) {
 			utils.RemoveAll(dstProfile)
 		}
-		utils.LinkFile(srcProfile, dstProfile)
+		utils.Symlink(srcProfile, dstProfile)
 	}
 }
 
 // Install and configure the Python library arrowdb.
-func arrowDb(cmd *cobra.Command, args []string) {
+func arrowDb(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "install") {
 		command := utils.Format("{prefix} {pip_install} arrowdb", map[string]string{
 			"prefix": utils.GetCommandPrefix(
@@ -36,6 +36,14 @@ func arrowDb(cmd *cobra.Command, args []string) {
 		linkArrowDbProfileFromHost()
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
+		command := utils.Format("{prefix} {pip_uninstall} arrowdb", map[string]string{
+			"prefix": utils.GetCommandPrefix(
+				utils.GetBoolFlag(cmd, "sudo"),
+				map[string]uint32{},
+			),
+			"pip_uninstall": utils.BuildPipUninstall(cmd),
+		})
+		utils.RunCmd(command)
 	}
 }
 

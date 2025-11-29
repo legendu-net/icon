@@ -9,7 +9,7 @@ import (
 )
 
 // Install and configure the KeepassXC terminal.
-func keepassxc(cmd *cobra.Command, args []string) {
+func keepassxc(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "install") {
 		switch runtime.GOOS {
 		case "linux":
@@ -68,6 +68,5 @@ func init() {
 	KeepassXCCmd.Flags().Bool("uninstall", false, "Uninstall keepassxc terminal.")
 	KeepassXCCmd.Flags().BoolP("config", "c", false, "Configure the keepassxc terminal.")
 	KeepassXCCmd.Flags().BoolP("yes", "y", false, "Automatically yes to prompt questions.")
-	KeepassXCCmd.Flags().StringP("version", "v", "", "The version of the release.")
 	// rootCmd.AddCommand(keepassxcCmd)
 }

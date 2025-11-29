@@ -8,7 +8,7 @@ import (
 )
 
 // Install and configure rip (rm-improved).
-func rip(cmd *cobra.Command, args []string) {
+func rip(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "install") {
 		switch runtime.GOOS {
 		case "linux":

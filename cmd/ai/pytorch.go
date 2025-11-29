@@ -8,7 +8,7 @@ import (
 )
 
 // Install and configure PyTorch.
-func pytorch(cmd *cobra.Command, args []string) {
+func pytorch(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "install") {
 		cudaVersion := utils.GetStringFlag(cmd, "cuda-version")
 		version := "cpu"
@@ -22,8 +22,10 @@ func pytorch(cmd *cobra.Command, args []string) {
 		utils.RunCmd(command)
 	}
 	if utils.GetBoolFlag(cmd, "config") {
+		// nothing to configure
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
+		// TODO
 	}
 }
 

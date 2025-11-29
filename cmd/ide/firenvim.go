@@ -10,7 +10,7 @@ import (
 )
 
 // Install and configure Firenvim.
-func firenvim(cmd *cobra.Command, args []string) {
+func firenvim(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "install") {
 		Neovim(true, true, false, "-y")
 		network.InstallChromeExtension("egpjdkipkomnmjhjmdamaniclmdlobbo", "Firenvim")
@@ -22,8 +22,10 @@ func firenvim(cmd *cobra.Command, args []string) {
 		}
 	}
 	if utils.GetBoolFlag(cmd, "config") {
+		// later
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
+		// later
 	}
 }
 

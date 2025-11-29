@@ -2,7 +2,6 @@ package ide
 
 import (
 	"log"
-	"path/filepath"
 	"runtime"
 
 	"github.com/spf13/cobra"
@@ -41,19 +40,16 @@ func vscode(cmd *cobra.Command, args []string) {
 		}
 	}
 	if utils.GetBoolFlag(cmd, "config") {
-		srcFile := "data/vscode/settings.json"
 		userDir := utils.GetStringFlag(cmd, "user-dir")
 		if userDir == "" {
-			home := utils.UserHomeDir()
 			switch runtime.GOOS {
 			case "darwin":
-				userDir = filepath.Join(home, "Library/Application Support/Code/User")
+				userDir = "~/Library/Application Support/Code/User"
 			default:
-				userDir = filepath.Join(home, ".config/Code/User")
+				userDir = "~/.config/Code/User"
 			}
 		}
-		utils.MkdirAll(userDir, 0o700)
-		utils.CopyEmbeddedFileToDir(srcFile, userDir, 0600, true)
+		utils.SymlinkIntoDir("~/.config/icon-data/vscode/settings.json", userDir)
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
 		switch runtime.GOOS {

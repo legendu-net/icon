@@ -10,7 +10,7 @@ import (
 )
 
 // Install and configure Rust.
-func bytehound(cmd *cobra.Command, args []string) {
+func bytehound(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "install") {
 		switch runtime.GOOS {
 		case "linux":

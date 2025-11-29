@@ -1,8 +1,6 @@
 package dev
 
 import (
-	"bufio"
-	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -13,44 +11,6 @@ import (
 	"legendu.net/icon/cmd/network"
 	"legendu.net/icon/utils"
 )
-
-var USER = utils.GetCurrentUser().Username
-
-func getGitUserName(cmd *cobra.Command) string {
-	user := utils.GetStringFlag(cmd, "user-name")
-	if user != "" {
-		return user
-	}
-	if utils.GetBoolFlag(cmd, "yes") {
-		return USER
-	}
-	fmt.Print("Please enter the user name for Git: ")
-	scanner := bufio.NewScanner(os.Stdin)
-	scanner.Scan()
-	err := scanner.Err()
-	if err != nil {
-		log.Fatal("ERROR - ", err)
-	}
-	return scanner.Text()
-}
-
-func getGitUserEmail(cmd *cobra.Command) string {
-	email := utils.GetStringFlag(cmd, "user-email")
-	if email != "" {
-		return email
-	}
-	if utils.GetBoolFlag(cmd, "yes") {
-		return USER + "@example.com"
-	}
-	fmt.Print("Please enter the user email for Git: ")
-	scanner := bufio.NewScanner(os.Stdin)
-	scanner.Scan()
-	err := scanner.Err()
-	if err != nil {
-		log.Fatal("ERROR - ", err)
-	}
-	return scanner.Text()
-}
 
 func installGitUi(cmd *cobra.Command) {
 	if utils.GetBoolFlag(cmd, "gitui") {
@@ -75,20 +35,17 @@ func installGitUi(cmd *cobra.Command) {
 	}
 }
 
-func configGitUiHelper(baseDir string) {
-	dstDir := filepath.Join(baseDir, "gitui/")
-	utils.MkdirAll(dstDir, 0o700)
-	utils.CopyEmbeddedFileToDir("data/git/gitui/key_bindings.ron", dstDir, 0o600, true)
+func linkGitUiFiles(baseDir string) {
+	utils.SymlinkIntoDir("~/.config/icon-data/git/gitui/key_bindings.ron", filepath.Join(baseDir, "gitui"))
 }
 
 func configGitUi(cmd *cobra.Command) {
 	if utils.GetBoolFlag(cmd, "gitui") {
-		home := utils.UserHomeDir()
-		configGitUiHelper(filepath.Join(home, ".config/"))
+		linkGitUiFiles("~/.config")
 		if utils.IsLinux() {
 			baseDir := os.Getenv("XDG_CONFIG_HOME")
 			if baseDir != "" {
-				configGitUiHelper(filepath.Join(baseDir))
+				linkGitUiFiles(baseDir)
 			}
 		}
 	}
@@ -129,38 +86,6 @@ func configGitProxy(cmd *cobra.Command) {
 	}
 }
 
-func configGitBashCompletion(cmd *cobra.Command) {
-	switch runtime.GOOS {
-	case "darwin":
-		file := "/usr/local/etc/bash_completion.d/git-completion.bash"
-		script := utils.Format("\n# Git completion\n[ -f {file} ] &&  . {file}", map[string]string{
-			"file": file,
-		})
-		home := utils.UserHomeDir()
-		utils.AppendToTextFile(filepath.Join(home, ".bash_profile"), script, true)
-		log.Printf("Bash completion is enabled for Git.")
-	default:
-	}
-}
-
-func configGitUser(cmd *cobra.Command) {
-	// user.name and user.email
-	git := utils.GetStringFlag(cmd, "git")
-	command := utils.Format(`{git} config --global user.name "{name}" \
-		&& {git} config --global user.email "{email}"`, map[string]string{
-		"name":  getGitUserName(cmd),
-		"email": getGitUserEmail(cmd),
-		"git":   git,
-	})
-	utils.RunCmd(command)
-}
-
-func createGitConfig() {
-	home := utils.UserHomeDir()
-	gitConfig := filepath.Join(home, ".gitconfig")
-	utils.CopyEmbeddedFile("data/git/gitconfig", gitConfig, 0o600, true)
-}
-
 // Install and configure Git.
 func git(cmd *cobra.Command, args []string) {
 	git := utils.GetStringFlag(cmd, "git")
@@ -189,7 +114,7 @@ func git(cmd *cobra.Command, args []string) {
 			installGitDelta(cmd)
 			installGitUi(cmd)
 		case "darwin":
-			utils.BrewInstallSafe([]string{"git", "git-lfs", "bash-completion@2"})
+			utils.BrewInstallSafe([]string{"git", "git-lfs"})
 		default:
 		}
 		command := utils.Format("{git} lfs install", map[string]string{
@@ -199,9 +124,7 @@ func git(cmd *cobra.Command, args []string) {
 	}
 	if utils.GetBoolFlag(cmd, "config") {
 		network.SshClient(cmd, args)
-		createGitConfig()
-		configGitUser(cmd)
-		configGitBashCompletion(cmd)
+		utils.Symlink("~/.config/icon-data/git/gitconfig", "~/.gitconfig")
 		configGitProxy(cmd)
 		configGitUi(cmd)
 	}
@@ -243,14 +166,14 @@ func configureGitIgnore(cmd *cobra.Command) {
 	if lang == "" {
 		return
 	}
-	srcFile := "data/git/gitignore_" + lang
+	srcFile := "~/.config/icon-data/git/gitignore_" + lang
 	dstDir := utils.GetStringFlag(cmd, "dest-dir")
 	dstFile := filepath.Join(dstDir, ".gitignore")
 	if utils.GetBoolFlag(cmd, "append") {
-		utils.AppendToTextFile(dstFile, utils.ReadEmbeddedFileAsString(srcFile), true)
+		utils.AppendToTextFile(dstFile, utils.ReadFileAsString(srcFile), true)
 		log.Printf("%s is appended into %s.", srcFile, dstFile)
 	} else {
-		utils.CopyEmbeddedFile(srcFile, dstFile, 0o600, true)
+		utils.CopyFile(srcFile, dstFile)
 	}
 }
 
