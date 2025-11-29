@@ -1611,27 +1611,18 @@ func IsSocket(path string) bool {
 	return fileInfo.Mode().Type() == fs.ModeSocket
 }
 
-// LinkFile creates a symbolic link between a source file and a destination link.
+// Symlink is a wrapper of os.Symlink with error handling.
 //
-// This function creates a symbolic link, or symlink, at the `dstLink` location that points
-// to the `srcFile`. A symbolic link is a file that acts as a pointer to another file.
-// If the creation of the symbolic link fails for any reason, the function will
-// terminate with a fatal log message indicating the source and destination files.
-//
-// @param srcFile The path to the source file to which the symlink will point.
+// @param path The path to the source file/directory.
 // @param dstLink The path where the symbolic link will be created.
 //
 // @example
 //
-//	LinkFile("/path/to/source/file.txt", "/path/to/link/file.txt")
-//	// Creates a symlink at /path/to/link/file.txt that points to /path/to/source/file.txt
-//
-// @remarks
-// This function uses the `os.Symlink` function from the Go standard library.
-func LinkFile(srcFile string, dstLink string) {
-	err := os.Symlink(srcFile, dstLink)
+//	Symlink("/path/to/source/file.txt", "/path/to/link/file.txt")
+func Symlink(path string, dstLink string) {
+	err := os.Symlink(path, dstLink)
 	if err != nil {
-		log.Fatalf("Failed to link the file %s to %s!\n", srcFile, dstLink)
+		log.Fatalf("Failed to link the file %s to %s!\n", path, dstLink)
 	}
 }
 
