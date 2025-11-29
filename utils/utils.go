@@ -764,7 +764,7 @@ func ReadAllAsText(readCloser io.ReadCloser) string {
 //
 //	content := ReadFile("/tmp/myfile.txt")
 func ReadFile(path string) []byte {
-	bytes, err := os.ReadFile(path)
+	bytes, err := os.ReadFile(NormalizePath(path))
 	if err != nil {
 		log.Fatal("ERROR - ", err)
 	}
