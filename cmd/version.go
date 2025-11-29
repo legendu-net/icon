@@ -6,7 +6,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// Update icon.
+// Show the version of icon.
 func version(_ *cobra.Command, args []string) {
 	fmt.Println("0.29.0")
 }
