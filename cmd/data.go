@@ -35,7 +35,7 @@ var dataCmd = &cobra.Command{
 }
 
 func init() {
-	dataCmd.Flags().StringP("git-url", "g", "git@github.com:legendu-net/icon-data.git", "The Git repo URL for icon-data.")
+	dataCmd.Flags().StringP("git-url", "g", "https://github.com/legendu-net/icon-data.git", "The Git repo URL for icon-data.")
 	dataCmd.Flags().Bool("force", false, "Force pulling data if it alreay exists.")
 	rootCmd.AddCommand(dataCmd)
 }
