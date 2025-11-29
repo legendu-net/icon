@@ -48,6 +48,9 @@ func GetFileMode(file string) fs.FileMode {
 // @param sourceFile      The path to the source file.
 // @param destinationFile The path to the destination file where the source file will be copied.
 func CopyFile(sourceFile string, destinationFile string) {
+	sourceFile = NormalizePath(sourceFile)
+	destinationFile = NormalizePath(destinationFile)
+	MkdirAll(filepath.Dir(destinationFile), 0o700)
 	input, err := os.ReadFile(sourceFile)
 	if err != nil {
 		log.Fatal("ERROR - ", err)
@@ -65,8 +68,7 @@ func CopyFile(sourceFile string, destinationFile string) {
 // @param sourceFile      The path to the source file.
 // @param destinationDir The path to the destination directory where the source file will be copied.
 func CopyFileToDir(sourceFile string, destinationDir string) {
-	destinationFile := filepath.Join(destinationDir, filepath.Base(sourceFile))
-	CopyFile(sourceFile, destinationFile)
+	CopyFile(sourceFile, filepath.Join(destinationDir, filepath.Base(sourceFile)))
 }
 
 // CopyDir recursively copies a source directory to a destination directory.
@@ -1498,10 +1500,17 @@ func IsSocket(path string) bool {
 //
 //	Symlink("/path/to/source/file.txt", "/path/to/link/file.txt")
 func Symlink(path string, dstLink string) {
+	path = NormalizePath(path)
+	dstLink = NormalizePath(dstLink)
+	MkdirAll(filepath.Dir(dstLink), 0o700)
 	err := os.Symlink(path, dstLink)
 	if err != nil {
 		log.Fatalf("Failed to link the file %s to %s!\n", path, dstLink)
 	}
+}
+
+func SymlinkIntoDir(path string, dstDir string) {
+	Symlink(path, filepath.Join(dstDir, filepath.Base(path)))
 }
 
 // Update map1 using map2.

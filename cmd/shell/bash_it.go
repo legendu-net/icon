@@ -23,9 +23,7 @@ func bashIt(cmd *cobra.Command, args []string) {
 	}
 	if utils.GetBoolFlag(cmd, "config") {
 		utils.ConfigBash()
-		utils.CopyDir(
-			utils.NormalizePath("~/.config/icon-data/bash-it"),
-			utils.NormalizePath("~/.bash_it"))
+		utils.Symlink("~/.config/icon-data/bash-it", "~/.bash_it")
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
 		utils.RunCmd("~/.bash_it/uninstall.sh && rm -rf ~/.bash_it/")

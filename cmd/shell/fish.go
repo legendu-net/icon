@@ -93,9 +93,7 @@ func fish(cmd *cobra.Command, args []string) {
 	if utils.GetBoolFlag(cmd, "config") {
 		dir := "~/.config/fish"
 		utils.BackupDir(dir, "")
-
-		utils.MkdirAll(dir, 0o700)
-		utils.RunCmd("git clone https://github.com/legendu-net/fish " + dir)
+		utils.Symlink("~/.config/icon-data/fish", dir)
 
 		generateCompletions()
 		generateCrazyCompletions()

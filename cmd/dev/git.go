@@ -35,21 +35,17 @@ func installGitUi(cmd *cobra.Command) {
 	}
 }
 
-func configGitUiHelper(baseDir string) {
-	dstDir := filepath.Join(baseDir, "gitui/")
-	utils.MkdirAll(dstDir, 0o700)
-	utils.CopyFileToDir(
-		utils.NormalizePath("~/.config/icon-data/git/gitui/key_bindings.ron"), dstDir)
+func linkGitUiFiles(baseDir string) {
+	utils.SymlinkIntoDir("~/.config/icon-data/git/gitui/key_bindings.ron", filepath.Join(baseDir, "gitui"))
 }
 
 func configGitUi(cmd *cobra.Command) {
 	if utils.GetBoolFlag(cmd, "gitui") {
-		home := utils.UserHomeDir()
-		configGitUiHelper(filepath.Join(home, ".config/"))
+		linkGitUiFiles("~/.config")
 		if utils.IsLinux() {
 			baseDir := os.Getenv("XDG_CONFIG_HOME")
 			if baseDir != "" {
-				configGitUiHelper(filepath.Join(baseDir))
+				linkGitUiFiles(baseDir)
 			}
 		}
 	}
@@ -90,13 +86,6 @@ func configGitProxy(cmd *cobra.Command) {
 	}
 }
 
-func createGitConfig() {
-	home := utils.UserHomeDir()
-	gitConfig := filepath.Join(home, ".gitconfig")
-	utils.CopyFile(
-		utils.NormalizePath("~/.config/icon-data/git/gitconfig"), gitConfig)
-}
-
 // Install and configure Git.
 func git(cmd *cobra.Command, args []string) {
 	git := utils.GetStringFlag(cmd, "git")
@@ -135,7 +124,7 @@ func git(cmd *cobra.Command, args []string) {
 	}
 	if utils.GetBoolFlag(cmd, "config") {
 		network.SshClient(cmd, args)
-		createGitConfig()
+		utils.Symlink("~/.config/icon-data/git/gitconfig", "~/.gitconfig")
 		configGitProxy(cmd)
 		configGitUi(cmd)
 	}

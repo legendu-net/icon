@@ -22,11 +22,11 @@ func ipython(cmd *cobra.Command, args []string) {
 	if utils.GetBoolFlag(cmd, "config") {
 		profile_dir := utils.GetStringFlag(cmd, "profile-dir")
 		profile_default := filepath.Join(profile_dir, "profile_default")
-		utils.CopyFile(
-			utils.NormalizePath("~/.config/icon-data/ipython/startup.ipy"),
+		utils.Symlink(
+			"~/.config/icon-data/ipython/startup.ipy",
 			filepath.Join(profile_default, "startup/startup.ipy"))
-		utils.CopyFileToDir(
-			utils.NormalizePath("~/.config/icon-data/ipython/ipython_config.py"),
+		utils.SymlinkIntoDir(
+			"~/.config/icon-data/ipython/ipython_config.py",
 			profile_default)
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {

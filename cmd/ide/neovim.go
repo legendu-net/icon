@@ -58,11 +58,8 @@ func Neovim(install bool, config bool, uninstall bool, yes_s string) {
 	}
 	if config {
 		dir := "~/.config/nvim"
-		dir_go := utils.NormalizePath(dir)
-		utils.BackupDir(dir_go, "")
-
-		utils.MkdirAll(dir_go, 0o700)
-		utils.RunCmd("git clone https://github.com/legendu-net/AstroNvim_template " + dir)
+		utils.BackupDir(dir, "")
+		utils.Symlink("~/.config/icon-data/nvim", dir)
 	}
 	if uninstall {
 		switch runtime.GOOS {

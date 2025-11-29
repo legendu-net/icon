@@ -33,17 +33,12 @@ func adjustPathInConfig() {
 	}
 }
 
-func copySshcConfig() {
-	utils.CopyFileToDir(
-		utils.NormalizePath("~/.config/icon-data/ssh/client/config"), sshHome)
-}
-
 // Install and configure SSH client.
 func SshClient(cmd *cobra.Command, args []string) {
 	if utils.GetBoolFlag(cmd, "install") {
 	}
 	if utils.GetBoolFlag(cmd, "config") {
-		copySshcConfig()
+		utils.SymlinkIntoDir("~/.config/icon-data/ssh/client/config", sshHome)
 		copySshcSettingsFromHost()
 		utils.MkdirAll(filepath.Join(sshHome, "control"), 0o700)
 		/*
