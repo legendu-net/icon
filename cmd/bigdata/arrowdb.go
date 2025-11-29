@@ -16,7 +16,7 @@ func linkArrowDbProfileFromHost() {
 		if utils.ExistsFile(dstProfile) {
 			utils.RemoveAll(dstProfile)
 		}
-		utils.LinkFile(srcProfile, dstProfile)
+		utils.Symlink(srcProfile, dstProfile)
 	}
 }
 
