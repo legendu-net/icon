@@ -34,8 +34,7 @@ func installGoLang(prefix string) {
 	})
 	goTgz := utils.DownloadFile(url, "go_*.tar.gz", true)
 	cmd := utils.Format(`{prefix} rm -rf /usr/local/go \
-				&& {prefix} tar -C /usr/local/ -xzf {goTgz}\
-				&& {prefix} rm -rf /usr/local/go/pkg/*/cmd`,
+				&& {prefix} tar -C /usr/local/ -xzf {goTgz}`,
 		map[string]string{
 			"prefix": prefix,
 			"goTgz":  goTgz,
