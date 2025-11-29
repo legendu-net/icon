@@ -486,6 +486,7 @@ func GetCommandPrefix(forceSudo bool, pathPerms map[string]uint32) string {
 				return sudo("true")
 			}
 			for path, perm := range pathPerms {
+				path = NormalizePath(path)
 				for !ExistsPath(path) {
 					path = filepath.Dir(path)
 				}
@@ -1146,6 +1147,7 @@ func BuildPipInstall(cmd *cobra.Command) string {
 //		fmt.Println("ls command exists")
 //	}
 func ExistsCommand(cmd string) bool {
+	cmd = NormalizePath(cmd)
 	_, err := exec.LookPath(cmd)
 	return err == nil
 }

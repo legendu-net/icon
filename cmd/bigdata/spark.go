@@ -116,7 +116,7 @@ func spark(cmd *cobra.Command, _ []string) {
 				})
 			utils.RunCmd(cmd)
 			// spark-defaults.conf
-			text := utils.ReadFileAsString(utils.NormalizePath("~/.config/icon-data/spark/spark-defaults.conf"))
+			text := utils.ReadFileAsString("~/.config/icon-data/spark/spark-defaults.conf")
 			cmd = utils.Format("echo '{conf}' | {prefix} tee {sparkDefaults} > /dev/null",
 				map[string]string{
 					"prefix":        prefix,

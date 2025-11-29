@@ -29,7 +29,7 @@ func downloadFishFromGitHub(version string) string {
 func generateCompletions() {
 	dir := "~/.config/fish/completions/"
 	var cmdMap map[string]string
-	err := yaml.Unmarshal(utils.ReadFile(utils.NormalizePath(dir+"commands.yaml")), &cmdMap)
+	err := yaml.Unmarshal(utils.ReadFile(dir+"commands.yaml"), &cmdMap)
 	if err != nil {
 		log.Fatalf("Error unmarshaling data: %v", err)
 	}
@@ -47,7 +47,7 @@ func generateCrazyCompletions() {
 	if utils.ExistsCommand("uvx") {
 		uvx = "uvx"
 	} else {
-		file := utils.NormalizePath("~/.local/bin/uvx")
+		file := "~/.local/bin/uvx"
 		if !utils.ExistsCommand(file) {
 			utils.RunCmd("icon uv -ic")
 		}

@@ -23,7 +23,7 @@ func zellij(cmd *cobra.Command, args []string) {
 			[]string{"sha256sum"},
 			file,
 		)
-		dir_bin := utils.NormalizePath(utils.GetStringFlag(cmd, "bin-dir"))
+		dir_bin := utils.GetStringFlag(cmd, "bin-dir")
 		command := utils.Format(`{prefix} tar -zxvf {file} -C {dir_bin}`, map[string]string{
 			"file":    file,
 			"dir_bin": dir_bin,

@@ -20,7 +20,7 @@ func pytype(cmd *cobra.Command, args []string) {
 	}
 	if utils.GetBoolFlag(cmd, "config") {
 		var srcMap orderedmap.OrderedMap[string, any]
-		err := toml.Unmarshal(utils.ReadFile(utils.NormalizePath("~/.config/icon-data/pytype/pyproject.toml")), &srcMap)
+		err := toml.Unmarshal(utils.ReadFile("~/.config/icon-data/pytype/pyproject.toml"), &srcMap)
 		if err != nil {
 			log.Fatalf("Failed to parse TOML: %v", err)
 		}

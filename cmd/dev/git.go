@@ -166,7 +166,7 @@ func configureGitIgnore(cmd *cobra.Command) {
 	if lang == "" {
 		return
 	}
-	srcFile := utils.NormalizePath("~/.config/icon-data/git/gitignore_" + lang)
+	srcFile := "~/.config/icon-data/git/gitignore_" + lang
 	dstDir := utils.GetStringFlag(cmd, "dest-dir")
 	dstFile := filepath.Join(dstDir, ".gitignore")
 	if utils.GetBoolFlag(cmd, "append") {

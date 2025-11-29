@@ -28,7 +28,7 @@ func readDefaultKeybindings(file string) []string {
 func readDefaultKeybindingsFromYaml() map[string]string {
 	var keyBindings map[string]string
 	err := yaml.Unmarshal(
-		utils.ReadFile(utils.NormalizePath("~/.config/icon-data/keyboard/DefaultKeyBinding.yaml")), &keyBindings)
+		utils.ReadFile("~/.config/icon-data/keyboard/DefaultKeyBinding.yaml"), &keyBindings)
 	if err != nil {
 		log.Fatalf("Error unmarshaling data: %v", err)
 	}
@@ -69,7 +69,7 @@ func addDefaultKeyBindings(defaultKeyBindings []string, keyBindings map[string]s
 }
 
 func ConfigDefaultKeybindings() {
-	dir := utils.NormalizePath("~/Library/KeyBindings")
+	dir := "~/Library/KeyBindings"
 	utils.MkdirAll(dir, 0o700)
 	file := filepath.Join(dir, "DefaultKeyBinding.dict")
 	defaultKeyBindings := readDefaultKeybindings(file)
