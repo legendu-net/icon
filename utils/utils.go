@@ -1162,7 +1162,7 @@ func ExistsCommand(cmd string) bool {
 //
 //	MkdirAll("/tmp/mydir/subdir", 0o755)
 func MkdirAll(path string, perm os.FileMode) {
-	err := os.MkdirAll(path, perm)
+	err := os.MkdirAll(NormalizePath(path), perm)
 	if err != nil {
 		log.Fatal("ERROR - ", err)
 	}
