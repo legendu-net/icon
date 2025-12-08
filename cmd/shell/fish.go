@@ -49,7 +49,7 @@ func generateCrazyCompletions() {
 	} else {
 		file := "~/.local/bin/uvx"
 		if !utils.ExistsCommand(file) {
-			utils.RunCmd("icon uv -ic")
+			utils.RunCmd("curl -LsSf https://astral.sh/uv/install.sh | sh")
 		}
 		uvx = file
 	}
