@@ -967,7 +967,7 @@ fi
 // @param paths: Absolute paths to add into PATH.
 // @param config_file: The path of a shell's configuration file.
 func ConfigShellPath(config_file string) {
-	if GetLinuxDistId() == "idx" {
+	if GetLinuxDistID() == "idx" {
 		return
 	}
 	text := ReadFileAsString(config_file)
@@ -1234,11 +1234,11 @@ func IsLinux() bool {
 //	if distId == "ubuntu" {
 //	  fmt.Println("Running on Ubuntu")
 //	}
-func GetLinuxDistId() string {
+func GetLinuxDistID() string {
 	m := distro.OSRelease()
-	distId, found := m["ID"]
+	distID, found := m["ID"]
 	if found {
-		return distId
+		return distID
 	}
 	return ""
 }
@@ -1259,7 +1259,7 @@ func GetLinuxDistId() string {
 //	  fmt.Println("Not running on Ubuntu")
 //	}
 func IsUbuntu() bool {
-	return GetLinuxDistId() == "ubuntu"
+	return GetLinuxDistID() == "ubuntu"
 }
 
 // IsDebian checks if the current Linux distribution is Debian.
@@ -1278,7 +1278,7 @@ func IsUbuntu() bool {
 //	  fmt.Println("Not running on Debian")
 //	}
 func IsDebian() bool {
-	return GetLinuxDistId() == "debian"
+	return GetLinuxDistID() == "debian"
 }
 
 // IsDebianSeries checks if the current Linux distribution belongs to the Debian series.
@@ -1303,9 +1303,9 @@ func IsDebianSeries() bool {
 		"antix",
 		"lmde",
 	}
-	distId := GetLinuxDistId()
+	distID := GetLinuxDistID()
 	for _, id := range ids {
-		if distId == id {
+		if distID == id {
 			return true
 		}
 	}
@@ -1339,9 +1339,9 @@ func IsDebianUbuntuSeries() bool {
 		"lmde",
 		"ubuntu", "linuxmint", "pop",
 	}
-	distId := GetLinuxDistId()
+	distID := GetLinuxDistID()
 	for _, id := range ids {
-		if distId == id {
+		if distID == id {
 			return true
 		}
 	}
@@ -1372,7 +1372,7 @@ func IsUbuntuSeries() bool {
 	ids := []string{
 		"ubuntu", "linuxmint", "pop",
 	}
-	distId := GetLinuxDistId()
+	distId := GetLinuxDistID()
 	for _, id := range ids {
 		if distId == id {
 			return true
@@ -1405,7 +1405,7 @@ func IsFedoraSeries() bool {
 	ids := []string{
 		"fedora", "centos", "rhel",
 	}
-	distId := GetLinuxDistId()
+	distId := GetLinuxDistID()
 	for _, id := range ids {
 		if distId == id {
 			return true
@@ -1561,11 +1561,11 @@ func UpdateMap(map1 orderedmap.OrderedMap[string, any], map2 orderedmap.OrderedM
 			map1.Set(key2, val2)
 			continue
 		}
-		switch val2.(type) {
+		switch t2 := val2.(type) {
 		case orderedmap.OrderedMap[string, any]:
-			switch val1.(type) {
+			switch t1 := val1.(type) {
 			case orderedmap.OrderedMap[string, any]:
-				UpdateMap(val1.(orderedmap.OrderedMap[string, any]), val2.(orderedmap.OrderedMap[string, any]))
+				UpdateMap(t1, t2)
 			default:
 				map1.Set(key2, val2)
 			}

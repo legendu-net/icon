@@ -136,6 +136,11 @@ linters:
           disabled: true
         - name: unused-parameter
         - name: unused-receiver
+    staticcheck:
+      checks:
+        - "all"
+        - "-SA9003"
+
 
   exclusions:
     presets:
