@@ -8,7 +8,7 @@ import (
 )
 
 // Install and configure the Alacritty terminal.
-func alacritty(cmd *cobra.Command, args []string) {
+func alacritty(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "install") {
 		switch runtime.GOOS {
 		case "linux":

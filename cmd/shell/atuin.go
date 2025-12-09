@@ -9,7 +9,7 @@ import (
 )
 
 // Install atuin.
-func atuin(cmd *cobra.Command, args []string) {
+func atuin(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "install") {
 		command := "bash <(curl https://raw.githubusercontent.com/ellie/atuin/main/install.sh)"
 		utils.RunCmd(command)

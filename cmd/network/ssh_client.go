@@ -34,7 +34,7 @@ func adjustPathInConfig() {
 }
 
 // Install and configure SSH client.
-func SshClient(cmd *cobra.Command, args []string) {
+func SshClient(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "install") {
 	}
 	if utils.GetBoolFlag(cmd, "config") {

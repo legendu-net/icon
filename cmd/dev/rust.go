@@ -104,7 +104,7 @@ func installCargoBinstall() {
 }
 
 // Install and configure Rust.
-func rust(cmd *cobra.Command, args []string) {
+func rust(cmd *cobra.Command, _ []string) {
 	rustupHome := utils.GetStringFlag(cmd, "rustup-home")
 	if rustupHome == "" {
 		rustupHome = filepath.Join(utils.UserHomeDir(), ".rustup")

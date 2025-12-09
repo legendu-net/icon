@@ -9,7 +9,7 @@ import (
 
 // Install bash-it, a community Bash framework.
 // For more details, please refer to https://github.com/Bash-it/bash-it#installation.
-func bashIt(cmd *cobra.Command, args []string) {
+func bashIt(cmd *cobra.Command, _ []string) {
 	home := utils.UserHomeDir()
 	if utils.GetBoolFlag(cmd, "install") {
 		dir := filepath.Join(home, ".bash_it")

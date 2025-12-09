@@ -8,7 +8,7 @@ import (
 )
 
 // Install and configure neovim.
-func neovim(cmd *cobra.Command, args []string) {
+func neovim(cmd *cobra.Command, _ []string) {
 	Neovim(
 		utils.GetBoolFlag(cmd, "install"),
 		utils.GetBoolFlag(cmd, "config"),

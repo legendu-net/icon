@@ -83,7 +83,7 @@ func GetLatestRelease(releaseUrl string) ReleaseInfo {
 // Download a release from GitHub.
 // @param args: The arguments to parse.
 // If None, the arguments from command-line are parsed.
-func DownloadGitHubReleaseArgs(cmd *cobra.Command, args []string) {
+func DownloadGitHubReleaseArgs(cmd *cobra.Command, _ []string) {
 	DownloadGitHubRelease(
 		utils.GetStringFlag(cmd, "repo"),
 		utils.GetStringFlag(cmd, "version"),

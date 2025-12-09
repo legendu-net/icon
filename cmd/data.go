@@ -8,7 +8,7 @@ import (
 )
 
 // Pull data for icon from GitHub into ~/.config/icon-data.
-func data(cmd *cobra.Command, args []string) {
+func data(cmd *cobra.Command, _ []string) {
 	dir := "~/.config/icon-data"
 	if !utils.GetBoolFlag(cmd, "force") && utils.ExistsDir(dir+"/.git") {
 		fmt.Println("Using existing data in ~/.config/icon-data.")
