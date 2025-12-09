@@ -107,12 +107,15 @@ func CopyDir(sourceDir string, destinationDir string) {
 // @param path The path string to normalize.
 // @return The normalized path string.
 func NormalizePath(path string) string {
+	oldPath := path
 	if path == "~" {
-		return UserHomeDir()
+		path = UserHomeDir()
+	} else {
+		if strings.HasPrefix(path, "~/") {
+			path = filepath.Join(UserHomeDir(), path[2:])
+		}
 	}
-	if strings.HasPrefix(path, "~/") {
-		return filepath.Join(UserHomeDir(), path[2:])
-	}
+	fmt.Printf("Path %s has been normalized to %s.\n", oldPath, path)
 	return path
 }
 
@@ -803,6 +806,7 @@ func ReadFileAsString(path string) string {
 // @example
 // WriteFile("/tmp/myfile.txt", []byte("Hello, world!"), 0644)
 func WriteFile(fileName string, data []byte, perm fs.FileMode) {
+	fileName = NormalizePath(fileName)
 	err := os.WriteFile(fileName, data, perm)
 	if err != nil {
 		log.Fatal("ERROR - ", err)
