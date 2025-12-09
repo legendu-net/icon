@@ -138,6 +138,7 @@ linters:
         - name: unused-receiver
     staticcheck:
       checks:
+        - "all"
         - "-SA9003"
 
 
