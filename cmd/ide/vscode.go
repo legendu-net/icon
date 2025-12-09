@@ -52,7 +52,7 @@ func vscode(cmd *cobra.Command, args []string) {
 		if utils.GetBoolFlag(cmd, "copy") {
 			utils.CopyFileToDir("~/.config/icon-data/vscode/settings.json", userDir)
 		} else {
-			utils.SymlinkIntoDir("~/.config/icon-data/vscode/settings.json", userDir)
+			utils.SymlinkIntoDir("~/.config/icon-data/vscode/settings.json", userDir, true)
 		}
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {

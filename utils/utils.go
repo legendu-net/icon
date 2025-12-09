@@ -1501,9 +1501,15 @@ func IsSocket(path string) bool {
 // @example
 //
 //	Symlink("/path/to/source/file.txt", "/path/to/link/file.txt")
-func Symlink(path string, dstLink string) {
+func Symlink(path string, dstLink string, backup bool) {
 	path = NormalizePath(path)
 	dstLink = NormalizePath(dstLink)
+	if backup {
+		Backup(dstLink, "")
+	} else {
+		RemoveAll(dstLink)
+	}
+
 	MkdirAll(filepath.Dir(dstLink), 0o700)
 	err := os.Symlink(path, dstLink)
 	if err != nil {
@@ -1511,8 +1517,8 @@ func Symlink(path string, dstLink string) {
 	}
 }
 
-func SymlinkIntoDir(path string, dstDir string) {
-	Symlink(path, filepath.Join(dstDir, filepath.Base(path)))
+func SymlinkIntoDir(path string, dstDir string, backup bool) {
+	Symlink(path, filepath.Join(dstDir, filepath.Base(path)), backup)
 }
 
 // Update map1 using map2.
@@ -1665,21 +1671,21 @@ func ParseInt(str string) int64 {
 	return i
 }
 
-func RenameDir(originalDir string, newDir string) {
-	err := os.Rename(originalDir, newDir)
+func Rename(original string, new string) {
+	err := os.Rename(original, new)
 	if err != nil {
 		log.Fatal(err)
 	}
 }
 
-func BackupDir(originalDir string, backupDir string) {
-	originalDir = NormalizePath(originalDir)
-	backupDir = NormalizePath(backupDir)
-	if ExistsDir(originalDir) {
-		if backupDir == "" {
-			backupDir = filepath.Clean(originalDir) + "_" + time.Now().Format(time.RFC3339)
+func Backup(original string, backup string) {
+	original = NormalizePath(original)
+	backup = NormalizePath(backup)
+	if ExistsDir(original) {
+		if backup == "" {
+			backup = filepath.Clean(original) + "_" + time.Now().Format(time.RFC3339)
 		}
-		RenameDir(originalDir, backupDir)
-		fmt.Printf("%s has been backed up to %s.\n", originalDir, backupDir)
+		Rename(original, backup)
+		fmt.Printf("%s has been backed up to %s.\n", original, backup)
 	}
 }

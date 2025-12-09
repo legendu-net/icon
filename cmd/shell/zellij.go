@@ -34,7 +34,7 @@ func zellij(cmd *cobra.Command, args []string) {
 		utils.RunCmd(command)
 	}
 	if utils.GetBoolFlag(cmd, "config") {
-		utils.Symlink("~/.config/icon-data/zellij/config.kdl", "~/.config/zellij/config.kdl")
+		utils.Symlink("~/.config/icon-data/zellij/config.kdl", "~/.config/zellij/config.kdl", true)
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
 	}

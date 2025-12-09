@@ -56,7 +56,7 @@ func hyper(cmd *cobra.Command, _ []string) {
 		log.Printf("Hyper plugins hypercwd, hyper-search, hyper-pane and hyperpower are installed.\n")
 		utils.Symlink(
 			"~/.config/icon-data/hyper/hyper.js",
-			"~/.hyper.js")
+			"~/.hyper.js", true)
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
 		switch runtime.GOOS {
