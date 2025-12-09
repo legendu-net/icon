@@ -36,7 +36,7 @@ func installGitUi(cmd *cobra.Command) {
 }
 
 func linkGitUiFiles(baseDir string) {
-	utils.SymlinkIntoDir("~/.config/icon-data/git/gitui/key_bindings.ron", filepath.Join(baseDir, "gitui"))
+	utils.SymlinkIntoDir("~/.config/icon-data/git/gitui/key_bindings.ron", filepath.Join(baseDir, "gitui"), true)
 }
 
 func configGitUi(cmd *cobra.Command) {
@@ -124,7 +124,7 @@ func git(cmd *cobra.Command, args []string) {
 	}
 	if utils.GetBoolFlag(cmd, "config") {
 		network.SshClient(cmd, args)
-		utils.Symlink("~/.config/icon-data/git/gitconfig", "~/.gitconfig")
+		utils.Symlink("~/.config/icon-data/git/gitconfig", "~/.gitconfig", true)
 		configGitProxy(cmd)
 		configGitUi(cmd)
 	}

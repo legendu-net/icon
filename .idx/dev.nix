@@ -14,6 +14,7 @@
     fzf
     util-linux
     go
+    golangci-lint
     uv
     dos2unix
   ];

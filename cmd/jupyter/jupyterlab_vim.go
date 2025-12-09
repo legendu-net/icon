@@ -6,7 +6,7 @@ import (
 )
 
 // Install and configure the jupyterlab_vim extension for JupyterLab.
-func jupyterlab_vim(cmd *cobra.Command, args []string) {
+func jupyterlab_vim(cmd *cobra.Command, _ []string) {
 	prefix := utils.GetCommandPrefix(
 		utils.GetBoolFlag(cmd, "sudo"),
 		map[string]uint32{},

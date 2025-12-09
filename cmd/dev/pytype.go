@@ -11,7 +11,7 @@ import (
 )
 
 // Install and configure pytype.
-func pytype(cmd *cobra.Command, args []string) {
+func pytype(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "install") {
 		command := utils.Format("{pip_install} pytype", map[string]string{
 			"pip_install": utils.BuildPipInstall(cmd),

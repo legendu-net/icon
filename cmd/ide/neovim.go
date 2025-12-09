@@ -8,7 +8,7 @@ import (
 )
 
 // Install and configure neovim.
-func neovim(cmd *cobra.Command, args []string) {
+func neovim(cmd *cobra.Command, _ []string) {
 	Neovim(
 		utils.GetBoolFlag(cmd, "install"),
 		utils.GetBoolFlag(cmd, "config"),
@@ -58,8 +58,7 @@ func Neovim(install bool, config bool, uninstall bool, yes_s string) {
 	}
 	if config {
 		dir := "~/.config/nvim"
-		utils.BackupDir(dir, "")
-		utils.Symlink("~/.config/icon-data/nvim", dir)
+		utils.Symlink("~/.config/icon-data/nvim", dir, true)
 	}
 	if uninstall {
 		switch runtime.GOOS {

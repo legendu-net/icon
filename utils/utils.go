@@ -967,7 +967,7 @@ fi
 // @param paths: Absolute paths to add into PATH.
 // @param config_file: The path of a shell's configuration file.
 func ConfigShellPath(config_file string) {
-	if GetLinuxDistId() == "idx" {
+	if GetLinuxDistID() == "idx" {
 		return
 	}
 	text := ReadFileAsString(config_file)
@@ -1234,11 +1234,11 @@ func IsLinux() bool {
 //	if distId == "ubuntu" {
 //	  fmt.Println("Running on Ubuntu")
 //	}
-func GetLinuxDistId() string {
+func GetLinuxDistID() string {
 	m := distro.OSRelease()
-	distId, found := m["ID"]
+	distID, found := m["ID"]
 	if found {
-		return distId
+		return distID
 	}
 	return ""
 }
@@ -1259,7 +1259,7 @@ func GetLinuxDistId() string {
 //	  fmt.Println("Not running on Ubuntu")
 //	}
 func IsUbuntu() bool {
-	return GetLinuxDistId() == "ubuntu"
+	return GetLinuxDistID() == "ubuntu"
 }
 
 // IsDebian checks if the current Linux distribution is Debian.
@@ -1278,7 +1278,7 @@ func IsUbuntu() bool {
 //	  fmt.Println("Not running on Debian")
 //	}
 func IsDebian() bool {
-	return GetLinuxDistId() == "debian"
+	return GetLinuxDistID() == "debian"
 }
 
 // IsDebianSeries checks if the current Linux distribution belongs to the Debian series.
@@ -1303,9 +1303,9 @@ func IsDebianSeries() bool {
 		"antix",
 		"lmde",
 	}
-	distId := GetLinuxDistId()
+	distID := GetLinuxDistID()
 	for _, id := range ids {
-		if distId == id {
+		if distID == id {
 			return true
 		}
 	}
@@ -1339,9 +1339,9 @@ func IsDebianUbuntuSeries() bool {
 		"lmde",
 		"ubuntu", "linuxmint", "pop",
 	}
-	distId := GetLinuxDistId()
+	distID := GetLinuxDistID()
 	for _, id := range ids {
-		if distId == id {
+		if distID == id {
 			return true
 		}
 	}
@@ -1372,7 +1372,7 @@ func IsUbuntuSeries() bool {
 	ids := []string{
 		"ubuntu", "linuxmint", "pop",
 	}
-	distId := GetLinuxDistId()
+	distId := GetLinuxDistID()
 	for _, id := range ids {
 		if distId == id {
 			return true
@@ -1405,7 +1405,7 @@ func IsFedoraSeries() bool {
 	ids := []string{
 		"fedora", "centos", "rhel",
 	}
-	distId := GetLinuxDistId()
+	distId := GetLinuxDistID()
 	for _, id := range ids {
 		if distId == id {
 			return true
@@ -1501,9 +1501,15 @@ func IsSocket(path string) bool {
 // @example
 //
 //	Symlink("/path/to/source/file.txt", "/path/to/link/file.txt")
-func Symlink(path string, dstLink string) {
+func Symlink(path string, dstLink string, backup bool) {
 	path = NormalizePath(path)
 	dstLink = NormalizePath(dstLink)
+	if backup {
+		Backup(dstLink, "")
+	} else {
+		RemoveAll(dstLink)
+	}
+
 	MkdirAll(filepath.Dir(dstLink), 0o700)
 	err := os.Symlink(path, dstLink)
 	if err != nil {
@@ -1511,8 +1517,8 @@ func Symlink(path string, dstLink string) {
 	}
 }
 
-func SymlinkIntoDir(path string, dstDir string) {
-	Symlink(path, filepath.Join(dstDir, filepath.Base(path)))
+func SymlinkIntoDir(path string, dstDir string, backup bool) {
+	Symlink(path, filepath.Join(dstDir, filepath.Base(path)), backup)
 }
 
 // Update map1 using map2.
@@ -1555,11 +1561,11 @@ func UpdateMap(map1 orderedmap.OrderedMap[string, any], map2 orderedmap.OrderedM
 			map1.Set(key2, val2)
 			continue
 		}
-		switch val2.(type) {
+		switch t2 := val2.(type) {
 		case orderedmap.OrderedMap[string, any]:
-			switch val1.(type) {
+			switch t1 := val1.(type) {
 			case orderedmap.OrderedMap[string, any]:
-				UpdateMap(val1.(orderedmap.OrderedMap[string, any]), val2.(orderedmap.OrderedMap[string, any]))
+				UpdateMap(t1, t2)
 			default:
 				map1.Set(key2, val2)
 			}
@@ -1665,21 +1671,21 @@ func ParseInt(str string) int64 {
 	return i
 }
 
-func RenameDir(originalDir string, newDir string) {
-	err := os.Rename(originalDir, newDir)
+func Rename(original string, new string) {
+	err := os.Rename(original, new)
 	if err != nil {
 		log.Fatal(err)
 	}
 }
 
-func BackupDir(originalDir string, backupDir string) {
-	originalDir = NormalizePath(originalDir)
-	backupDir = NormalizePath(backupDir)
-	if ExistsDir(originalDir) {
-		if backupDir == "" {
-			backupDir = filepath.Clean(originalDir) + "_" + time.Now().Format(time.RFC3339)
+func Backup(original string, backup string) {
+	original = NormalizePath(original)
+	backup = NormalizePath(backup)
+	if ExistsDir(original) {
+		if backup == "" {
+			backup = filepath.Clean(original) + "_" + time.Now().Format(time.RFC3339)
 		}
-		RenameDir(originalDir, backupDir)
-		fmt.Printf("%s has been backed up to %s.\n", originalDir, backupDir)
+		Rename(original, backup)
+		fmt.Printf("%s has been backed up to %s.\n", original, backup)
 	}
 }

@@ -22,10 +22,8 @@ func pytorch(cmd *cobra.Command, _ []string) {
 		utils.RunCmd(command)
 	}
 	if utils.GetBoolFlag(cmd, "config") {
-		// nothing to configure
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
-		// TODO
 	}
 }
 

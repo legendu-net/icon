@@ -75,7 +75,7 @@ func generateCrazyCompletions() {
 }
 
 // Install and config the fish shell.
-func fish(cmd *cobra.Command, args []string) {
+func fish(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "install") {
 		switch runtime.GOOS {
 		case "linux":
@@ -92,8 +92,7 @@ func fish(cmd *cobra.Command, args []string) {
 	}
 	if utils.GetBoolFlag(cmd, "config") {
 		dir := "~/.config/fish"
-		utils.BackupDir(dir, "")
-		utils.Symlink("~/.config/icon-data/fish", dir)
+		utils.Symlink("~/.config/icon-data/fish", dir, true)
 
 		generateCompletions()
 		generateCrazyCompletions()

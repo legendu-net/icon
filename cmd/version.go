@@ -7,8 +7,8 @@ import (
 )
 
 // Show the version of icon.
-func version(_ *cobra.Command, args []string) {
-	fmt.Println("0.31.2")
+func version(_ *cobra.Command, _ []string) {
+	fmt.Println("0.32.0")
 }
 
 var versionCmd = &cobra.Command{

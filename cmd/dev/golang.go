@@ -60,7 +60,7 @@ func installGoPls(prefix string) {
 }
 
 // Install and configure Golang.
-func golang(cmd *cobra.Command, args []string) {
+func golang(cmd *cobra.Command, _ []string) {
 	prefix := utils.GetCommandPrefix(false, map[string]uint32{
 		"/usr/local/go":  unix.W_OK | unix.R_OK,
 		"/usr/local":     unix.W_OK | unix.R_OK,

@@ -34,11 +34,11 @@ func adjustPathInConfig() {
 }
 
 // Install and configure SSH client.
-func SshClient(cmd *cobra.Command, args []string) {
+func SshClient(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "install") {
 	}
 	if utils.GetBoolFlag(cmd, "config") {
-		utils.SymlinkIntoDir("~/.config/icon-data/ssh/client/config", sshHome)
+		utils.SymlinkIntoDir("~/.config/icon-data/ssh/client/config", sshHome, true)
 		copySshcSettingsFromHost()
 		utils.MkdirAll(filepath.Join(sshHome, "control"), 0o700)
 		/*

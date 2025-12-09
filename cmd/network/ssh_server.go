@@ -6,7 +6,7 @@ import (
 )
 
 // Install and configure SSH server.
-func SshServer(cmd *cobra.Command, args []string) {
+func SshServer(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "install") {
 		if utils.IsDebianUbuntuSeries() {
 			command := utils.Format("{prefix} apt-get update && {prefix} apt-get install {yes_s} openssh-server fail2ban", map[string]string{
