@@ -15,7 +15,7 @@ func data(cmd *cobra.Command, args []string) {
 		return
 	}
 
-	utils.BackupDir(dir, "")
+	utils.Backup(dir, "")
 	utils.MkdirAll(dir, 0o700)
 
 	command := utils.Format(`git clone {gitUrl} {dir} \

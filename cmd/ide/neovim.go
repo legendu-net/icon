@@ -58,8 +58,7 @@ func Neovim(install bool, config bool, uninstall bool, yes_s string) {
 	}
 	if config {
 		dir := "~/.config/nvim"
-		utils.BackupDir(dir, "")
-		utils.Symlink("~/.config/icon-data/nvim", dir)
+		utils.Symlink("~/.config/icon-data/nvim", dir, true)
 	}
 	if uninstall {
 		switch runtime.GOOS {
