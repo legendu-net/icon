@@ -1561,11 +1561,11 @@ func UpdateMap(map1 orderedmap.OrderedMap[string, any], map2 orderedmap.OrderedM
 			map1.Set(key2, val2)
 			continue
 		}
-		switch val2.(type) {
+		switch t2 := val2.(type) {
 		case orderedmap.OrderedMap[string, any]:
-			switch val1.(type) {
+			switch t1 := val1.(type) {
 			case orderedmap.OrderedMap[string, any]:
-				UpdateMap(val1.(orderedmap.OrderedMap[string, any]), val2.(orderedmap.OrderedMap[string, any]))
+				UpdateMap(t1, t2)
 			default:
 				map1.Set(key2, val2)
 			}
