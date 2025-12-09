@@ -9,7 +9,7 @@ import (
 )
 
 // Install and configure Visual Studio Code.
-func vscode(cmd *cobra.Command, args []string) {
+func vscode(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "install") {
 		switch runtime.GOOS {
 		case "linux":

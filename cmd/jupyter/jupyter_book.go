@@ -8,7 +8,7 @@ import (
 )
 
 // Install and configure jupyter_book.
-func jupyter_book(cmd *cobra.Command, args []string) {
+func jupyter_book(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "install") {
 		command := utils.Format("{pip_install} jupyter-book", map[string]string{
 			"pip_install": utils.BuildPipInstall(cmd),

@@ -8,7 +8,7 @@ import (
 )
 
 // Install and configure IPython.
-func ipython(cmd *cobra.Command, args []string) {
+func ipython(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "install") {
 		command := utils.Format("{prefix} {pip_install} ipython", map[string]string{
 			"prefix": utils.GetCommandPrefix(

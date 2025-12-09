@@ -11,7 +11,7 @@ import (
 )
 
 // Install and configure Ganymede.
-func zellij(cmd *cobra.Command, args []string) {
+func zellij(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "install") {
 		tmpdir := utils.CreateTempDir("")
 		defer os.RemoveAll(tmpdir)
