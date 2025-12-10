@@ -7,11 +7,16 @@ import (
 	"legendu.net/icon/utils"
 )
 
-// Pull data for icon from GitHub into ~/.config/icon-data.
-func data(cmd *cobra.Command, _ []string) {
+const GIT_URL = "https://github.com/legendu-net/icon-data.git"
+
+func FetchConfigData(force bool, gitUrl string) {
+	if gitUrl == "" {
+		gitUrl = GIT_URL
+	}
+
 	dir := "~/.config/icon-data"
-	if !utils.GetBoolFlag(cmd, "force") && utils.ExistsDir(dir+"/.git") {
-		fmt.Println("Using existing data in ~/.config/icon-data.")
+	if !force && utils.ExistsDir(dir+"/.git") {
+		fmt.Printf("Using existing data in %s.\n", dir)
 		return
 	}
 
@@ -20,11 +25,16 @@ func data(cmd *cobra.Command, _ []string) {
 
 	command := utils.Format(`git clone {gitUrl} {dir} \
 			&& cd {dir} && git submodule init && git submodule update --remote`, map[string]string{
-		"gitUrl": utils.GetStringFlag(cmd, "git-url"),
+		"gitUrl": gitUrl,
 		"dir":    dir,
 	})
 	utils.RunCmd(command)
 	fmt.Printf("Data for icon has been pulled into %s.\n", dir)
+}
+
+// Pull data for icon from GitHub into ~/.config/icon-data.
+func data(cmd *cobra.Command, _ []string) {
+	FetchConfigData(utils.GetBoolFlag(cmd, "force"), utils.GetStringFlag(cmd, "git-url"))
 }
 
 var dataCmd = &cobra.Command{
@@ -35,7 +45,7 @@ var dataCmd = &cobra.Command{
 }
 
 func init() {
-	dataCmd.Flags().StringP("git-url", "g", "https://github.com/legendu-net/icon-data.git", "The Git repo URL for icon-data.")
+	dataCmd.Flags().StringP("git-url", "g", GIT_URL, "The Git repo URL for icon-data.")
 	dataCmd.Flags().Bool("force", false, "Force pulling data if it alreay exists.")
 	rootCmd.AddCommand(dataCmd)
 }
