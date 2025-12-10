@@ -107,12 +107,15 @@ func CopyDir(sourceDir string, destinationDir string) {
 // @param path The path string to normalize.
 // @return The normalized path string.
 func NormalizePath(path string) string {
+	oldPath := path
 	if path == "~" {
-		return UserHomeDir()
+		path = UserHomeDir()
+	} else {
+		if strings.HasPrefix(path, "~/") {
+			path = filepath.Join(UserHomeDir(), path[2:])
+		}
 	}
-	if strings.HasPrefix(path, "~/") {
-		return filepath.Join(UserHomeDir(), path[2:])
-	}
+	fmt.Printf("Path %s has been normalized to %s.\n", oldPath, path)
 	return path
 }
 
@@ -613,6 +616,7 @@ func RemoveAll(path string) {
 	if err != nil {
 		log.Fatal("ERROR - ", err)
 	}
+	fmt.Printf("The path %s has been removed.\n", path)
 }
 
 // GetBoolFlag retrieves the boolean value of a flag from a Cobra command.
@@ -803,6 +807,7 @@ func ReadFileAsString(path string) string {
 // @example
 // WriteFile("/tmp/myfile.txt", []byte("Hello, world!"), 0644)
 func WriteFile(fileName string, data []byte, perm fs.FileMode) {
+	fileName = NormalizePath(fileName)
 	err := os.WriteFile(fileName, data, perm)
 	if err != nil {
 		log.Fatal("ERROR - ", err)
@@ -1166,10 +1171,12 @@ func ExistsCommand(cmd string) bool {
 //
 //	MkdirAll("/tmp/mydir/subdir", 0o755)
 func MkdirAll(path string, perm os.FileMode) {
-	err := os.MkdirAll(NormalizePath(path), perm)
+	path = NormalizePath(path)
+	err := os.MkdirAll(path, perm)
 	if err != nil {
 		log.Fatal("ERROR - ", err)
 	}
+	fmt.Printf("Sucessfully created the directory %s.\n", path)
 }
 
 // AddPythonFlags adds common Python-related flags to a Cobra command.
@@ -1515,6 +1522,7 @@ func Symlink(path string, dstLink string, backup bool) {
 	if err != nil {
 		log.Fatalf("Failed to link the file %s to %s!\n", path, dstLink)
 	}
+	fmt.Printf("Successfully created the symbolic link %s pointing to %s.\n", dstLink, path)
 }
 
 func SymlinkIntoDir(path string, dstDir string, backup bool) {
@@ -1676,6 +1684,7 @@ func Rename(original string, new string) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	fmt.Printf("The path %s has been renamed to %s.\n", original, new)
 }
 
 func Backup(original string, backup string) {
@@ -1686,6 +1695,5 @@ func Backup(original string, backup string) {
 			backup = filepath.Clean(original) + "_" + time.Now().Format(time.RFC3339)
 		}
 		Rename(original, backup)
-		fmt.Printf("%s has been backed up to %s.\n", original, backup)
 	}
 }
