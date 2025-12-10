@@ -19,7 +19,7 @@ func data(cmd *cobra.Command, _ []string) {
 	utils.MkdirAll(dir, 0o700)
 
 	command := utils.Format(`git clone {gitUrl} {dir} \
-			&& cd {dir} && git submodule init && git submodule update`, map[string]string{
+			&& cd {dir} && git submodule init && git submodule update --remote`, map[string]string{
 		"gitUrl": utils.GetStringFlag(cmd, "git-url"),
 		"dir":    dir,
 	})
