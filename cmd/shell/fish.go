@@ -61,7 +61,7 @@ func generateCrazyCompletions() {
 			srcFile := filepath.Join(dirCrazy, fileName)
 			fileName = strings.TrimSuffix(fileName, filepath.Ext(fileName)) + ".fish"
 			destFile := dir + fileName
-			cmd := utils.Format(`{uvx} --with pyyaml \
+			cmd := utils.Format(`{uvx} --python '>=3.10' --with pyyaml \
 				--from git+https://github.com/dclong/crazy-complete \
 				crazy-complete --input-type=yaml fish {srcFile} > {destFile}`,
 				map[string]string{
