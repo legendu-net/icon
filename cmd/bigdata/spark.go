@@ -12,6 +12,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"golang.org/x/sys/unix"
+	"legendu.net/icon/cmd/icon"
 	"legendu.net/icon/utils"
 )
 
@@ -96,6 +97,8 @@ func spark(cmd *cobra.Command, _ []string) {
 		}
 	}
 	if utils.GetBoolFlag(cmd, "config") {
+		icon.FetchConfigData(false, "")
+
 		metastoreDb := filepath.Join(sparkHome, "metastoreDb")
 		warehouse := filepath.Join(sparkHome, "warehouse")
 		switch runtime.GOOS {

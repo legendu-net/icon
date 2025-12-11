@@ -48,6 +48,8 @@ func alacritty(cmd *cobra.Command, _ []string) {
 		default:
 		}
 	}
+	if utils.GetBoolFlag(cmd, "config") {
+	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
 		switch runtime.GOOS {
 		case "linux":

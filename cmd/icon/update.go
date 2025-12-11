@@ -1,4 +1,4 @@
-package cmd
+package icon
 
 import (
 	"github.com/spf13/cobra"
@@ -19,7 +19,7 @@ func update(cmd *cobra.Command, _ []string) {
 	utils.RunCmd(command)
 }
 
-var updateCmd = &cobra.Command{
+var UpdateCmd = &cobra.Command{
 	Use:     "update",
 	Aliases: []string{"upd"},
 	Short:   "Update icon.",
@@ -27,6 +27,5 @@ var updateCmd = &cobra.Command{
 }
 
 func init() {
-	updateCmd.Flags().StringP("install-dir", "d", "/usr/local/bin", "The directory for installing icon.")
-	rootCmd.AddCommand(updateCmd)
+	UpdateCmd.Flags().StringP("install-dir", "d", "/usr/local/bin", "The directory for installing icon.")
 }

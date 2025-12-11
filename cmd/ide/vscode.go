@@ -5,6 +5,7 @@ import (
 	"runtime"
 
 	"github.com/spf13/cobra"
+	"legendu.net/icon/cmd/icon"
 	"legendu.net/icon/utils"
 )
 
@@ -40,6 +41,8 @@ func vscode(cmd *cobra.Command, _ []string) {
 		}
 	}
 	if utils.GetBoolFlag(cmd, "config") {
+		icon.FetchConfigData(false, "")
+
 		userDir := utils.GetStringFlag(cmd, "user-dir")
 		if userDir == "" {
 			switch runtime.GOOS {

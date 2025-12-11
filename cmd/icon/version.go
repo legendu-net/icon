@@ -1,4 +1,4 @@
-package cmd
+package icon
 
 import (
 	"fmt"
@@ -8,10 +8,10 @@ import (
 
 // Show the version of icon.
 func version(_ *cobra.Command, _ []string) {
-	fmt.Println("0.32.1")
+	fmt.Println("0.33.0")
 }
 
-var versionCmd = &cobra.Command{
+var VersionCmd = &cobra.Command{
 	Use:     "version",
 	Aliases: []string{"v"},
 	Short:   "Show the version of icon.",
@@ -19,5 +19,4 @@ var versionCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(versionCmd)
 }

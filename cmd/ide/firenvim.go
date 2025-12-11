@@ -22,10 +22,8 @@ func firenvim(cmd *cobra.Command, _ []string) {
 		}
 	}
 	if utils.GetBoolFlag(cmd, "config") {
-		// later
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
-		// later
 	}
 }
 

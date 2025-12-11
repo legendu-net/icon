@@ -6,6 +6,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"golang.org/x/sys/unix"
+	"legendu.net/icon/cmd/icon"
 	"legendu.net/icon/cmd/network"
 	"legendu.net/icon/utils"
 )
@@ -34,6 +35,7 @@ func zellij(cmd *cobra.Command, _ []string) {
 		utils.RunCmd(command)
 	}
 	if utils.GetBoolFlag(cmd, "config") {
+		icon.FetchConfigData(false, "")
 		utils.Symlink("~/.config/icon-data/zellij/config.kdl", "~/.config/zellij/config.kdl", true)
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {

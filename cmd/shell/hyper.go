@@ -5,6 +5,7 @@ import (
 	"runtime"
 
 	"github.com/spf13/cobra"
+	"legendu.net/icon/cmd/icon"
 	"legendu.net/icon/cmd/network"
 	"legendu.net/icon/utils"
 )
@@ -49,6 +50,8 @@ func hyper(cmd *cobra.Command, _ []string) {
 		}
 	}
 	if utils.GetBoolFlag(cmd, "config") {
+		icon.FetchConfigData(false, "")
+
 		utils.RunCmd("hyper i hypercwd")
 		utils.RunCmd("hyper i hyper-search")
 		utils.RunCmd("hyper i hyper-pane")
