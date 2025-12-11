@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
-	"legendu.net/icon/cmd"
+	"legendu.net/icon/cmd/icon"
 	"legendu.net/icon/utils"
 )
 
@@ -39,7 +39,7 @@ func SshClient(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "install") {
 	}
 	if utils.GetBoolFlag(cmd, "config") {
-		cmd.FetchConfigData(false, "")
+		icon.FetchConfigData(false, "")
 		utils.SymlinkIntoDir("~/.config/icon-data/ssh/client/config", sshHome, true)
 		copySshcSettingsFromHost()
 		utils.MkdirAll(filepath.Join(sshHome, "control"), 0o700)

@@ -8,6 +8,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
+	"legendu.net/icon/cmd/icon"
 	"legendu.net/icon/cmd/network"
 	"legendu.net/icon/utils"
 )
@@ -91,6 +92,8 @@ func fish(cmd *cobra.Command, _ []string) {
 		}
 	}
 	if utils.GetBoolFlag(cmd, "config") {
+		icon.FetchConfigData(false, "")
+
 		dir := "~/.config/fish"
 		utils.Symlink("~/.config/icon-data/fish", dir, true)
 
