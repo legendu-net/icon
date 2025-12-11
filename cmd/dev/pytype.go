@@ -7,6 +7,7 @@ import (
 	"github.com/elliotchance/orderedmap/v2"
 	"github.com/pelletier/go-toml/v2"
 	"github.com/spf13/cobra"
+	"legendu.net/icon/cmd/icon"
 	"legendu.net/icon/utils"
 )
 
@@ -19,6 +20,7 @@ func pytype(cmd *cobra.Command, _ []string) {
 		utils.RunCmd(command)
 	}
 	if utils.GetBoolFlag(cmd, "config") {
+		icon.FetchConfigData(false, "")
 		var srcMap orderedmap.OrderedMap[string, any]
 		err := toml.Unmarshal(utils.ReadFile("~/.config/icon-data/pytype/pyproject.toml"), &srcMap)
 		if err != nil {

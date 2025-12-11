@@ -4,6 +4,7 @@ import (
 	"runtime"
 
 	"github.com/spf13/cobra"
+	"legendu.net/icon/cmd/icon"
 	"legendu.net/icon/utils"
 )
 
@@ -57,6 +58,7 @@ func Neovim(install bool, config bool, uninstall bool, yes_s string) {
 		}
 	}
 	if config {
+		icon.FetchConfigData(false, "")
 		dir := "~/.config/nvim"
 		utils.Symlink("~/.config/icon-data/nvim", dir, true)
 	}

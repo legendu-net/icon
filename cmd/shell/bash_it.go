@@ -4,6 +4,7 @@ import (
 	"path/filepath"
 
 	"github.com/spf13/cobra"
+	"legendu.net/icon/cmd/icon"
 	"legendu.net/icon/utils"
 )
 
@@ -22,6 +23,7 @@ func bashIt(cmd *cobra.Command, _ []string) {
 		utils.RunCmd(command)
 	}
 	if utils.GetBoolFlag(cmd, "config") {
+		icon.FetchConfigData(false, "")
 		utils.ConfigBash()
 		utils.Symlink("~/.config/icon-data/bash-it", "~/.bash_it", true)
 	}

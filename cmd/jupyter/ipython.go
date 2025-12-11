@@ -4,6 +4,7 @@ import (
 	"path/filepath"
 
 	"github.com/spf13/cobra"
+	"legendu.net/icon/cmd/icon"
 	"legendu.net/icon/utils"
 )
 
@@ -20,6 +21,7 @@ func ipython(cmd *cobra.Command, _ []string) {
 		utils.RunCmd(command)
 	}
 	if utils.GetBoolFlag(cmd, "config") {
+		icon.FetchConfigData(false, "")
 		profile_dir := utils.GetStringFlag(cmd, "profile-dir")
 		profile_default := filepath.Join(profile_dir, "profile_default")
 		utils.Symlink(

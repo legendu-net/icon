@@ -10,6 +10,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
+	"legendu.net/icon/cmd/icon"
 	"legendu.net/icon/utils"
 )
 
@@ -86,6 +87,7 @@ func keyboard(cmd *cobra.Command, _ []string) {
 		// nothing to install
 	}
 	if utils.GetBoolFlag(cmd, "config") {
+		icon.FetchConfigData(false, "")
 		switch runtime.GOOS {
 		case "darwin":
 			ConfigDefaultKeybindings()

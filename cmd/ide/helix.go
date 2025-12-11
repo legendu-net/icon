@@ -55,7 +55,6 @@ func Helix(install bool, config bool, uninstall bool, yes_s string) {
 		}
 	}
 	if config {
-		// later
 	}
 	if uninstall {
 		switch runtime.GOOS {

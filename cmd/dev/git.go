@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
+	"legendu.net/icon/cmd/icon"
 	"legendu.net/icon/cmd/network"
 	"legendu.net/icon/utils"
 )
@@ -123,6 +124,7 @@ func git(cmd *cobra.Command, args []string) {
 		utils.RunCmd(command)
 	}
 	if utils.GetBoolFlag(cmd, "config") {
+		icon.FetchConfigData(false, "")
 		network.SshClient(cmd, args)
 		utils.Symlink("~/.config/icon-data/git/gitconfig", "~/.gitconfig", true)
 		configGitProxy(cmd)

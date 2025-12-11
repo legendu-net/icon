@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/spf13/cobra"
+	"legendu.net/icon/cmd/icon"
 	"legendu.net/icon/utils"
 )
 
@@ -16,6 +17,7 @@ func jupyter_book(cmd *cobra.Command, _ []string) {
 		utils.RunCmd(command)
 	}
 	if utils.GetBoolFlag(cmd, "config") {
+		icon.FetchConfigData(false, "")
 		srcFile := "~/.config/icon-data/jupyter-book/_config.yml"
 		utils.CopyFileToDir(srcFile, ".")
 		log.Printf("%s is copied to the current directory.", srcFile)
