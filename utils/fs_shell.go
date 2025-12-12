@@ -2,12 +2,60 @@ package utils
 
 import (
 	"fmt"
+	"log"
 	"path/filepath"
 	"strings"
 	"time"
 
 	"golang.org/x/sys/unix"
 )
+
+// Chmod changes the mode of the named file to mode.
+func Chmod(path string, mode string) {
+	prefix := GetCommandPrefix(false, map[string]uint32{
+		path: unix.W_OK | unix.R_OK,
+	})
+	cmd := Format("{prefix} chmod -R {mode} {path}", map[string]string{
+		"prefix": prefix,
+		"mode":   mode,
+		"path":   path,
+	})
+	RunCmd(cmd)
+}
+
+// Chmod600 recursively changes file modes of files under a directory to 600.
+//
+// @param path The path to the file or directory.
+func Chmod600(path string) {
+	if ExistsDir(path) {
+		Chmod(path, "700")
+		for _, entry := range ReadDir(path) {
+			Chmod600(filepath.Join(path, entry.Name()))
+		}
+	} else {
+		Chmod(path, "600")
+	}
+}
+
+// copyFile copies a file from the source path to the destination path.
+//
+// @param sourceFile      The path to the source file.
+// @param destinationFile The path to the destination file where the source file will be copied.
+func CopyFile(sourceFile string, destinationFile string) {
+	MkdirAll(dir(destinationFile), "700")
+
+	prefix := GetCommandPrefix(false, map[string]uint32{
+		sourceFile:      unix.R_OK,
+		destinationFile: unix.R_OK | unix.W_OK,
+	})
+	cmd := Format("{prefix} cp {sourceFile} {destinationFile}", map[string]string{
+		"prefix":          prefix,
+		"sourceFile":      sourceFile,
+		"destinationFile": destinationFile,
+	})
+	RunCmd(cmd)
+	log.Printf("%s is copied to %s.\n", sourceFile, destinationFile)
+}
 
 // RemoveAll removes the specified path and any children it contains.
 //
@@ -40,6 +88,7 @@ func MkdirAll(path, perm string) {
 	cmd = Format(cmd, map[string]string{
 		"prefix": prefix,
 		"path":   path,
+		"perm":   perm,
 	})
 	RunCmd(cmd)
 }
