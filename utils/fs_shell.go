@@ -23,7 +23,7 @@ func Chmod(path string, mode string) {
 	RunCmd(cmd)
 }
 
-// Chmod600 recursively changes the file mode of a file or directory to 0600 (rw-------).
+// Chmod600 recursively changes file modes of files under a directory to 600.
 //
 // @param path The path to the file or directory.
 func Chmod600(path string) {
