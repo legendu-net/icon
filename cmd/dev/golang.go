@@ -86,15 +86,7 @@ func golang(cmd *cobra.Command, _ []string) {
 			entries := utils.ReadDir(go_bin)
 			for _, entry := range entries {
 				file := filepath.Join(go_bin, entry.Name())
-				log.Printf(
-					"Creating a symbolic link of %s into %s/ ...", file, usr_local_bin,
-				)
-				cmd := utils.Format("{prefix} ln -svf {file} {usr_local_bin}/", map[string]string{
-					"prefix":        prefix,
-					"file":          file,
-					"usr_local_bin": usr_local_bin,
-				})
-				utils.RunCmd(cmd)
+				utils.SymlinkIntoDir(file, usr_local_bin, false, false)
 			}
 		default:
 			log.Fatal("The OS ", runtime.GOOS, " is not supported!")

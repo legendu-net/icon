@@ -22,7 +22,7 @@ func getExtensionDir() string {
 
 func InstallChromeExtension(id string, name string) {
 	dir := getExtensionDir()
-	utils.MkdirAll(dir, 0o700)
+	utils.MkdirAll(dir, "700")
 	config := filepath.Join(dir, id+".json")
 	utils.WriteTextFile(config, `{"external_update_url": "https://clients2.google.com/service/update2/crx"}`, 0o600)
 	log.Printf("Installed %s (%s)", config, name)

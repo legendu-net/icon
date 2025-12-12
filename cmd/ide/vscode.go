@@ -52,11 +52,8 @@ func vscode(cmd *cobra.Command, _ []string) {
 				userDir = "~/.config/Code/User"
 			}
 		}
-		if utils.GetBoolFlag(cmd, "copy") {
-			utils.CopyFileToDir("~/.config/icon-data/vscode/settings.json", userDir)
-		} else {
-			utils.SymlinkIntoDir("~/.config/icon-data/vscode/settings.json", userDir, true)
-		}
+		utils.SymlinkIntoDir("~/.config/icon-data/vscode/settings.json", userDir,
+			!utils.GetBoolFlag(cmd, "no-backup"), utils.GetBoolFlag(cmd, "copy"))
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
 		switch runtime.GOOS {
@@ -99,7 +96,8 @@ func init() {
 	VscodeCmd.Flags().BoolP("install", "i", false, "Install Visual Studio Code.")
 	VscodeCmd.Flags().Bool("uninstall", false, "Uninstall Visual Studio Code.")
 	VscodeCmd.Flags().BoolP("config", "c", false, "Configure Visual Studio Code.")
-	VscodeCmd.Flags().Bool("copy", false, "Copy (instead of link) configuration files.")
+	VscodeCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
+	VscodeCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
 	VscodeCmd.Flags().StringP("user-dir", "d", "", "The configuration directory for Visual Studio Code.")
 	VscodeCmd.Flags().BoolP("yes", "y", false, "Automatically yes to prompt questions.")
 	// rootCmd.AddCommand(vscodeCmd)

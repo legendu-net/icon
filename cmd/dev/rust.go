@@ -1,7 +1,6 @@
 package dev
 
 import (
-	"log"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -20,19 +19,8 @@ func linkRust(cmd *cobra.Command, cargoHome string) {
 	cargoBin := filepath.Join(cargoHome, "bin")
 	switch runtime.GOOS {
 	case "linux", "darwin":
-		prefix := utils.GetCommandPrefix(false, map[string]uint32{
-			cargoBin:  unix.R_OK,
-			linkToDir: unix.W_OK | unix.R_OK,
-		})
-		// TODO:
 		for _, entry := range utils.ReadDir(cargoBin) {
-			bin := filepath.Join(cargoBin, entry.Name())
-			utils.Format("{prefix} ln -svf {bin} {linkToDir}/", map[string]string{
-				"prefix":    prefix,
-				"bin":       bin,
-				"linkToDir": linkToDir,
-			})
-			log.Printf("%s is linked into %s/.", bin, linkToDir)
+			utils.SymlinkIntoDir(filepath.Join(cargoBin, entry.Name()), linkToDir, false, false)
 		}
 	default:
 	}

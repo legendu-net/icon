@@ -36,7 +36,8 @@ func zellij(cmd *cobra.Command, _ []string) {
 	}
 	if utils.GetBoolFlag(cmd, "config") {
 		icon.FetchConfigData(false, "")
-		utils.Symlink("~/.config/icon-data/zellij/config.kdl", "~/.config/zellij/config.kdl", true)
+		utils.Symlink("~/.config/icon-data/zellij/config.kdl", "~/.config/zellij/config.kdl",
+			!utils.GetBoolFlag(cmd, "no-backup"), utils.GetBoolFlag(cmd, "copy"))
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
 	}
@@ -55,6 +56,8 @@ func init() {
 	ZellijCmd.Flags().Bool("uninstall", false, "Uninstall Ganymede.")
 	ZellijCmd.Flags().BoolP("config", "c", false, "Configure Ganymede.")
 	ZellijCmd.Flags().Bool("sudo", false, "Force using sudo.")
+	ZellijCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
+	ZellijCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
 	ZellijCmd.Flags().String("bin-dir", "/usr/local/bin", "The directory for installing Zellij executable.")
 	utils.AddPythonFlags(ZellijCmd)
 	// rootCmd.AddCommand(ZellijCmd)

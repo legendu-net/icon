@@ -8,12 +8,12 @@ import (
 	"legendu.net/icon/utils"
 )
 
-func linkArrowDbProfileFromHost() {
+func linkArrowDbProfileFromHost(backup, copy bool) {
 	srcProfile := filepath.Join("/home_host", utils.GetCurrentUser().Name, ".arrowdb_profile")
 	dstProfile := filepath.Join(utils.UserHomeDir(), ".arrowdb_profile")
 	if utils.ExistsFile(srcProfile) {
 		// inside a Docker container, link profile from host
-		utils.Symlink(srcProfile, dstProfile, false)
+		utils.Symlink(srcProfile, dstProfile, backup, copy)
 	}
 }
 
@@ -30,7 +30,7 @@ func arrowDb(cmd *cobra.Command, _ []string) {
 		utils.RunCmd(command)
 	}
 	if utils.GetBoolFlag(cmd, "config") {
-		linkArrowDbProfileFromHost()
+		linkArrowDbProfileFromHost(!utils.GetBoolFlag(cmd, "no-backup"), utils.GetBoolFlag(cmd, "copy"))
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
 		command := utils.Format("{prefix} {pip_uninstall} arrowdb", map[string]string{
@@ -56,6 +56,7 @@ func init() {
 	ArrowDbCmd.Flags().BoolP("install", "i", false, "Install Spark.")
 	ArrowDbCmd.Flags().BoolP("uninstall", "u", false, "Uninstall Spark.")
 	ArrowDbCmd.Flags().BoolP("config", "c", false, "Configure Spark.")
+	ArrowDbCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
+	ArrowDbCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
 	utils.AddPythonFlags(ArrowDbCmd)
-	// rootCmd.AddCommand(ArrowDbCmd)
 }
