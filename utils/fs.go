@@ -24,25 +24,8 @@ func getFileMode(file string) fs.FileMode {
 	return fileInfo.Mode()
 }
 
-// copyFile copies a file from the source path to the destination path.
-//
-// This function reads the content of the source file, writes it to the destination file,
-// and then sets the destination file's permissions to match those of the source file.
-// If any error occurs during these operations, the function will terminate with a fatal log.
-//
-// @param sourceFile      The path to the source file.
-// @param destinationFile The path to the destination file where the source file will be copied.
-func CopyFile(sourceFile string, destinationFile string) {
-	sourceFile = NormalizePath(sourceFile)
-	destinationFile = NormalizePath(destinationFile)
-	MkdirAll(filepath.Dir(destinationFile), "700")
-	input, err := os.ReadFile(sourceFile)
-	if err != nil {
-		log.Fatal("ERROR - ", err)
-	}
-	WriteFile(destinationFile, input, 0o600)
-	Chmod(destinationFile, getFileMode(sourceFile))
-	log.Printf("%s is copied to %s.\n", sourceFile, destinationFile)
+func dir(path string) string {
+	return filepath.Dir(NormalizePath(path))
 }
 
 // CopyFileToDir copies a file from a source path to a destination directory.
@@ -53,6 +36,8 @@ func CopyFile(sourceFile string, destinationFile string) {
 // @param sourceFile      The path to the source file.
 // @param destinationDir The path to the destination directory where the source file will be copied.
 func CopyFileToDir(sourceFile string, destinationDir string) {
+	sourceFile = NormalizePath(sourceFile)
+	destinationDir = NormalizePath(destinationDir)
 	CopyFile(sourceFile, filepath.Join(destinationDir, filepath.Base(sourceFile)))
 }
 
@@ -97,36 +82,6 @@ func NormalizePath(path string) string {
 		return filepath.Join(UserHomeDir(), path[2:])
 	}
 	return path
-}
-
-// Chmod changes the mode of the named file to mode.
-//
-// If an error occurs during the chmod operation, the function will terminate with a fatal log.
-//
-// @param path The path to the file.
-func Chmod(path string, mode fs.FileMode) {
-	err := os.Chmod(path, mode)
-	if err != nil {
-		log.Fatal("ERROR - ", err)
-	}
-}
-
-// Chmod600 recursively changes the file mode of a file or directory to 0600 (rw-------).
-//
-// If the given path is a directory, this function will recursively apply the 0700
-// permissions (rwx------) to the directory and 0600 to all files within it. If the
-// path is a file, it will simply apply 0600 permissions to that file.
-//
-// @param path The path to the file or directory.
-func Chmod600(path string) {
-	if ExistsDir(path) {
-		Chmod(path, 0o700)
-		for _, entry := range ReadDir(path) {
-			Chmod600(filepath.Join(path, entry.Name()))
-		}
-	} else {
-		Chmod(path, 0o600)
-	}
 }
 
 // CreateTempDir creates a new temporary directory.
@@ -241,6 +196,7 @@ func UserHomeDir() string {
 //
 // @return A slice of DirEntry representing the directory's contents.
 func ReadDir(dir string) []os.DirEntry {
+	dir = NormalizePath(dir)
 	entries, err := os.ReadDir(dir)
 	if err != nil {
 		log.Fatal("ERROR - ", err)
