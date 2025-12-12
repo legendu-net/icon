@@ -1163,6 +1163,7 @@ func ExistsCommand(cmd string) bool {
 // @param perm The file mode (permissions) to set for the newly created directories.
 //
 // @example
+//
 //	MkdirAll("/tmp/mydir/subdir", "755")
 func MkdirAll(path, perm string) {
 	perm = strings.TrimSpace(perm)
@@ -1175,8 +1176,8 @@ func MkdirAll(path, perm string) {
 		cmd += " && {prefix} chmod -R {perm} {path}"
 	}
 	cmd = Format(cmd, map[string]string{
-		"prefix":   prefix,
-		"path": path,
+		"prefix": prefix,
+		"path":   path,
 	})
 	RunCmd(cmd)
 }
