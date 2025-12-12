@@ -25,7 +25,8 @@ func bashIt(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "config") {
 		icon.FetchConfigData(false, "")
 		utils.ConfigBash()
-		utils.Symlink("~/.config/icon-data/bash-it", "~/.bash_it", true)
+		utils.Symlink("~/.config/icon-data/bash-it", "~/.bash_it",
+			!utils.GetBoolFlag(cmd, "no-backup"), utils.GetBoolFlag(cmd, "copy"))
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
 		utils.RunCmd("~/.bash_it/uninstall.sh && rm -rf ~/.bash_it/")
@@ -44,5 +45,6 @@ func init() {
 	BashItCmd.Flags().BoolP("install", "i", false, "If specified, install bash-it.")
 	BashItCmd.Flags().Bool("uninstall", false, "If specified, uninstall bash-it.")
 	BashItCmd.Flags().BoolP("config", "c", false, "If specified, configure bash-it.")
-	// rootCmd.AddCommand(bashItCmd)
+	BashItCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
+	BashItCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
 }

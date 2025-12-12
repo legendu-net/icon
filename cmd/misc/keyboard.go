@@ -71,7 +71,7 @@ func addDefaultKeyBindings(defaultKeyBindings []string, keyBindings map[string]s
 
 func ConfigDefaultKeybindings() {
 	dir := "~/Library/KeyBindings"
-	utils.MkdirAll(dir, 0o700)
+	utils.MkdirAll(dir, "700")
 	file := filepath.Join(dir, "DefaultKeyBinding.dict")
 	defaultKeyBindings := readDefaultKeybindings(file)
 	keyBindings := readDefaultKeybindingsFromYaml()

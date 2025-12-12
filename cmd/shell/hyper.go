@@ -59,7 +59,8 @@ func hyper(cmd *cobra.Command, _ []string) {
 		log.Printf("Hyper plugins hypercwd, hyper-search, hyper-pane and hyperpower are installed.\n")
 		utils.Symlink(
 			"~/.config/icon-data/hyper/hyper.js",
-			"~/.hyper.js", true)
+			"~/.hyper.js",
+			!utils.GetBoolFlag(cmd, "no-backup"), utils.GetBoolFlag(cmd, "copy"))
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
 		switch runtime.GOOS {
@@ -83,6 +84,8 @@ func init() {
 	HyperCmd.Flags().BoolP("install", "i", false, "Install the Hyper terminal.")
 	HyperCmd.Flags().Bool("uninstall", false, "Uninstall Hyper terminal.")
 	HyperCmd.Flags().BoolP("config", "c", false, "Configure the Hyper terminal.")
+	HyperCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
+	HyperCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
 	HyperCmd.Flags().BoolP("yes", "y", false, "Automatically yes to prompt questions.")
 	HyperCmd.Flags().StringP("version", "v", "", "The version of the release.")
 }

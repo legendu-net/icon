@@ -36,17 +36,19 @@ func installGitUi(cmd *cobra.Command) {
 	}
 }
 
-func linkGitUiFiles(baseDir string) {
-	utils.SymlinkIntoDir("~/.config/icon-data/git/gitui/key_bindings.ron", filepath.Join(baseDir, "gitui"), true)
+func linkGitUiFiles(baseDir string, backup bool, copy bool) {
+	utils.SymlinkIntoDir("~/.config/icon-data/git/gitui/key_bindings.ron", filepath.Join(baseDir, "gitui"),
+		backup, copy)
 }
 
 func configGitUi(cmd *cobra.Command) {
 	if utils.GetBoolFlag(cmd, "gitui") {
-		linkGitUiFiles("~/.config")
+		linkGitUiFiles("~/.config", !utils.GetBoolFlag(cmd, "no-backup"), utils.GetBoolFlag(cmd, "copy"))
 		if utils.IsLinux() {
 			baseDir := os.Getenv("XDG_CONFIG_HOME")
 			if baseDir != "" {
-				linkGitUiFiles(baseDir)
+				linkGitUiFiles(baseDir,
+					!utils.GetBoolFlag(cmd, "no-backup"), utils.GetBoolFlag(cmd, "copy"))
 			}
 		}
 	}
@@ -126,7 +128,8 @@ func git(cmd *cobra.Command, args []string) {
 	if utils.GetBoolFlag(cmd, "config") {
 		icon.FetchConfigData(false, "")
 		network.SshClient(cmd, args)
-		utils.Symlink("~/.config/icon-data/git/gitconfig", "~/.gitconfig", true)
+		utils.Symlink("~/.config/icon-data/git/gitconfig", "~/.gitconfig",
+			!utils.GetBoolFlag(cmd, "no-backup"), utils.GetBoolFlag(cmd, "copy"))
 		configGitProxy(cmd)
 		configGitUi(cmd)
 	}
@@ -191,14 +194,13 @@ func init() {
 	GitCmd.Flags().BoolP("install", "i", false, "Install Git.")
 	GitCmd.Flags().Bool("uninstall", false, "Uninstall Git.")
 	GitCmd.Flags().BoolP("config", "c", false, "Configure Git.")
+	GitCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
+	GitCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
 	GitCmd.Flags().String("git", "git", "Path to the Git command.")
 	GitCmd.Flags().BoolP("yes", "y", false, "Automatically yes to prompt questions.")
 	GitCmd.Flags().Bool("gitui", false, "Install and configure gitui too.")
-	GitCmd.Flags().StringP("user-name", "n", "", "The user name for Git.")
-	GitCmd.Flags().StringP("user-email", "e", "", "The user name for Git.")
 	GitCmd.Flags().String("proxy", "", "Configure Git to use the specified proxy.")
 	GitCmd.Flags().StringP("dest-dir", "d", ".", "The destination directory (current directory, by default) to copy gitignore files to.")
 	GitCmd.Flags().BoolP("append", "a", false, "Append to the .gitignore instead of oveerwriting it.")
 	GitCmd.Flags().StringP("lang", "l", "", "The language to configure .gitignore for.")
-	// rootCmd.AddCommand(gitCmd)
 }

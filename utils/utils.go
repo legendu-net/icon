@@ -50,7 +50,7 @@ func GetFileMode(file string) fs.FileMode {
 func CopyFile(sourceFile string, destinationFile string) {
 	sourceFile = NormalizePath(sourceFile)
 	destinationFile = NormalizePath(destinationFile)
-	MkdirAll(filepath.Dir(destinationFile), 0o700)
+	MkdirAll(filepath.Dir(destinationFile), "700")
 	input, err := os.ReadFile(sourceFile)
 	if err != nil {
 		log.Fatal("ERROR - ", err)
@@ -82,7 +82,7 @@ func CopyFileToDir(sourceFile string, destinationDir string) {
 //	and its contents will be copied.
 func CopyDir(sourceDir string, destinationDir string) {
 	if !ExistsDir(destinationDir) {
-		MkdirAll(destinationDir, GetFileMode(sourceDir))
+		MkdirAll(destinationDir, "700")
 	}
 	for _, entry := range ReadDir(sourceDir) {
 		if entry.IsDir() {
@@ -107,15 +107,12 @@ func CopyDir(sourceDir string, destinationDir string) {
 // @param path The path string to normalize.
 // @return The normalized path string.
 func NormalizePath(path string) string {
-	oldPath := path
 	if path == "~" {
-		path = UserHomeDir()
-	} else {
-		if strings.HasPrefix(path, "~/") {
-			path = filepath.Join(UserHomeDir(), path[2:])
-		}
+		return UserHomeDir()
 	}
-	fmt.Printf("Path %s has been normalized to %s.\n", oldPath, path)
+	if strings.HasPrefix(path, "~/") {
+		return filepath.Join(UserHomeDir(), path[2:])
+	}
 	return path
 }
 
@@ -612,11 +609,14 @@ func UserHomeDir() string {
 //	RemoveAll("/tmp/mydir") // Removes /tmp/mydir and all its contents.
 //	RemoveAll("/tmp/myfile.txt") // Removes /tmp/myfile.txt.
 func RemoveAll(path string) {
-	err := os.RemoveAll(path)
-	if err != nil {
-		log.Fatal("ERROR - ", err)
-	}
-	fmt.Printf("The path %s has been removed.\n", path)
+	prefix := GetCommandPrefix(false, map[string]uint32{
+		path: unix.W_OK | unix.R_OK,
+	})
+	cmd := Format("{prefix} rm -rf {path}", map[string]string{
+		"prefix": prefix,
+		"path":   path,
+	})
+	RunCmd(cmd)
 }
 
 // GetBoolFlag retrieves the boolean value of a flag from a Cobra command.
@@ -1159,24 +1159,26 @@ func ExistsCommand(cmd string) bool {
 
 // MkdirAll creates a directory and all necessary parent directories.
 //
-// This function is similar to `os.MkdirAll` but it terminates the program
-// with a fatal log message if an error occurs. It ensures that the specified
-// directory, along with any necessary parent directories, are created with the
-// given permissions.
-//
 // @param path The path of the directory to create.
 // @param perm The file mode (permissions) to set for the newly created directories.
 //
 // @example
-//
-//	MkdirAll("/tmp/mydir/subdir", 0o755)
-func MkdirAll(path string, perm os.FileMode) {
+//	MkdirAll("/tmp/mydir/subdir", "755")
+func MkdirAll(path, perm string) {
+	perm = strings.TrimSpace(perm)
 	path = NormalizePath(path)
-	err := os.MkdirAll(path, perm)
-	if err != nil {
-		log.Fatal("ERROR - ", err)
+	prefix := GetCommandPrefix(false, map[string]uint32{
+		path: unix.R_OK | unix.W_OK | unix.X_OK,
+	})
+	cmd := "{prefix} mkdir -p {path}"
+	if perm != "" {
+		cmd += " && {prefix} chmod -R {perm} {path}"
 	}
-	fmt.Printf("Sucessfully created the directory %s.\n", path)
+	cmd = Format(cmd, map[string]string{
+		"prefix":   prefix,
+		"path": path,
+	})
+	RunCmd(cmd)
 }
 
 // AddPythonFlags adds common Python-related flags to a Cobra command.
@@ -1508,7 +1510,7 @@ func IsSocket(path string) bool {
 // @example
 //
 //	Symlink("/path/to/source/file.txt", "/path/to/link/file.txt")
-func Symlink(path string, dstLink string, backup bool) {
+func Symlink(path string, dstLink string, backup bool, copy bool) {
 	path = NormalizePath(path)
 	dstLink = NormalizePath(dstLink)
 	if backup {
@@ -1517,16 +1519,30 @@ func Symlink(path string, dstLink string, backup bool) {
 		RemoveAll(dstLink)
 	}
 
-	MkdirAll(filepath.Dir(dstLink), 0o700)
-	err := os.Symlink(path, dstLink)
-	if err != nil {
-		log.Fatalf("Failed to link the file %s to %s!\n", path, dstLink)
+	MkdirAll(filepath.Dir(dstLink), "700")
+	prefix := GetCommandPrefix(false, map[string]uint32{
+		path:    unix.R_OK,
+		dstLink: unix.W_OK | unix.R_OK,
+	})
+	if copy {
+		cmd := Format("{prefix} cp -ir {path} {dstLink}", map[string]string{
+			"prefix":  prefix,
+			"path":    path,
+			"dstLink": dstLink,
+		})
+		RunCmd(cmd)
+	} else {
+		cmd := Format("{prefix} ln -sv {path} {dstLink}", map[string]string{
+			"prefix":  prefix,
+			"path":    path,
+			"dstLink": dstLink,
+		})
+		RunCmd(cmd)
 	}
-	fmt.Printf("Successfully created the symbolic link %s pointing to %s.\n", dstLink, path)
 }
 
-func SymlinkIntoDir(path string, dstDir string, backup bool) {
-	Symlink(path, filepath.Join(dstDir, filepath.Base(path)), backup)
+func SymlinkIntoDir(path string, dstDir string, backup bool, copy bool) {
+	Symlink(path, filepath.Join(dstDir, filepath.Base(path)), backup, copy)
 }
 
 // Update map1 using map2.
@@ -1680,17 +1696,23 @@ func ParseInt(str string) int64 {
 }
 
 func Rename(original string, new string) {
-	err := os.Rename(original, new)
-	if err != nil {
-		log.Fatal(err)
-	}
+	prefix := GetCommandPrefix(false, map[string]uint32{
+		original: unix.W_OK | unix.R_OK,
+		new:      unix.W_OK | unix.R_OK,
+	})
+	cmd := Format("{prefix} mv {original} {new}", map[string]string{
+		"prefix":   prefix,
+		"original": original,
+		"new":      new,
+	})
+	RunCmd(cmd)
 	fmt.Printf("The path %s has been renamed to %s.\n", original, new)
 }
 
 func Backup(original string, backup string) {
 	original = NormalizePath(original)
 	backup = NormalizePath(backup)
-	if ExistsDir(original) {
+	if ExistsPath(original) {
 		if backup == "" {
 			backup = filepath.Clean(original) + "_" + time.Now().Format(time.RFC3339)
 		}

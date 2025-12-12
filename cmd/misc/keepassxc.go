@@ -1,7 +1,6 @@
 package misc
 
 import (
-	"log"
 	"runtime"
 
 	"github.com/spf13/cobra"
@@ -32,13 +31,7 @@ func keepassxc(cmd *cobra.Command, _ []string) {
 		}
 	}
 	if utils.GetBoolFlag(cmd, "config") {
-		path := "~/.local/bin/"
-		command := utils.Format(`mkdir -p {path} \
-			&& ln -s /Applications/KeePassXC.app/Contents/MacOS/keepassxc-cli {path}`, map[string]string{
-			"path": path,
-		})
-		utils.RunCmd(command)
-		log.Printf("The command keepassxc-cli has been symlinked into %s.\n", path)
+		utils.SymlinkIntoDir("/Applications/KeePassXC.app/Contents/MacOS/keepassxc-cli", "~/.local/bin", false, false)
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
 		switch runtime.GOOS {

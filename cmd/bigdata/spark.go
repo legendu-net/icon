@@ -103,8 +103,8 @@ func spark(cmd *cobra.Command, _ []string) {
 		warehouse := filepath.Join(sparkHome, "warehouse")
 		switch runtime.GOOS {
 		case "windows":
-			utils.MkdirAll(metastoreDb, 0777)
-			utils.MkdirAll(warehouse, 0777)
+			utils.MkdirAll(metastoreDb, "777")
+			utils.MkdirAll(warehouse, "777")
 		default:
 			cmd := utils.Format(
 				`{prefix} mkdir -p {metastoreDb} && 

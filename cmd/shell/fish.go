@@ -95,7 +95,8 @@ func fish(cmd *cobra.Command, _ []string) {
 		icon.FetchConfigData(false, "")
 
 		dir := "~/.config/fish"
-		utils.Symlink("~/.config/icon-data/fish", dir, true)
+		utils.Symlink("~/.config/icon-data/fish", dir,
+			!utils.GetBoolFlag(cmd, "no-backup"), utils.GetBoolFlag(cmd, "copy"))
 
 		generateCompletions()
 		generateCrazyCompletions()
@@ -125,5 +126,7 @@ func init() {
 	FishCmd.Flags().BoolP("install", "i", false, "If specified, install the fish shell.")
 	FishCmd.Flags().Bool("uninstall", false, "If specified, uninstall the fish shell.")
 	FishCmd.Flags().BoolP("config", "c", false, "If specified, configure the fish shell.")
+	FishCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
+	FishCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
 	FishCmd.Flags().StringP("version", "v", "", "The version of the release.")
 }
