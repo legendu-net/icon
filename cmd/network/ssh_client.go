@@ -10,7 +10,7 @@ import (
 	"legendu.net/icon/utils"
 )
 
-var sshHome = filepath.Join(utils.UserHomeDir(), ".ssh")
+const sshHome = "~/.ssh"
 
 // Copy configuration files from /home_host/USER/.ssh if it exists.
 // @param ssh_home: The home directory (~/.ssh) of SSH client configuration.
@@ -40,18 +40,10 @@ func SshClient(cmd *cobra.Command, _ []string) {
 	}
 	if utils.GetBoolFlag(cmd, "config") {
 		icon.FetchConfigData(false, "")
-		utils.SymlinkIntoDir("~/.config/icon-data/ssh/client/config", sshHome, true)
+		utils.SymlinkIntoDir("~/.config/icon-data/ssh/client/config", sshHome,
+			!utils.GetBoolFlag(cmd, "no-backup"), utils.GetBoolFlag(cmd, "copy"))
 		copySshcSettingsFromHost()
-		utils.MkdirAll(filepath.Join(sshHome, "control"), 0o700)
-		/*
-					switch runtime.GOOS {
-					case "linux", "darwin":
-			            command = utils.Format("{prefix} chown -R {USER}:`id -g {USER}` {HOME}/.ssh", map[string]string{
-						})
-			            utils.RunCmd(command)
-					default:
-					}
-		*/
+		utils.MkdirAll("~/.local/share/ssh", "700")
 		utils.Chmod600(sshHome)
 		log.Print("The permissions of ~/.ssh and its contents are correctly set.\n")
 	}
@@ -71,5 +63,6 @@ func init() {
 	SshClientCmd.Flags().BoolP("install", "i", false, "Install Git.")
 	SshClientCmd.Flags().Bool("uninstall", false, "Uninstall Git.")
 	SshClientCmd.Flags().BoolP("config", "c", false, "Configure Git.")
-	// rootCmd.AddCommand(sshClientCmd)
+	SshClientCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
+	SshClientCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
 }

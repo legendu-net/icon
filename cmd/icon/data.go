@@ -21,7 +21,7 @@ func FetchConfigData(force bool, gitUrl string) {
 	}
 
 	utils.Backup(dir, "")
-	utils.MkdirAll(dir, 0o700)
+	utils.MkdirAll(dir, "700")
 
 	command := utils.Format(`git clone {gitUrl} {dir} \
 			&& cd {dir} && git submodule init && git submodule update --remote`, map[string]string{
