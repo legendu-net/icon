@@ -108,6 +108,6 @@ func init() {
 	GolangCmd.Flags().BoolP("install", "i", false, "Install Golang.")
 	GolangCmd.Flags().BoolP("uninstall", "u", false, "Uninstall Golang.")
 	GolangCmd.Flags().BoolP("config", "c", false, "Configure Golang.")
-	BytehoundCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
-	BytehoundCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
+	GolangCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
+	GolangCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
 }
