@@ -94,6 +94,8 @@ var DockerCmd = &cobra.Command{
 func init() {
 	DockerCmd.Flags().BoolP("install", "i", false, "Install Rust.")
 	DockerCmd.Flags().BoolP("config", "c", false, "Configure Rust.")
+	DockerCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
+	DockerCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
 	DockerCmd.Flags().BoolP("uninstall", "u", false, "Uninstall Rust.")
 	DockerCmd.Flags().BoolP("yes", "y", false, "Automatically yes to prompt questions.")
 	user := utils.GetCurrentUser().Username

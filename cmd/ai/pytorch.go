@@ -39,6 +39,8 @@ func init() {
 	PyTorchCmd.Flags().BoolP("install", "i", false, "Install IPython.")
 	PyTorchCmd.Flags().Bool("uninstall", false, "Uninstall IPython.")
 	PyTorchCmd.Flags().BoolP("config", "c", false, "Configure IPython.")
+	PyTorchCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
+	PyTorchCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
 	PyTorchCmd.Flags().String("cuda-version", "", "The version of CUDA. If not specified, the CPU version is used.")
 	utils.AddPythonFlags(PyTorchCmd)
 	// rootCmd.AddCommand(ipythonCmd)

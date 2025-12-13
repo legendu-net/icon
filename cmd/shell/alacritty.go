@@ -72,6 +72,7 @@ func init() {
 	AlacrittyCmd.Flags().BoolP("install", "i", false, "Install the Alacritty terminal.")
 	AlacrittyCmd.Flags().Bool("uninstall", false, "Uninstall Alacritty terminal.")
 	AlacrittyCmd.Flags().BoolP("config", "c", false, "Configure the Alacritty terminal.")
+	AlacrittyCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
+	AlacrittyCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
 	AlacrittyCmd.Flags().BoolP("yes", "y", false, "Automatically yes to prompt questions.")
-	// rootCmd.AddCommand(alacrittyCmd)
 }

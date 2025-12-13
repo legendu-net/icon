@@ -53,9 +53,10 @@ func init() {
 	JLabVimCmd.Flags().BoolP("install", "i", false, "Install the jupyterlab_vim extension for JupyterLab.")
 	JLabVimCmd.Flags().Bool("uninstall", false, "Uninstall the jupyterlab_vim extension for JupyterLab.")
 	JLabVimCmd.Flags().BoolP("config", "c", false, "Configure the jupyterlab_vim extension for JupyterLab.")
+	JLabVimCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
+	JLabVimCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
 	JLabVimCmd.Flags().Bool("sudo", false, "Force using sudo.")
 	JLabVimCmd.Flags().Bool("enable", false, "Enable the jupyterlab_vim extension for JupyterLab.")
 	JLabVimCmd.Flags().Bool("disable", false, "Disable the jupyterlab_vim extension for JupyterLab.")
 	utils.AddPythonFlags(JLabVimCmd)
-	// rootCmd.AddCommand(jvimCmd)
 }

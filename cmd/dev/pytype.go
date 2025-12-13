@@ -65,6 +65,8 @@ func init() {
 	PytypeCmd.Flags().BoolP("install", "i", false, "Install Pytype.")
 	PytypeCmd.Flags().Bool("uninstall", false, "Uninstall Pytype.")
 	PytypeCmd.Flags().BoolP("config", "c", false, "Configure Pytype.")
+	PytypeCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
+	PytypeCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
 	PytypeCmd.Flags().StringP("dest-dir", "d", ".", "The destination directory to copy the Pytype configuration to.")
 	utils.AddPythonFlags(PytypeCmd)
 }

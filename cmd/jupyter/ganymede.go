@@ -53,8 +53,9 @@ func init() {
 	GanymedeCmd.Flags().BoolP("install", "i", false, "Install Ganymede.")
 	GanymedeCmd.Flags().Bool("uninstall", false, "Uninstall Ganymede.")
 	GanymedeCmd.Flags().BoolP("config", "c", false, "Configure Ganymede.")
+	GanymedeCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
+	GanymedeCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
 	GanymedeCmd.Flags().Bool("sudo", false, "Force using sudo.")
 	GanymedeCmd.Flags().String("profile-dir", filepath.Join(utils.UserHomeDir(), ".ipython"), "The directory for storing IPython configuration files.")
 	utils.AddPythonFlags(GanymedeCmd)
-	// rootCmd.AddCommand(GanymedeCmd)
 }

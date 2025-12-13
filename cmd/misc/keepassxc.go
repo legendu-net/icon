@@ -60,6 +60,7 @@ func init() {
 	KeepassXCCmd.Flags().BoolP("install", "i", false, "Install the keepassxc terminal.")
 	KeepassXCCmd.Flags().Bool("uninstall", false, "Uninstall keepassxc terminal.")
 	KeepassXCCmd.Flags().BoolP("config", "c", false, "Configure the keepassxc terminal.")
+	KeepassXCCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
+	KeepassXCCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
 	KeepassXCCmd.Flags().BoolP("yes", "y", false, "Automatically yes to prompt questions.")
-	// rootCmd.AddCommand(keepassxcCmd)
 }

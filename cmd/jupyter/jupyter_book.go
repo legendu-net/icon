@@ -42,6 +42,7 @@ func init() {
 	JupyterBookCmd.Flags().BoolP("install", "i", false, "Install jupyter_book.")
 	JupyterBookCmd.Flags().Bool("uninstall", false, "Uninstall jupyter_book.")
 	JupyterBookCmd.Flags().BoolP("config", "c", false, "Configure jupyter_book.")
+	JupyterBookCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
+	JupyterBookCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
 	utils.AddPythonFlags(JupyterBookCmd)
-	// rootCmd.AddCommand(jupyterBookCmd)
 }

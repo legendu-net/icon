@@ -178,5 +178,6 @@ func init() {
 	SparkCmd.Flags().BoolP("install", "i", false, "Install Spark.")
 	SparkCmd.Flags().BoolP("uninstall", "u", false, "Uninstall Spark.")
 	SparkCmd.Flags().BoolP("config", "c", false, "Configure Spark.")
-	// rootCmd.AddCommand(sparkCmd)
+	SparkCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
+	SparkCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
 }

@@ -60,5 +60,6 @@ func init() {
 	NushellCmd.Flags().BoolP("install", "i", false, "If specified, install nushell.")
 	NushellCmd.Flags().Bool("uninstall", false, "If specified, uninstall nushell.")
 	NushellCmd.Flags().BoolP("config", "c", false, "If specified, configure nushell.")
-	// rootCmd.AddCommand(nushellCmd)
+	NushellCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
+	NushellCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
 }
