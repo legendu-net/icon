@@ -111,4 +111,6 @@ func init() {
 	KeyboardCmd.Flags().BoolP("install", "i", false, "Install keyboard related tools.")
 	KeyboardCmd.Flags().Bool("uninstall", false, "Uninstall keyboard related terminal.")
 	KeyboardCmd.Flags().BoolP("config", "c", false, "Configure keyboard related.")
+	KeyboardCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
+	KeyboardCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
 }

@@ -116,5 +116,6 @@ func init() {
 	PerfCmd.Flags().Bool("uninstall", false, "Uninstall Git.")
 	PerfCmd.Flags().BoolP("config", "c", false, "Configure Git.")
 	PerfCmd.Flags().BoolP("yes", "y", false, "Automatically yes to prompt questions.")
-	// rootCmd.AddCommand(gitCmd)
+	PerfCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
+	PerfCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
 }

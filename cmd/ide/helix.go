@@ -97,5 +97,6 @@ func init() {
 	HelixCmd.Flags().Bool("uninstall", false, "Uninstall helix.")
 	HelixCmd.Flags().BoolP("config", "c", false, "Configure helix.")
 	HelixCmd.Flags().BoolP("yes", "y", false, "Automatically yes to prompt questions.")
-	// rootCmd.AddCommand(HelixCmd)
+	HelixCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
+	HelixCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
 }

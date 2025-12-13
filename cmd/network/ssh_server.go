@@ -47,6 +47,7 @@ func init() {
 	SshServerCmd.Flags().BoolP("install", "i", false, "Install Git.")
 	SshServerCmd.Flags().Bool("uninstall", false, "Uninstall Git.")
 	SshServerCmd.Flags().BoolP("config", "c", false, "Configure Git.")
+	SshServerCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
+	SshServerCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
 	SshServerCmd.Flags().BoolP("yes", "y", false, "Automatically yes to prompt questions.")
-	// rootCmd.AddCommand(sshServerCmd)
 }

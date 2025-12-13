@@ -100,5 +100,4 @@ func init() {
 	VscodeCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
 	VscodeCmd.Flags().StringP("user-dir", "d", "", "The configuration directory for Visual Studio Code.")
 	VscodeCmd.Flags().BoolP("yes", "y", false, "Automatically yes to prompt questions.")
-	// rootCmd.AddCommand(vscodeCmd)
 }

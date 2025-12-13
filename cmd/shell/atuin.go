@@ -48,6 +48,7 @@ func init() {
 	AtuinCmd.Flags().BoolP("install", "i", false, "If specified, install atuin.")
 	AtuinCmd.Flags().Bool("uninstall", false, "If specified, uninstall atuin.")
 	AtuinCmd.Flags().BoolP("config", "c", false, "If specified, configure atuin.")
+	AtuinCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
+	AtuinCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
 	AtuinCmd.Flags().BoolP("yes", "y", false, "Automatically yes to prompt questions.")
-	// rootCmd.AddCommand(AtuinCmd)
 }

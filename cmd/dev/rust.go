@@ -147,11 +147,12 @@ var RustCmd = &cobra.Command{
 func init() {
 	RustCmd.Flags().BoolP("install", "i", false, "Install Rust.")
 	RustCmd.Flags().BoolP("config", "c", false, "Configure Rust.")
+	RustCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
+	RustCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
 	RustCmd.Flags().BoolP("uninstall", "u", false, "Uninstall Rust.")
 	RustCmd.Flags().String("link-to-dir", "", "The directory to link commands (cargo and rustc) to.")
 	RustCmd.Flags().String("rustup-home", "", "Value for the RUSTUP_HOME environment.")
 	RustCmd.Flags().String("cargo-home", "", "Value for the CARGO_HOME environment.")
 	RustCmd.Flags().String("toolchain", "stable", "The Rust toolchain (stable by default) to install.")
 	RustCmd.Flags().BoolP("path", "p", false, "Configure the PATH environment variable.")
-	// rootCmd.AddCommand(RustCmd)
 }
