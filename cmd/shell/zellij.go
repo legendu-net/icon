@@ -60,5 +60,4 @@ func init() {
 	ZellijCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
 	ZellijCmd.Flags().String("bin-dir", "/usr/local/bin", "The directory for installing Zellij executable.")
 	utils.AddPythonFlags(ZellijCmd)
-	// rootCmd.AddCommand(ZellijCmd)
 }

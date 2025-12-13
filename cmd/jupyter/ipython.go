@@ -62,5 +62,4 @@ func init() {
 	IpythonCmd.Flags().Bool("sudo", false, "Force using sudo.")
 	IpythonCmd.Flags().String("profile-dir", filepath.Join(utils.UserHomeDir(), ".ipython"), "The directory for storing IPython configuration files.")
 	utils.AddPythonFlags(IpythonCmd)
-	// rootCmd.AddCommand(ipythonCmd)
 }

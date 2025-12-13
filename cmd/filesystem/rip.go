@@ -44,5 +44,6 @@ func init() {
 	RipCmd.Flags().Bool("uninstall", false, "Uninstall rip (rm-improved).")
 	RipCmd.Flags().BoolP("config", "c", false, "Configure rip (rm-improved).")
 	RipCmd.Flags().BoolP("yes", "y", false, "Automatically yes to prompt questions.")
-	// rootCmd.AddCommand(RipCmd)
+	RipCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
+	RipCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
 }

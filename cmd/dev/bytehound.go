@@ -46,4 +46,6 @@ func init() {
 	BytehoundCmd.Flags().BoolP("install", "i", false, "Install Bytehound.")
 	BytehoundCmd.Flags().BoolP("config", "c", false, "Configure Bytehound.")
 	BytehoundCmd.Flags().BoolP("uninstall", "u", false, "Uninstall Bytehound.")
+	BytehoundCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
+	BytehoundCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
 }
