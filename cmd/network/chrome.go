@@ -12,11 +12,9 @@ func getExtensionDir() string {
 	home := utils.UserHomeDir()
 	switch runtime.GOOS {
 	case "darwin":
-		return filepath.Join(home, "Library/Application Support/Google/Chrome/Default/Extensions")
-	case "windows":
-		return filepath.Join(home, "AppData/Local/Google/Chrome/User Data/Default/Extensions")
+		return "~/Library/Application Support/Google/Chrome/Default/Extensions"
 	default:
-		return filepath.Join(home, ".config/google-chrome/Default/Extensions")
+		return "~/.config/google-chrome/Default/Extensions"
 	}
 }
 

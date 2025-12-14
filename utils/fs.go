@@ -51,9 +51,7 @@ func CopyFileToDir(sourceFile string, destinationDir string) {
 //
 //	and its contents will be copied.
 func CopyDir(sourceDir string, destinationDir string) {
-	if !ExistsDir(destinationDir) {
-		MkdirAll(destinationDir, "700")
-	}
+	MkdirAll(destinationDir, "")
 	for _, entry := range ReadDir(sourceDir) {
 		if entry.IsDir() {
 			srcDir := filepath.Join(sourceDir, entry.Name())
