@@ -9,7 +9,6 @@ import (
 )
 
 func getExtensionDir() string {
-	home := utils.UserHomeDir()
 	switch runtime.GOOS {
 	case "darwin":
 		return "~/Library/Application Support/Google/Chrome/Default/Extensions"
