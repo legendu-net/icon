@@ -42,7 +42,7 @@ func Chmod600(path string) {
 // @param sourceFile      The path to the source file.
 // @param destinationFile The path to the destination file where the source file will be copied.
 func CopyFile(sourceFile string, destinationFile string) {
-	MkdirAll(dir(destinationFile), "700")
+	MkdirAll(dir(destinationFile), "")
 
 	prefix := GetCommandPrefix(false, map[string]uint32{
 		sourceFile:      unix.R_OK,
@@ -106,7 +106,7 @@ func Symlink(path string, dstLink string, backup bool, copy bool) {
 		RemoveAll(dstLink)
 	}
 
-	MkdirAll(filepath.Dir(dstLink), "700")
+	MkdirAll(filepath.Dir(dstLink), "")
 	prefix := GetCommandPrefix(false, map[string]uint32{
 		path:    unix.R_OK,
 		dstLink: unix.W_OK | unix.R_OK,
