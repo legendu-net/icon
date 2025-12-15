@@ -73,7 +73,6 @@ func golang(cmd *cobra.Command, _ []string) {
 	}
 	if utils.GetBoolFlag(cmd, "config") {
 		switch runtime.GOOS {
-		case "darwin":
 		case "linux":
 			usr_local_bin := "/usr/local/bin"
 			go_bin := "/usr/local/go/bin"
@@ -82,6 +81,7 @@ func golang(cmd *cobra.Command, _ []string) {
 				file := filepath.Join(go_bin, entry.Name())
 				utils.SymlinkIntoDir(file, usr_local_bin, false, false)
 			}
+		case "darwin":
 		}
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
