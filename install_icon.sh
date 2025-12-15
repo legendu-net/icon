@@ -8,6 +8,7 @@ Options:
   -h        Display this help message
   -d <dir>  Specify the installation directory (default: /usr/local/bin/)
   -v <version>  The version (latest by default) to install.
+    Notice that a valid version starts with "v".
 EOF
 }
 
@@ -23,10 +24,9 @@ function install_icon() {
         esac
     done
     mkdir -p "$install_dir"
-    add_script_ldc "$install_dir"
-    echo "Parsing the latest version ..."
     local URL=https://github.com/legendu-net/icon/releases
     if [[ "$version" == "" ]]; then
+        echo "Parsing the latest version ..."
         version=$(basename $(curl -sL -o /dev/null -w %{url_effective} $URL/latest))
     fi
     local arch="$(uname -m)"
@@ -46,10 +46,23 @@ function install_icon() {
     local output=/tmp/icon_$(date +%Y%m%d%H%M%S).tar.gz
     echo "Downloading $url_download to $output ..."
     curl -sSL $url_download -o $output
+    if [ $? -ne 0 ]; then
+        echo "Failed to download $url_download to $output!"
+        return 3
+    fi
     echo "Installing icon ..."
-    tar -zxvf $output -C "$install_dir"
+    tar -zxf $output -C "$install_dir"
+    if [ $? -ne 0 ]; then
+        echo "Failed to extract $output into $install_dir!"
+        return 4
+    fi
     chmod +x "$install_dir/icon"
-    echo "icon has been installed successfully."
+    if [ $? -ne 0 ]; then
+        echo "Failed to make $install_dir/icon executable!"
+        return 5
+    fi
+    echo "icon has been successfully installed into $install_dir."
+    add_script_ldc "$install_dir"
 }
 
 function add_script_ldc() {
