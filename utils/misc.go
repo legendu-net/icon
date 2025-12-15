@@ -21,15 +21,7 @@ import (
 //
 // @example RunCmd("ls -l", "MY_VAR=myvalue")
 func RunCmd(cmd string, env ...string) {
-	var command *exec.Cmd
-	switch runtime.GOOS {
-	case "windows":
-		command = exec.Command("pwsh", "-Command", cmd)
-	case "linux", "darwin":
-		command = exec.Command("bash", "-c", cmd)
-	default:
-		log.Fatal("ERROR - The OS ", runtime.GOOS, " is not supported!")
-	}
+	command := exec.Command("bash", "-c", cmd)
 	command.Env = append(os.Environ(), env...)
 	command.Stdin = os.Stdin
 	command.Stdout = os.Stdout

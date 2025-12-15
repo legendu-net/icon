@@ -45,7 +45,6 @@ func alacritty(cmd *cobra.Command, _ []string) {
 			utils.RunCmd(command)
 		case "darwin":
 			utils.RunCmd("brew install --cask alacritty")
-		default:
 		}
 	}
 	if utils.GetBoolFlag(cmd, "config") {
@@ -55,7 +54,6 @@ func alacritty(cmd *cobra.Command, _ []string) {
 		case "linux":
 		case "darwin":
 			utils.RunCmd("brew uninstall --cask alacritty")
-		default:
 		}
 	}
 }

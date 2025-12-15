@@ -32,7 +32,6 @@ func docker(cmd *cobra.Command, args []string) {
 			utils.RunCmd(command)
 		case "darwin":
 			utils.BrewInstallSafe([]string{"docker", "docker-compose", "bash-completion@2"})
-		default:
 		}
 	}
 	if utils.GetBoolFlag(cmd, "config") {
@@ -54,7 +53,6 @@ func docker(cmd *cobra.Command, args []string) {
 					"user_to_docker": userToDocker,
 				})
 				utils.RunCmd(command)
-			default:
 			}
 		}
 	}
@@ -78,7 +76,6 @@ func docker(cmd *cobra.Command, args []string) {
 			utils.RunCmd(
 				"brew uninstall docker docker-completion docker-compose docker-compose-completion",
 			)
-		default:
 		}
 	}
 }

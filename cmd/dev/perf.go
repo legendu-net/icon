@@ -1,8 +1,6 @@
 package dev
 
 import (
-	"log"
-	"os"
 	"runtime"
 
 	"github.com/spf13/cobra"
@@ -46,9 +44,6 @@ func perf(cmd *cobra.Command, args []string) {
 			}
 		case "darwin":
 			utils.BrewInstallSafe([]string{"gperftools"})
-		default:
-			log.Fatal("This OS is not supported by perf or icon!")
-			os.Exit(1)
 		}
 	}
 	if utils.GetBoolFlag(cmd, "config") {
@@ -62,7 +57,6 @@ func perf(cmd *cobra.Command, args []string) {
 			})
 			utils.RunCmd(command)
 		case "darwin":
-		default:
 		}
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
@@ -98,7 +92,6 @@ func perf(cmd *cobra.Command, args []string) {
 			}
 		case "darwin":
 			utils.RunCmd("brew uninstall gperftools")
-		default:
 		}
 	}
 }

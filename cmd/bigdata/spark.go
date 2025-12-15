@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"path/filepath"
 	"regexp"
-	"runtime"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -85,50 +84,40 @@ func spark(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "install") {
 		sparkTgz := utils.DownloadFile(url, "spark.tgz", true)
 		log.Printf("Installing Spark into the directory %s ...\n", sparkHome)
-		switch runtime.GOOS {
-		case "windows":
-		default:
-			cmd := utils.Format("{prefix} mkdir -p {dir} && {prefix} tar -zxf {sparkTgz} -C {dir} && rm {sparkTgz}", map[string]string{
-				"prefix":   prefix,
-				"dir":      dir,
-				"sparkTgz": sparkTgz,
-			})
-			utils.RunCmd(cmd)
-		}
+		cmd := utils.Format("{prefix} mkdir -p {dir} && {prefix} tar -zxf {sparkTgz} -C {dir} && rm {sparkTgz}", map[string]string{
+			"prefix":   prefix,
+			"dir":      dir,
+			"sparkTgz": sparkTgz,
+		})
+		utils.RunCmd(cmd)
 	}
 	if utils.GetBoolFlag(cmd, "config") {
 		icon.FetchConfigData(false, "")
 
 		metastoreDb := filepath.Join(sparkHome, "metastoreDb")
 		warehouse := filepath.Join(sparkHome, "warehouse")
-		switch runtime.GOOS {
-		case "windows":
-			utils.MkdirAll(metastoreDb, "777")
-			utils.MkdirAll(warehouse, "777")
-		default:
-			cmd := utils.Format(
-				`{prefix} mkdir -p {metastoreDb} && 
-					{prefix} chmod -R 777 {metastoreDb} &&
-					{prefix} mkdir -p {warehouse} &&
-					{prefix} chmod -R 777 {warehouse}
-					`,
-				map[string]string{
-					"prefix":      prefix,
-					"metastoreDb": metastoreDb,
-					"warehouse":   warehouse,
-				})
-			utils.RunCmd(cmd)
-			// spark-defaults.conf
-			text := utils.ReadFileAsString("~/.config/icon-data/spark/spark-defaults.conf")
-			cmd = utils.Format("echo '{conf}' | {prefix} tee {sparkDefaults} > /dev/null",
-				map[string]string{
-					"prefix":        prefix,
-					"conf":          strings.ReplaceAll(text, "$SPARK_HOME", sparkHome),
-					"sparkDefaults": filepath.Join(sparkHome, "conf/spark-defaults.conf"),
-				},
-			)
-			utils.RunCmd(cmd)
-		}
+		cmd := utils.Format(
+			`{prefix} mkdir -p {metastoreDb} && 
+				{prefix} chmod -R 777 {metastoreDb} &&
+				{prefix} mkdir -p {warehouse} &&
+				{prefix} chmod -R 777 {warehouse}
+				`,
+			map[string]string{
+				"prefix":      prefix,
+				"metastoreDb": metastoreDb,
+				"warehouse":   warehouse,
+			})
+		utils.RunCmd(cmd)
+		// spark-defaults.conf
+		text := utils.ReadFileAsString("~/.config/icon-data/spark/spark-defaults.conf")
+		cmd = utils.Format("echo '{conf}' | {prefix} tee {sparkDefaults} > /dev/null",
+			map[string]string{
+				"prefix":        prefix,
+				"conf":          strings.ReplaceAll(text, "$SPARK_HOME", sparkHome),
+				"sparkDefaults": filepath.Join(sparkHome, "conf/spark-defaults.conf"),
+			},
+		)
+		utils.RunCmd(cmd)
 		log.Printf(
 			"Spark is configured to use %s as the metastore database and %s as the Hive warehouse.",
 			metastoreDb, warehouse,

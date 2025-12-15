@@ -17,12 +17,8 @@ func linkRust(cmd *cobra.Command, cargoHome string) {
 		return
 	}
 	cargoBin := filepath.Join(cargoHome, "bin")
-	switch runtime.GOOS {
-	case "linux", "darwin":
-		for _, entry := range utils.ReadDir(cargoBin) {
-			utils.SymlinkIntoDir(filepath.Join(cargoBin, entry.Name()), linkToDir, false, false)
-		}
-	default:
+	for _, entry := range utils.ReadDir(cargoBin) {
+		utils.SymlinkIntoDir(filepath.Join(cargoBin, entry.Name()), linkToDir, false, false)
 	}
 }
 
@@ -116,7 +112,6 @@ func rust(cmd *cobra.Command, _ []string) {
 				utils.RunCmd(command)
 			}
 			installRustNix(rustupHome, cargoHome, toolchain)
-		default:
 		}
 	}
 	if utils.GetBoolFlag(cmd, "config") {

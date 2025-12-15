@@ -88,7 +88,6 @@ func fish(cmd *cobra.Command, _ []string) {
 			utils.RunCmd(command)
 		case "darwin":
 			utils.RunCmd("brew install fish")
-		default:
 		}
 	}
 	if utils.GetBoolFlag(cmd, "config") {
@@ -110,7 +109,6 @@ func fish(cmd *cobra.Command, _ []string) {
 			utils.RunCmd(command)
 		case "darwin":
 			utils.RunCmd("brew uninstall fish")
-		default:
 		}
 	}
 }

@@ -46,7 +46,6 @@ func hyper(cmd *cobra.Command, _ []string) {
 			}
 		case "darwin":
 			utils.RunCmd("brew install --cask hyper")
-		default:
 		}
 	}
 	if utils.GetBoolFlag(cmd, "config") {
@@ -67,7 +66,6 @@ func hyper(cmd *cobra.Command, _ []string) {
 		case "linux":
 		case "darwin":
 			utils.RunCmd("brew uninstall --cask hyper")
-		default:
 		}
 	}
 }

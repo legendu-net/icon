@@ -9,12 +9,10 @@ import (
 )
 
 func getExtensionDir() string {
-	switch runtime.GOOS {
-	case "darwin":
+	if runtime.GOOS == "darwin" {
 		return "~/Library/Application Support/Google/Chrome/Default/Extensions"
-	default:
-		return "~/.config/google-chrome/Default/Extensions"
 	}
+	return "~/.config/google-chrome/Default/Extensions"
 }
 
 func InstallChromeExtension(id string, name string) {

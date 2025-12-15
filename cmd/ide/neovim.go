@@ -54,7 +54,6 @@ func Neovim(install bool, config bool, uninstall bool, yes_s string, backup bool
 				})
 				utils.RunCmd(command)
 			}
-		default:
 		}
 	}
 	if config {
@@ -85,7 +84,6 @@ func Neovim(install bool, config bool, uninstall bool, yes_s string, backup bool
 				})
 				utils.RunCmd(command)
 			}
-		default:
 		}
 	}
 }

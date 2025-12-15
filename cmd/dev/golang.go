@@ -67,18 +67,12 @@ func golang(cmd *cobra.Command, _ []string) {
 		"/usr/local/bin": unix.W_OK | unix.R_OK,
 	})
 	if utils.GetBoolFlag(cmd, "install") {
-		switch runtime.GOOS {
-		case "darwin", "linux":
-			installGoLang(prefix)
-			installGoLangCiLint(prefix)
-			installGoPls(prefix)
-		default:
-			log.Fatal("The OS ", runtime.GOOS, " is not supported!")
-		}
+		installGoLang(prefix)
+		installGoLangCiLint(prefix)
+		installGoPls(prefix)
 	}
 	if utils.GetBoolFlag(cmd, "config") {
 		switch runtime.GOOS {
-		case "windows":
 		case "darwin":
 		case "linux":
 			usr_local_bin := "/usr/local/bin"
@@ -88,8 +82,6 @@ func golang(cmd *cobra.Command, _ []string) {
 				file := filepath.Join(go_bin, entry.Name())
 				utils.SymlinkIntoDir(file, usr_local_bin, false, false)
 			}
-		default:
-			log.Fatal("The OS ", runtime.GOOS, " is not supported!")
 		}
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {

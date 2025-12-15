@@ -1,7 +1,6 @@
 package ide
 
 import (
-	"log"
 	"runtime"
 
 	"github.com/spf13/cobra"
@@ -36,8 +35,6 @@ func vscode(cmd *cobra.Command, _ []string) {
 		case "darwin":
 			command := "brew cask install visual-studio-code"
 			utils.RunCmd(command)
-		default:
-			log.Fatal("ERROR - The OS ", runtime.GOOS, " is not supported!")
 		}
 	}
 	if utils.GetBoolFlag(cmd, "config") {
@@ -46,10 +43,10 @@ func vscode(cmd *cobra.Command, _ []string) {
 		userDir := utils.GetStringFlag(cmd, "user-dir")
 		if userDir == "" {
 			switch runtime.GOOS {
+			case "linux":
+				userDir = "~/.config/Code/User"
 			case "darwin":
 				userDir = "~/Library/Application Support/Code/User"
-			default:
-				userDir = "~/.config/Code/User"
 			}
 		}
 		utils.SymlinkIntoDir("~/.config/icon-data/vscode/settings.json", userDir,
@@ -57,9 +54,6 @@ func vscode(cmd *cobra.Command, _ []string) {
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
 		switch runtime.GOOS {
-		case "darwin":
-			command := "brew cask uninstall visual-studio-code"
-			utils.RunCmd(command)
 		case "linux":
 			if utils.IsDebianUbuntuSeries() {
 				command := utils.Format("{prefix} apt-get purge {yes_s} vscode", map[string]string{
@@ -79,7 +73,9 @@ func vscode(cmd *cobra.Command, _ []string) {
 				})
 				utils.RunCmd(command)
 			}
-		default:
+		case "darwin":
+			command := "brew cask uninstall visual-studio-code"
+			utils.RunCmd(command)
 		}
 	}
 }

@@ -118,7 +118,6 @@ func git(cmd *cobra.Command, args []string) {
 			installGitUi(cmd)
 		case "darwin":
 			utils.BrewInstallSafe([]string{"git", "git-lfs"})
-		default:
 		}
 		command := utils.Format("{git} lfs install", map[string]string{
 			"git": git,
@@ -160,7 +159,6 @@ func git(cmd *cobra.Command, args []string) {
 				})
 				utils.RunCmd(command)
 			}
-		default:
 		}
 	}
 }
