@@ -15,7 +15,6 @@ func rip(cmd *cobra.Command, _ []string) {
 			utils.RunCmd("cargo install rm-improved")
 		case "darwin":
 			utils.BrewInstallSafe([]string{"rm-improved"})
-		default:
 		}
 	}
 	if utils.GetBoolFlag(cmd, "config") {
@@ -26,7 +25,6 @@ func rip(cmd *cobra.Command, _ []string) {
 			utils.RunCmd("rm ~/.cargo/bin/rip")
 		case "darwin":
 			utils.RunCmd("brew uninstall rm-improved")
-		default:
 		}
 	}
 }

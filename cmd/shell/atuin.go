@@ -29,7 +29,6 @@ eval "$(atuin init bash --disable-up-arrow)"
 			)
 		case "linux":
 			utils.ReplacePattern(utils.GetBashConfigFile(), `eval "$(atuin init bash)"`, "eval \"$(atuin init bash --disable-up-arrow)\"\n")
-		default:
 		}
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {

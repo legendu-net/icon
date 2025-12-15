@@ -89,9 +89,9 @@ func keyboard(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "config") {
 		icon.FetchConfigData(false, "")
 		switch runtime.GOOS {
+		case "linux":
 		case "darwin":
 			ConfigDefaultKeybindings()
-		default:
 		}
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {

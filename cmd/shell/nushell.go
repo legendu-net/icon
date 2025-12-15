@@ -26,8 +26,6 @@ func downloadNushellFromGitHub(version string) string {
 func nushell(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "install") {
 		switch runtime.GOOS {
-		case "windows":
-			utils.RunCmd("winget install nushell")
 		case "darwin":
 			utils.BrewInstallSafe([]string{"nushell"})
 		case "linux":
@@ -39,7 +37,6 @@ func nushell(cmd *cobra.Command, _ []string) {
 				"dir":  dir,
 			})
 			log.Printf("Nushell has been installed into %s.\n", dir)
-		default:
 		}
 	}
 	if utils.GetBoolFlag(cmd, "config") {

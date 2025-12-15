@@ -51,7 +51,6 @@ func Helix(install bool, config bool, uninstall bool, yes_s string) {
 				})
 				utils.RunCmd(command)
 			}
-		default:
 		}
 	}
 	if config {
@@ -79,7 +78,6 @@ func Helix(install bool, config bool, uninstall bool, yes_s string) {
 				})
 				utils.RunCmd(command)
 			}
-		default:
 		}
 	}
 }

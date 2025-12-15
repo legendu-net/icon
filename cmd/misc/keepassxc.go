@@ -27,11 +27,14 @@ func keepassxc(cmd *cobra.Command, _ []string) {
 			}
 		case "darwin":
 			utils.RunCmd("brew install --cask keepassxc")
-		default:
 		}
 	}
 	if utils.GetBoolFlag(cmd, "config") {
-		utils.SymlinkIntoDir("/Applications/KeePassXC.app/Contents/MacOS/keepassxc-cli", "~/.local/bin", false, false)
+		switch runtime.GOOS {
+		case "darwin":
+			utils.SymlinkIntoDir("/Applications/KeePassXC.app/Contents/MacOS/keepassxc-cli", "~/.local/bin", false, false)
+		case "linux":
+		}
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
 		switch runtime.GOOS {
@@ -43,7 +46,6 @@ func keepassxc(cmd *cobra.Command, _ []string) {
 			utils.RunCmd(command)
 		case "darwin":
 			utils.RunCmd("brew uninstall --cask keepassxc")
-		default:
 		}
 	}
 }

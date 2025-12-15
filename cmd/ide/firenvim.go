@@ -19,7 +19,7 @@ func firenvim(cmd *cobra.Command, _ []string) {
 		switch runtime.GOOS {
 		case "linux":
 			log.Println("\nPlease follow step 5 in https://www.legendu.net/misc/blog/firenvim-brings-neovim-into-your-browser/#installation to configure a shortcut!")
-		default:
+		case "darwin":
 		}
 	}
 	if utils.GetBoolFlag(cmd, "config") {
