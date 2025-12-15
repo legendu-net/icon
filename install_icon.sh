@@ -7,44 +7,62 @@ Usage: $0 [options]
 Options:
   -h        Display this help message
   -d <dir>  Specify the installation directory (default: /usr/local/bin/)
+  -v <version>  The version (latest by default) to install.
+    Notice that a valid version starts with "v".
 EOF
 }
 
 function install_icon() {
     local install_dir="/usr/local/bin/"
-    while getopts "hd:" opt; do
+    local version=""
+    while getopts "hd:v:" opt; do
         case $opt in
             h) install_icon.usage; return 0 ;;
             d) install_dir="$OPTARG" ;;
+            v) version="$OPTARG" ;;
             \?) install_icon.usage; return 1 ;;
         esac
     done
     mkdir -p "$install_dir"
-    add_script_ldc "$install_dir"
-    echo "Parsing the latest version ..."
     local URL=https://github.com/legendu-net/icon/releases
-    local VERSION=$(basename $(curl -sL -o /dev/null -w %{url_effective} $URL/latest))
-    local ARCH="$(uname -m)"
-    case "$ARCH" in
+    if [[ "$version" == "" ]]; then
+        echo "Parsing the latest version ..."
+        version=$(basename $(curl -sL -o /dev/null -w %{url_effective} $URL/latest))
+    fi
+    local arch="$(uname -m)"
+    case "$arch" in
         x86_64 )
-            ARCH=amd64
+            arch=amd64
             ;;
-        arm64 )
-            ARCH=arm64
+        aarch64 )
+            arch=arm64
             ;;
         *)
-            echo "The architecture $ARCH is not supported!"
+            echo "The architecture $arch is not supported!"
             return 2
             ;;
     esac
-    local url_download=$URL/download/$VERSION/icon-$VERSION-$(uname)-${ARCH}.tar.gz
+    local url_download=$URL/download/$version/icon-$version-$(uname)-${arch}.tar.gz
     local output=/tmp/icon_$(date +%Y%m%d%H%M%S).tar.gz
     echo "Downloading $url_download to $output ..."
     curl -sSL $url_download -o $output
+    if [ $? -ne 0 ]; then
+        echo "Failed to download $url_download to $output!"
+        return 3
+    fi
     echo "Installing icon ..."
-    tar -zxvf $output -C "$install_dir"
+    tar -zxf $output -C "$install_dir"
+    if [ $? -ne 0 ]; then
+        echo "Failed to extract $output into $install_dir!"
+        return 4
+    fi
     chmod +x "$install_dir/icon"
-    echo "icon has been installed successfully."
+    if [ $? -ne 0 ]; then
+        echo "Failed to make $install_dir/icon executable!"
+        return 5
+    fi
+    echo "icon has been successfully installed into $install_dir."
+    add_script_ldc "$install_dir"
 }
 
 function add_script_ldc() {
