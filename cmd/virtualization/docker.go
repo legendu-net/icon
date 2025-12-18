@@ -8,7 +8,7 @@ import (
 )
 
 // Install and configure Docker container.
-func docker(cmd *cobra.Command, args []string) {
+func docker(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "install") {
 		if utils.IsLinux() {
 			if utils.IsDebianUbuntuSeries() {

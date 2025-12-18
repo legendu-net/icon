@@ -2,7 +2,6 @@ package ide
 
 import (
 	"log"
-	"runtime"
 
 	"github.com/spf13/cobra"
 	"legendu.net/icon/cmd/network"
@@ -16,11 +15,10 @@ func firenvim(cmd *cobra.Command, _ []string) {
 			!utils.GetBoolFlag(cmd, "no-backup"), utils.GetBoolFlag(cmd, "copy"))
 		network.InstallChromeExtension("egpjdkipkomnmjhjmdamaniclmdlobbo", "Firenvim")
 		utils.RunCmd(`nvim --headless +"call firenvim#install(0)" +qall`)
-		switch runtime.GOOS {
-		case "linux":
+		if utils.IsLinux() {
 			url := "https://www.legendu.net/misc/blog/firenvim-brings-neovim-into-your-browser/#installation"
 			log.Printf("\nPlease follow step 5 in %s to configure a shortcut!\n", url)
-		case "darwin":
+		} else {
 		}
 	}
 	if utils.GetBoolFlag(cmd, "config") {

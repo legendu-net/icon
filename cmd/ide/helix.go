@@ -1,8 +1,6 @@
 package ide
 
 import (
-	"runtime"
-
 	"github.com/spf13/cobra"
 	"legendu.net/icon/utils"
 )
@@ -19,10 +17,7 @@ func helix(cmd *cobra.Command, _ []string) {
 
 func Helix(install, config, uninstall bool, yesStr string) {
 	if install {
-		switch runtime.GOOS {
-		case "darwin":
-			utils.BrewInstallSafe([]string{"helix"})
-		case "linux":
+		if utils.IsLinux() {
 			if utils.IsDebianUbuntuSeries() {
 				if utils.IsUbuntuSeries() {
 					command := utils.Format(`{prefix} add-apt-repository ppa:maveonair/helix-editor`, map[string]string{
@@ -51,15 +46,14 @@ func Helix(install, config, uninstall bool, yesStr string) {
 				})
 				utils.RunCmd(command)
 			}
+		} else {
+			utils.BrewInstallSafe([]string{"helix"})
 		}
 	}
 	if config {
 	}
 	if uninstall {
-		switch runtime.GOOS {
-		case "darwin":
-			utils.RunCmd("brew uninstall helix")
-		case "linux":
+		if utils.IsLinux() {
 			if utils.IsDebianUbuntuSeries() {
 				command := utils.Format("{prefix} apt-get purge {yesStr} helix", map[string]string{
 					"prefix": utils.GetCommandPrefix(
@@ -78,6 +72,8 @@ func Helix(install, config, uninstall bool, yesStr string) {
 				})
 				utils.RunCmd(command)
 			}
+		} else {
+			utils.RunCmd("brew uninstall helix")
 		}
 	}
 }

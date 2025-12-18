@@ -30,16 +30,16 @@ func hyper(cmd *cobra.Command, _ []string) {
 		case "linux":
 			file := downloadHyperFromGitHub(utils.GetStringFlag(cmd, "version"))
 			if utils.IsDebianUbuntuSeries() {
-				command := utils.Format("{prefix} apt-get update && {prefix} apt-get install {yes_s} {file}", map[string]string{
+				command := utils.Format("{prefix} apt-get update && {prefix} apt-get install {yesStr} {file}", map[string]string{
 					"prefix": utils.GetCommandPrefix(true, map[string]uint32{}),
-					"yes_s":  utils.BuildYesFlag(cmd),
+					"yesStr": utils.BuildYesFlag(cmd),
 					"file":   file,
 				})
 				utils.RunCmd(command)
 			} else if utils.IsFedoraSeries() {
-				command := utils.Format("{prefix} dnf {yes_s} install {file}", map[string]string{
+				command := utils.Format("{prefix} dnf {yesStr} install {file}", map[string]string{
 					"prefix": utils.GetCommandPrefix(true, map[string]uint32{}),
-					"yes_s":  utils.BuildYesFlag(cmd),
+					"yesStr": utils.BuildYesFlag(cmd),
 					"file":   file,
 				})
 				utils.RunCmd(command)

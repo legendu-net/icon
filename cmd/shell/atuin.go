@@ -2,7 +2,6 @@ package shell
 
 import (
 	"path/filepath"
-	"runtime"
 
 	"github.com/spf13/cobra"
 	"legendu.net/icon/utils"
@@ -16,8 +15,9 @@ func atuin(cmd *cobra.Command, _ []string) {
 	}
 	if utils.GetBoolFlag(cmd, "config") {
 		utils.ConfigBash()
-		switch runtime.GOOS {
-		case "darwin":
+		if utils.IsLinux() {
+			utils.ReplacePattern(utils.GetBashConfigFile(), `eval "$(atuin init bash)"`, "eval \"$(atuin init bash --disable-up-arrow)\"\n")
+		} else {
 			atuinBash := `
 [[ -f ~/.bash-preexec.sh ]] && source ~/.bash-preexec.sh
 eval "$(atuin init bash --disable-up-arrow)"
@@ -27,8 +27,6 @@ eval "$(atuin init bash --disable-up-arrow)"
 				atuinBash,
 				true,
 			)
-		case "linux":
-			utils.ReplacePattern(utils.GetBashConfigFile(), `eval "$(atuin init bash)"`, "eval \"$(atuin init bash --disable-up-arrow)\"\n")
 		}
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {

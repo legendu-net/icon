@@ -1,8 +1,6 @@
 package ide
 
 import (
-	"runtime"
-
 	"github.com/spf13/cobra"
 	"legendu.net/icon/cmd/icon"
 	"legendu.net/icon/utils"
@@ -18,16 +16,16 @@ func vscode(cmd *cobra.Command, _ []string) {
 						true,
 						map[string]uint32{},
 					),
-					"yes_s": utils.BuildYesFlag(cmd),
+					"yesStr": utils.BuildYesFlag(cmd),
 				})
 				utils.RunCmd(command)
 			} else if utils.IsFedoraSeries() {
-				command := utils.Format("{prefix} dnf {yes_s} install vscode", map[string]string{
+				command := utils.Format("{prefix} dnf {yesStr} install vscode", map[string]string{
 					"prefix": utils.GetCommandPrefix(
 						true,
 						map[string]uint32{},
 					),
-					"yes_s": utils.BuildYesFlag(cmd),
+					"yesStr": utils.BuildYesFlag(cmd),
 				})
 				utils.RunCmd(command)
 			}
@@ -41,10 +39,9 @@ func vscode(cmd *cobra.Command, _ []string) {
 
 		userDir := utils.GetStringFlag(cmd, "user-dir")
 		if userDir == "" {
-			switch runtime.GOOS {
-			case "linux":
+			if utils.IsLinux() {
 				userDir = "~/.config/Code/User"
-			case "darwin":
+			} else {
 				userDir = "~/Library/Application Support/Code/User"
 			}
 		}
@@ -54,16 +51,16 @@ func vscode(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "uninstall") {
 		if utils.IsLinux() {
 			if utils.IsDebianUbuntuSeries() {
-				command := utils.Format("{prefix} apt-get purge {yes_s} vscode", map[string]string{
+				command := utils.Format("{prefix} apt-get purge {yesStr} vscode", map[string]string{
 					"prefix": utils.GetCommandPrefix(
 						true,
 						map[string]uint32{},
 					),
-					"yes_s": utils.BuildYesFlag(cmd),
+					"yesStr": utils.BuildYesFlag(cmd),
 				})
 				utils.RunCmd(command)
 			} else if utils.IsFedoraSeries() {
-				command := utils.Format("{prefix} dnf {yes_s} remove vscode", map[string]string{
+				command := utils.Format("{prefix} dnf {yesStr} remove vscode", map[string]string{
 					"prefix": utils.GetCommandPrefix(
 						true,
 						map[string]uint32{},

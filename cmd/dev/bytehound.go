@@ -2,7 +2,6 @@ package dev
 
 import (
 	"log"
-	"runtime"
 
 	"github.com/spf13/cobra"
 	"legendu.net/icon/cmd/network"
@@ -12,8 +11,7 @@ import (
 // Install and configure Rust.
 func bytehound(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "install") {
-		switch runtime.GOOS {
-		case "linux":
+		if utils.IsLinux() {
 			network.DownloadGitHubRelease("koute/bytehound", "", map[string][]string{
 				"common": {"bytehound", "tgz"},
 				"amd64":  {"x86_64"},
@@ -24,7 +22,7 @@ func bytehound(cmd *cobra.Command, _ []string) {
 			utils.RunCmd(command)
 			log.Println("libbytehound.so has been installed to ~/.local/lib.")
 			log.Println("bytehound and bytehound-gather has been installed to ~/.local/bin.")
-		default:
+		} else {
 			log.Fatalln("Bytehound is only supported on linux!")
 		}
 	}
