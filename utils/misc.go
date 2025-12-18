@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"context"
 	"log"
 	"os"
 	"os/exec"
@@ -21,7 +22,7 @@ import (
 //
 // @example RunCmd("ls -l", "MY_VAR=myvalue")
 func RunCmd(cmd string, env ...string) {
-	command := exec.Command("bash", "-c", cmd)
+	command := exec.CommandContext(context.Background(), "bash", "-c", cmd)
 	command.Env = append(os.Environ(), env...)
 	command.Stdin = os.Stdin
 	command.Stdout = os.Stdout
