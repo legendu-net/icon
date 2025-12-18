@@ -35,7 +35,7 @@ func adjustPathInConfig() {
 }
 
 // Install and configure SSH client.
-func SshClient(cmd *cobra.Command, _ []string) {
+func SSHClient(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "install") {
 	}
 	if utils.GetBoolFlag(cmd, "config") {
@@ -51,18 +51,18 @@ func SshClient(cmd *cobra.Command, _ []string) {
 	}
 }
 
-var SshClientCmd = &cobra.Command{
+var SSHClientCmd = &cobra.Command{
 	Use:     "ssh_client",
 	Aliases: []string{"sshc"},
 	Short:   "Install and configure SSH client.",
 	//Args:  cobra.ExactArgs(1),
-	Run: SshClient,
+	Run: SSHClient,
 }
 
 func init() {
-	SshClientCmd.Flags().BoolP("install", "i", false, "Install Git.")
-	SshClientCmd.Flags().Bool("uninstall", false, "Uninstall Git.")
-	SshClientCmd.Flags().BoolP("config", "c", false, "Configure Git.")
-	SshClientCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
-	SshClientCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
+	SSHClientCmd.Flags().BoolP("install", "i", false, "Install Git.")
+	SSHClientCmd.Flags().Bool("uninstall", false, "Uninstall Git.")
+	SSHClientCmd.Flags().BoolP("config", "c", false, "Configure Git.")
+	SSHClientCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
+	SSHClientCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
 }

@@ -74,12 +74,12 @@ func golang(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "config") {
 		switch runtime.GOOS {
 		case "linux":
-			usr_local_bin := "/usr/local/bin"
-			go_bin := "/usr/local/go/bin"
-			entries := utils.ReadDir(go_bin)
+			usrLocalBin := "/usr/local/bin"
+			goBin := "/usr/local/go/bin"
+			entries := utils.ReadDir(goBin)
 			for _, entry := range entries {
-				file := filepath.Join(go_bin, entry.Name())
-				utils.SymlinkIntoDir(file, usr_local_bin, false, false)
+				file := filepath.Join(goBin, entry.Name())
+				utils.SymlinkIntoDir(file, usrLocalBin, false, false)
 			}
 		case "darwin":
 		}

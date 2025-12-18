@@ -18,7 +18,7 @@ import (
 // Get the latest version of Spark.
 func getSparkVersion() string {
 	log.Printf("Parsing the latest version of Spark ...")
-	html := utils.HttpGetAsString("https://spark.apache.org/downloads.html", 3, 120)
+	html := utils.HTTPGetAsString("https://spark.apache.org/downloads.html", 3, 120)
 	re := regexp.MustCompile(`Latest Release \(Spark (\d.\d.\d)\)`)
 	for _, line := range strings.Split(html, "\n") {
 		match := re.FindString(line)
@@ -94,7 +94,7 @@ func spark(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "config") {
 		icon.FetchConfigData(false, "")
 
-		metastoreDb := filepath.Join(sparkHome, "metastoreDb")
+		metastoreDB := filepath.Join(sparkHome, "metastoreDb")
 		warehouse := filepath.Join(sparkHome, "warehouse")
 		cmd := utils.Format(
 			`{prefix} mkdir -p {metastoreDb} && 
@@ -104,7 +104,7 @@ func spark(cmd *cobra.Command, _ []string) {
 				`,
 			map[string]string{
 				"prefix":      prefix,
-				"metastoreDb": metastoreDb,
+				"metastoreDb": metastoreDB,
 				"warehouse":   warehouse,
 			})
 		utils.RunCmd(cmd)
@@ -120,7 +120,7 @@ func spark(cmd *cobra.Command, _ []string) {
 		utils.RunCmd(cmd)
 		log.Printf(
 			"Spark is configured to use %s as the metastore database and %s as the Hive warehouse.",
-			metastoreDb, warehouse,
+			metastoreDB, warehouse,
 		)
 		// create databases and tables
 		/*

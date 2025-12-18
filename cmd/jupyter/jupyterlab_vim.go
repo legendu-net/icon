@@ -6,7 +6,7 @@ import (
 )
 
 // Install and configure the jupyterlab_vim extension for JupyterLab.
-func jupyterlab_vim(cmd *cobra.Command, _ []string) {
+func jupyterlabVim(cmd *cobra.Command, _ []string) {
 	prefix := utils.GetCommandPrefix(
 		utils.GetBoolFlag(cmd, "sudo"),
 		map[string]uint32{},
@@ -46,7 +46,7 @@ var JLabVimCmd = &cobra.Command{
 	Aliases: []string{"jlab_vim", "jlabvim", "jvim"},
 	Short:   "Install and configure the jupyterlab_vim extension for JupyterLab.",
 	//Args:  cobra.ExactArgs(1),
-	Run: jupyterlab_vim,
+	Run: jupyterlabVim,
 }
 
 func init() {

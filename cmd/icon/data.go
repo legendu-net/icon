@@ -7,11 +7,11 @@ import (
 	"legendu.net/icon/utils"
 )
 
-const GIT_URL = "https://github.com/legendu-net/icon-data.git"
+const GitURL = "https://github.com/legendu-net/icon-data.git"
 
-func FetchConfigData(force bool, gitUrl string) {
-	if gitUrl == "" {
-		gitUrl = GIT_URL
+func FetchConfigData(force bool, gitURL string) {
+	if gitURL == "" {
+		gitURL = GitURL
 	}
 
 	dir := "~/.config/icon-data"
@@ -25,7 +25,7 @@ func FetchConfigData(force bool, gitUrl string) {
 
 	command := utils.Format(`git clone {gitUrl} {dir} \
 			&& cd {dir} && git submodule init && git submodule update --remote`, map[string]string{
-		"gitUrl": gitUrl,
+		"gitUrl": gitURL,
 		"dir":    dir,
 	})
 	utils.RunCmd(command)
@@ -45,6 +45,6 @@ var DataCmd = &cobra.Command{
 }
 
 func init() {
-	DataCmd.Flags().StringP("git-url", "g", GIT_URL, "The Git repo URL for icon-data.")
+	DataCmd.Flags().StringP("git-url", "g", GitURL, "The Git repo URL for icon-data.")
 	DataCmd.Flags().Bool("force", false, "Force pulling data if it alreay exists.")
 }

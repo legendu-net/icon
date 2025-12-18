@@ -13,7 +13,7 @@ import (
 // Get the release URL of a project on GitHub.
 // @param repo: The repo name of the project on GitHub.
 // return: The release URL of the project on GitHub.
-func GetReleaseUrl(repo string) string {
+func GetReleaseURL(repo string) string {
 	repo = strings.TrimSuffix(repo, ".git")
 	if strings.HasPrefix(repo, "https://api.") {
 		return repo
@@ -31,7 +31,7 @@ func GetReleaseUrl(repo string) string {
 
 type AssetInfo struct {
 	Name               string `json:"name"`
-	BrowserDownloadUrl string `json:"browser_download_url"`
+	BrowserDownloadURL string `json:"browser_download_url"`
 }
 
 type ReleaseInfo struct {
@@ -56,7 +56,7 @@ func assetNameContainKeywords(name string, keywords []string, keyworkdsExclude [
 func filterReleases(url string, constraint string) ReleaseInfo {
 	log.Printf("Extracting release from %s with the constraint %s", url, constraint)
 	var releases []ReleaseInfo
-	err := json.Unmarshal(utils.HttpGetAsBytes(url, 3, 120), &releases)
+	err := json.Unmarshal(utils.HTTPGetAsBytes(url, 3, 120), &releases)
 	if err != nil {
 		log.Fatalf("Failed to parse TOML: %v", err)
 	}
@@ -70,10 +70,10 @@ func filterReleases(url string, constraint string) ReleaseInfo {
 	return ReleaseInfo{}
 }
 
-func GetLatestRelease(releaseUrl string) ReleaseInfo {
-	url := releaseUrl + "/latest"
+func GetLatestRelease(releaseURL string) ReleaseInfo {
+	url := releaseURL + "/latest"
 	var releaseInfo ReleaseInfo
-	err := json.Unmarshal(utils.HttpGetAsBytes(url, 3, 120), &releaseInfo)
+	err := json.Unmarshal(utils.HTTPGetAsBytes(url, 3, 120), &releaseInfo)
 	if err != nil {
 		log.Fatal("ERROR - ", err)
 	}
@@ -105,27 +105,27 @@ func DownloadGitHubRelease(repo string, version string, keywords map[string][]st
 	Write to: %s
 	`, repo, version, strings.Join(keywords_, ", "), strings.Join(keywordsExclude, ", "), output)
 	// form the release URL
-	releaseUrl := GetReleaseUrl(repo)
-	log.Printf("Release URL: %s\n", releaseUrl)
+	releaseURL := GetReleaseURL(repo)
+	log.Printf("Release URL: %s\n", releaseURL)
 	var releaseInfo ReleaseInfo
 	if version == "" {
-		releaseInfo = GetLatestRelease(releaseUrl)
+		releaseInfo = GetLatestRelease(releaseURL)
 	} else {
-		releaseInfo = filterReleases(releaseUrl, version)
+		releaseInfo = filterReleases(releaseURL, version)
 	}
 	// parse browser download url
-	var browserDownloadUrl string
+	var browserDownloadURL string
 	for _, assert := range releaseInfo.Assets {
 		if assetNameContainKeywords(assert.Name, keywords_, keywordsExclude) {
 			log.Printf("Assert %s is matched.", assert.Name)
-			browserDownloadUrl = assert.BrowserDownloadUrl
+			browserDownloadURL = assert.BrowserDownloadURL
 			break
 		} else {
 			log.Printf("Assert %s is not matched.", assert.Name)
 		}
 	}
 	// download the asset
-	utils.DownloadFile(browserDownloadUrl, output, false)
+	utils.DownloadFile(browserDownloadURL, output, false)
 }
 
 var DownloadGitHubReleaseCmd = &cobra.Command{
