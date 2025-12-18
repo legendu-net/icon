@@ -57,8 +57,8 @@ func installSccache() {
 		"common": {"tar.gz"},
 		"amd64":  {"x86_64"},
 		"arm64":  {"aarch64"},
-		Linux:  {"unknown", Linux, "musl"},
-		Darwin: {"apple", Darwin},
+		Linux:    {"unknown", Linux, "musl"},
+		Darwin:   {"apple", Darwin},
 	}, []string{"pre", "dist", "sha256"}, file)
 	command := utils.Format("{prefix} tar --wildcards --strip-components=1 -C /usr/local/bin/ -zxvf {file} */sccache", map[string]string{
 		"prefix": utils.GetCommandPrefix(false, map[string]uint32{
@@ -77,8 +77,8 @@ func installCargoBinstall() {
 		"common": {"tgz"},
 		"amd64":  {"x86_64"},
 		"arm64":  {"aarch64"},
-		Linux:  {"unknown", Linux, "gnu"},
- 		Darwin: {"apple", Darwin},
+		Linux:    {"unknown", Linux, "gnu"},
+		Darwin:   {"apple", Darwin},
 	}, []string{"pre", "full"}, file)
 	command := utils.Format("{prefix} tar -C /usr/local/bin/ -zxvf {file}", map[string]string{
 		"prefix": utils.GetCommandPrefix(false, map[string]uint32{

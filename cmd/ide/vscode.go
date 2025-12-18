@@ -11,7 +11,7 @@ import (
 // Install and configure Visual Studio Code.
 func vscode(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "install") {
-		if utils.IsLinux(){
+		if utils.IsLinux() {
 			if utils.IsDebianUbuntuSeries() {
 				command := utils.Format("{prefix} snap install --classic code", map[string]string{
 					"prefix": utils.GetCommandPrefix(
