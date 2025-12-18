@@ -1,6 +1,7 @@
 package bigdata
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"log"
@@ -37,7 +38,12 @@ func getSparkDownloadUrl(sparkVersion string, hadoopVersion string) (string, str
 		suffix = "-connect"
 	}
 	url = fmt.Sprintf(url, sparkVersion, sparkVersion, hadoopVersion, suffix)
-	resp, err := http.Get(url)
+	req, err := http.NewRequestWithContext(context.Background(),
+		http.MethodGet, url, http.NoBody)
+	if err != nil {
+		log.Fatal(err)
+	}
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -1,6 +1,7 @@
 package dev
 
 import (
+	"context"
 	"log"
 	"net/http"
 	"path/filepath"
@@ -13,7 +14,12 @@ import (
 )
 
 func getGolangVersion() string {
-	resp, err := http.Get("https://github.com/golang/go/tags")
+	req, err := http.NewRequestWithContext(context.Background(),
+		http.MethodGet, "https://github.com/golang/go/tags", http.NoBody)
+	if err != nil {
+		log.Fatal(err)
+	}
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		log.Fatal(err)
 	}
