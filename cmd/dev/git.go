@@ -71,7 +71,7 @@ func installGitDelta(cmd *cobra.Command) {
 			map[string]uint32{},
 		),
 		"yesStr": utils.BuildYesFlag(cmd),
-		"file":  file,
+		"file":   file,
 	})
 	utils.RunCmd(command)
 }

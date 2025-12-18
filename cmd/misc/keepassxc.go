@@ -12,13 +12,13 @@ func keepassxc(cmd *cobra.Command, _ []string) {
 			if utils.IsDebianUbuntuSeries() {
 				command := utils.Format("{prefix} apt-get update && {prefix} apt-get install {yesStr} keepassxc", map[string]string{
 					"prefix": utils.GetCommandPrefix(true, map[string]uint32{}),
-					"yesStr":  utils.BuildYesFlag(cmd),
+					"yesStr": utils.BuildYesFlag(cmd),
 				})
 				utils.RunCmd(command)
 			} else if utils.IsFedoraSeries() {
 				command := utils.Format("{prefix} dnf {yesStr} install keepassxc", map[string]string{
 					"prefix": utils.GetCommandPrefix(true, map[string]uint32{}),
-					"yesStr":  utils.BuildYesFlag(cmd),
+					"yesStr": utils.BuildYesFlag(cmd),
 				})
 				utils.RunCmd(command)
 			}
@@ -36,7 +36,7 @@ func keepassxc(cmd *cobra.Command, _ []string) {
 		if utils.IsLinux() {
 			command := utils.Format("{prefix} apt-get purge {yesStr} keepassxc", map[string]string{
 				"prefix": utils.GetCommandPrefix(true, map[string]uint32{}),
-				"yesStr":  utils.BuildYesFlag(cmd),
+				"yesStr": utils.BuildYesFlag(cmd),
 			})
 			utils.RunCmd(command)
 		} else {

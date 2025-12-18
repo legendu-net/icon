@@ -2,6 +2,7 @@ package dev
 
 import (
 	"log"
+
 	"github.com/spf13/cobra"
 	"legendu.net/icon/cmd/network"
 	"legendu.net/icon/utils"
