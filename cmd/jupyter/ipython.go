@@ -26,7 +26,7 @@ func ipython(cmd *cobra.Command, _ []string) {
 		profileDefault := filepath.Join(profileDir, "profile_default")
 		utils.Symlink(
 			"~/.config/icon-data/ipython/startup.ipy",
-			filepath.Join(profileDefault, "startup/startup.ipy"),
+			filepath.Join(profileDefault, "startup", "startup.ipy"),
 			!utils.GetBoolFlag(cmd, "no-backup"), utils.GetBoolFlag(cmd, "copy"))
 		utils.SymlinkIntoDir(
 			"~/.config/icon-data/ipython/ipython_config.py",

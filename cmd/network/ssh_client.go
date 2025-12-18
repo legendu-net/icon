@@ -15,7 +15,8 @@ const sshHome = "~/.ssh"
 // Copy configuration files from /home_host/USER/.ssh if it exists.
 // @param ssh_home: The home directory (~/.ssh) of SSH client configuration.
 func copySshcSettingsFromHost() {
-	sshSrc := filepath.Join("/home_host", utils.GetCurrentUser().Name, ".ssh")
+	//nolint:gocritic // filepathJoin: "/" is intentional to start an absolute path
+	sshSrc := filepath.Join("/", "home_host", utils.GetCurrentUser().Name, ".ssh")
 	if utils.ExistsDir(sshSrc) {
 		// inside a Docker container, use .ssh from host
 		utils.RemoveAll(sshHome)
