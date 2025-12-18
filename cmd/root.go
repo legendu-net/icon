@@ -41,8 +41,8 @@ func Execute() {
 
 func init() {
 	rootCmd.AddCommand(network.DownloadGitHubReleaseCmd)
-	rootCmd.AddCommand(network.SshClientCmd)
-	rootCmd.AddCommand(network.SshServerCmd)
+	rootCmd.AddCommand(network.SSHClientCmd)
+	rootCmd.AddCommand(network.SSHServerCmd)
 	rootCmd.AddCommand(jupyter.IpythonCmd)
 	rootCmd.AddCommand(jupyter.JLabVimCmd)
 	rootCmd.AddCommand(jupyter.JupyterBookCmd)

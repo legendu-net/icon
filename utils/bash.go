@@ -46,11 +46,11 @@ fi
 // Configure shell to add a path into the environment variable PATH.
 // @param paths: Absolute paths to add into PATH.
 // @param config_file: The path of a shell's configuration file.
-func ConfigShellPath(config_file string) {
+func ConfigShellPath(configFile string) {
 	if GetLinuxDistID() == "idx" {
 		return
 	}
-	text := ReadFileAsString(config_file)
+	text := ReadFileAsString(configFile)
 	if !strings.Contains(text, ". /scripts/path.sh") && !strings.Contains(text, "\n_PATHS=(\n") {
 		text = `
 # set $PATH
@@ -68,9 +68,9 @@ for ((_i=${#_PATHS[@]}-1; _i>=0; _i--)); do
 	fi
 done
 `
-		AppendToTextFile(config_file, text, true)
+		AppendToTextFile(configFile, text, true)
 	}
-	log.Printf("%s is configured to insert common bin paths into $PATH.", config_file)
+	log.Printf("%s is configured to insert common bin paths into $PATH.", configFile)
 }
 
 // GetBashConfigFile returns the path to the Bash configuration file based on the operating system.

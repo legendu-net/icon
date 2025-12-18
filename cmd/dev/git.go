@@ -13,7 +13,7 @@ import (
 	"legendu.net/icon/utils"
 )
 
-func installGitUi(cmd *cobra.Command) {
+func installGitUI(cmd *cobra.Command) {
 	if utils.GetBoolFlag(cmd, "gitui") {
 		tmpdir := utils.CreateTempDir("")
 		defer os.RemoveAll(tmpdir)
@@ -41,7 +41,7 @@ func linkGitUiFiles(baseDir string, backup bool, copy bool) {
 		backup, copy)
 }
 
-func configGitUi(cmd *cobra.Command) {
+func configGitUI(cmd *cobra.Command) {
 	if utils.GetBoolFlag(cmd, "gitui") {
 		linkGitUiFiles("~/.config", !utils.GetBoolFlag(cmd, "no-backup"), utils.GetBoolFlag(cmd, "copy"))
 		if utils.IsLinux() {
@@ -115,7 +115,7 @@ func git(cmd *cobra.Command, args []string) {
 				utils.RunCmd(command)
 			}
 			installGitDelta(cmd)
-			installGitUi(cmd)
+			installGitUI(cmd)
 		case "darwin":
 			utils.BrewInstallSafe([]string{"git", "git-lfs"})
 		}
@@ -126,11 +126,11 @@ func git(cmd *cobra.Command, args []string) {
 	}
 	if utils.GetBoolFlag(cmd, "config") {
 		icon.FetchConfigData(false, "")
-		network.SshClient(cmd, args)
+		network.SSHClient(cmd, args)
 		utils.Symlink("~/.config/icon-data/git/gitconfig", "~/.gitconfig",
 			!utils.GetBoolFlag(cmd, "no-backup"), utils.GetBoolFlag(cmd, "copy"))
 		configGitProxy(cmd)
-		configGitUi(cmd)
+		configGitUI(cmd)
 	}
 	configureGitIgnore(cmd)
 	if utils.GetBoolFlag(cmd, "uninstall") {

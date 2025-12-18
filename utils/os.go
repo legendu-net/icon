@@ -90,9 +90,9 @@ func IsUbuntuSeries() bool {
 	ids := []string{
 		"ubuntu", "linuxmint", "pop",
 	}
-	distId := GetLinuxDistID()
+	distID := GetLinuxDistID()
 	for _, id := range ids {
-		if distId == id {
+		if distID == id {
 			return true
 		}
 	}
@@ -106,9 +106,9 @@ func IsFedoraSeries() bool {
 	ids := []string{
 		"fedora", "centos", "rhel",
 	}
-	distId := GetLinuxDistID()
+	distID := GetLinuxDistID()
 	for _, id := range ids {
-		if distId == id {
+		if distID == id {
 			return true
 		}
 	}
@@ -195,10 +195,10 @@ func VirtualMemory() *mem.VirtualMemoryStat {
 	return memStat
 }
 
-// CpuInfo retrieves information about the system's CPU.
+// CPUInfo retrieves information about the system's CPU.
 //
 // @return A slice of `cpu.InfoStat` structs, each representing information about a logical CPU core.
-func CpuInfo() []cpu.InfoStat {
+func CPUInfo() []cpu.InfoStat {
 	cpuInfo, err := cpu.Info()
 	if err != nil {
 		log.Fatal("ERROR - ", err)

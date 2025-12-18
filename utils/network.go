@@ -9,30 +9,30 @@ import (
 	"time"
 )
 
-// HttpGetAsBytes performs an HTTP GET request to the specified URL and returns the response body as a byte slice.
+// HTTPGetAsBytes performs an HTTP GET request to the specified URL and returns the response body as a byte slice.
 //
 // @param url The URL to send the HTTP GET request to.
 // @param retry The number of times to retry the request if it fails or encounters a rate limit.
-// @param initial_waiting_seconds The initial number of seconds to wait before retrying the request.
+// @param initialWaitingSeconds The initial number of seconds to wait before retrying the request.
 //
 // @return The response body as a byte slice.
-func HttpGetAsBytes(url string, retry int8, initial_waiting_seconds int32) []byte {
+func HTTPGetAsBytes(url string, retry int8, initialWaitingSeconds int32) []byte {
 	resp, err := http.Get(url)
 	if err != nil {
 		if retry > 0 {
-			time.Sleep(time.Duration(initial_waiting_seconds) * time.Second)
-			return HttpGetAsBytes(url, retry-1, initial_waiting_seconds*2)
+			time.Sleep(time.Duration(initialWaitingSeconds) * time.Second)
+			return HTTPGetAsBytes(url, retry-1, initialWaitingSeconds*2)
 		}
 		log.Fatal("The HTTP GET request on the URL ", url, " got the following error:\n", err)
 	}
 	if resp.StatusCode > 399 {
 		if resp.Header.Get("x-ratelimit-remaining") == "0" {
 			time.Sleep(time.Until(time.Unix(ParseInt(resp.Header.Get("x-ratelimit-reset"))+10, 0)))
-			return HttpGetAsBytes(url, retry, initial_waiting_seconds)
+			return HTTPGetAsBytes(url, retry, initialWaitingSeconds)
 		}
 		if retry > 0 {
-			time.Sleep(time.Duration(initial_waiting_seconds) * time.Second)
-			return HttpGetAsBytes(url, retry-1, initial_waiting_seconds*2)
+			time.Sleep(time.Duration(initialWaitingSeconds) * time.Second)
+			return HTTPGetAsBytes(url, retry-1, initialWaitingSeconds*2)
 		}
 		log.Fatal(
 			"The HTTP GET request on the URL ", url, " got an error response with the status code ",
@@ -53,8 +53,8 @@ func HttpGetAsBytes(url string, retry int8, initial_waiting_seconds int32) []byt
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		if retry > 0 {
-			time.Sleep(time.Duration(initial_waiting_seconds) * time.Second)
-			return HttpGetAsBytes(url, retry-1, initial_waiting_seconds*2)
+			time.Sleep(time.Duration(initialWaitingSeconds) * time.Second)
+			return HTTPGetAsBytes(url, retry-1, initialWaitingSeconds*2)
 		}
 		log.Fatal("Reading the response body of the http GET request on the url ", url, " got the following error:\n", err)
 	}
@@ -68,8 +68,8 @@ func HttpGetAsBytes(url string, retry int8, initial_waiting_seconds int32) []byt
 // @param initial_waiting_seconds The initial number of seconds to wait before retrying the request.
 //
 // @return The response body as a string.
-func HttpGetAsString(url string, retry int8, initial_waiting_seconds int32) string {
-	return string(HttpGetAsBytes(url, retry, initial_waiting_seconds))
+func HTTPGetAsString(url string, retry int8, initialWaitingSeconds int32) string {
+	return string(HTTPGetAsBytes(url, retry, initialWaitingSeconds))
 }
 
 // Download file from the given URL.

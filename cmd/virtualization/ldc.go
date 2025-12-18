@@ -91,8 +91,8 @@ func ldc(cmd *cobra.Command, args []string) {
 	if password == "" {
 		password = userName
 	}
-	userId := currentUser.Uid
-	groupId := currentUser.Gid
+	userID := currentUser.Uid
+	groupID := currentUser.Gid
 	command := []string{
 		"docker",
 		"run",
@@ -108,11 +108,11 @@ func ldc(cmd *cobra.Command, args []string) {
 		"-e",
 		"DOCKER_USER='" + userName + "'",
 		"-e",
-		"DOCKER_USER_ID='" + userId + "'",
+		"DOCKER_USER_ID='" + userID + "'",
 		"-e",
 		"DOCKER_PASSWORD='" + password + "'",
 		"-e",
-		"DOCKER_GROUP_ID='" + groupId + "'",
+		"DOCKER_GROUP_ID='" + groupID + "'",
 		"-e",
 		"DOCKER_ADMIN_USER='" + userName + "'",
 		"--hostname",
@@ -135,16 +135,16 @@ func ldc(cmd *cobra.Command, args []string) {
 		memStat := utils.VirtualMemory()
 		memory := int(0.8 * float64(memStat.Total))
 		command = append(command, "--memory="+strconv.Itoa(memory)+"b")
-		cpuInfo := utils.CpuInfo()
+		cpuInfo := utils.CPUInfo()
 		cpus := utils.Max(len(cpuInfo)-1, 1)
 		command = append(command, "--cpus="+strconv.Itoa(cpus))
 	}
 	appendDockerImagePort(&command, cmd, args[0])
 	appendDockerImageCommand(&command, &args)
-	command_s := strings.Join(command, " ")
-	log.Printf("Launching Docker container using the following command:\n\n%s\n\n", command_s)
+	commandStr := strings.Join(command, " ")
+	log.Printf("Launching Docker container using the following command:\n\n%s\n\n", commandStr)
 	if !utils.GetBoolFlag(cmd, "dry-run") {
-		utils.RunCmd(command_s)
+		utils.RunCmd(commandStr)
 	}
 }
 
