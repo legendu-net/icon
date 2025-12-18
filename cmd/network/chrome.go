@@ -15,7 +15,7 @@ func getExtensionDir() string {
 	return "~/.config/google-chrome/Default/Extensions"
 }
 
-func InstallChromeExtension(id string, name string) {
+func InstallChromeExtension(id, name string) {
 	dir := getExtensionDir()
 	utils.MkdirAll(dir, "700")
 	config := filepath.Join(dir, id+".json")

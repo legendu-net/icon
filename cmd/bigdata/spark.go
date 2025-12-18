@@ -31,7 +31,7 @@ func getSparkVersion() string {
 }
 
 // Get the recommended downloading URL for Spark.
-func getSparkDownloadUrl(sparkVersion string, hadoopVersion string) (string, string) {
+func getSparkDownloadUrl(sparkVersion, hadoopVersion string) (string, string) {
 	url := "https://www.apache.org/dyn/closer.lua/spark/spark-%s/spark-%s-bin-hadoop%s%s.tgz"
 	suffix := ""
 	if sparkVersion >= "4.0.0" {

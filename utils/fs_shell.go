@@ -11,7 +11,7 @@ import (
 )
 
 // Chmod changes the mode of the named file to mode.
-func Chmod(path string, mode string) {
+func Chmod(path, mode string) {
 	prefix := GetCommandPrefix(false, map[string]uint32{
 		path: unix.W_OK | unix.R_OK,
 	})
@@ -41,7 +41,7 @@ func Chmod600(path string) {
 //
 // @param sourceFile      The path to the source file.
 // @param destinationFile The path to the destination file where the source file will be copied.
-func CopyFile(sourceFile string, destinationFile string) {
+func CopyFile(sourceFile, destinationFile string) {
 	MkdirAll(dir(destinationFile), "")
 
 	prefix := GetCommandPrefix(false, map[string]uint32{
@@ -146,7 +146,7 @@ func Rename(original string, new string) {
 	fmt.Printf("The path %s has been renamed to %s.\n", original, new)
 }
 
-func Backup(original string, backup string) {
+func Backup(original, backup string) {
 	original = NormalizePath(original)
 	backup = NormalizePath(backup)
 	if ExistsPath(original) {

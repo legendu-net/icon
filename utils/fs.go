@@ -35,7 +35,7 @@ func dir(path string) string {
 //
 // @param sourceFile      The path to the source file.
 // @param destinationDir The path to the destination directory where the source file will be copied.
-func CopyFileToDir(sourceFile string, destinationDir string) {
+func CopyFileToDir(sourceFile, destinationDir string) {
 	sourceFile = NormalizePath(sourceFile)
 	destinationDir = NormalizePath(destinationDir)
 	CopyFile(sourceFile, filepath.Join(destinationDir, filepath.Base(sourceFile)))
@@ -121,7 +121,7 @@ func CreateTempDir(pattern string) string {
 //
 //	ReplacePattern("/tmp/myfile.txt", "old_text", "new_text")
 //	// Replaces all occurrences of "old_text" with "new_text" in /tmp/myfile.txt.
-func ReplacePattern(path string, pattern string, repl string) {
+func ReplacePattern(path, pattern, repl string) {
 	text := ReadFileAsString(path)
 	text = strings.ReplaceAll(text, pattern, repl)
 	WriteTextFile(path, text, getFileMode(path))
@@ -254,7 +254,7 @@ func WriteFile(fileName string, data []byte, perm fs.FileMode) {
 // @param path The path to the file to write to.
 // @param text The string to write to the file.
 // @param perm The file mode (permissions) to set for the file.
-func WriteTextFile(path string, text string, perm fs.FileMode) {
+func WriteTextFile(path, text string, perm fs.FileMode) {
 	WriteFile(path, []byte(text), perm)
 }
 
@@ -263,7 +263,7 @@ func WriteTextFile(path string, text string, perm fs.FileMode) {
 // @param path           The path to the file to append to.
 // @param text           The text to append to the file.
 // @param checkExistence If true, checks if the text already exists in the file before appending.
-func AppendToTextFile(path string, text string, checkExistence bool) {
+func AppendToTextFile(path, text string, checkExistence bool) {
 	if checkExistence {
 		fileContent := ""
 		if ExistsFile(path) {

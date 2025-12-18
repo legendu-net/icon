@@ -79,7 +79,7 @@ func HTTPGetAsString(url string, retry int8, initialWaitingSeconds int32) string
 // @param useTempDir If true, the file will be saved to a temporary directory.
 //
 // @return The local path where the downloaded file is saved.
-func DownloadFile(url string, name string, useTempDir bool) string {
+func DownloadFile(url, name string, useTempDir bool) string {
 	var out *os.File
 	var err error
 	if useTempDir {

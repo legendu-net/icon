@@ -15,7 +15,8 @@ func pytorch(cmd *cobra.Command, _ []string) {
 		if cudaVersion != "" {
 			version = "cu" + strings.ReplaceAll(cudaVersion, ".", "")
 		}
-		command := utils.Format("{pip_install} torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/{version}", map[string]string{
+		command := utils.Format(`{pip_install} torch torchvision torchaudio \
+				--extra-index-url https://download.pytorch.org/whl/{version}`, map[string]string{
 			"pip_install": utils.BuildPipInstall(cmd),
 			"version":     version,
 		})

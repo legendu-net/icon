@@ -17,7 +17,7 @@ func helix(cmd *cobra.Command, _ []string) {
 	)
 }
 
-func Helix(install bool, config bool, uninstall bool, yes_s string) {
+func Helix(install, config, uninstall bool, yes_s string) {
 	if install {
 		switch runtime.GOOS {
 		case "darwin":

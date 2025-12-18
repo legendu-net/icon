@@ -59,7 +59,7 @@ func Format(cmd string, hmap map[string]string) string {
 // @param y The second integer.
 //
 // @return The larger of the two integers.
-func Max(x int, y int) int {
+func Max(x, y int) int {
 	if x >= y {
 		return x
 	}
@@ -133,7 +133,7 @@ func ExistsCommand(cmd string) bool {
 // @param f The string to return if `b` is false.
 //
 // @return `t` if `b` is true, `f` otherwise.
-func IfElseString(b bool, t string, f string) string {
+func IfElseString(b bool, t, f string) string {
 	if b {
 		return t
 	}
@@ -156,7 +156,7 @@ func BrewInstallSafe(pkgs []string) {
 //
 // @param map1 The target map to be updated.
 // @param map2 The source map from which to take updates.
-func UpdateMap(map1 orderedmap.OrderedMap[string, any], map2 orderedmap.OrderedMap[string, any]) {
+func UpdateMap(map1, map2 orderedmap.OrderedMap[string, any]) {
 	for _, key2 := range map2.Keys() {
 		val2, _ := map2.Get(key2)
 		val1, map1HasKey2 := map1.Get(key2)

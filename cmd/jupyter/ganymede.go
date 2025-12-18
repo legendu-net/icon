@@ -25,8 +25,9 @@ func ganymede(cmd *cobra.Command, _ []string) {
 		)
 		command := utils.Format(`{prefix} java -jar {file} -i --sys-prefix \
 				&& {prefix} cp -r /usr/share/jupyter/kernels/ganymede-*-java-* /usr/local/share/jupyter/kernels/ \
-				&& {prefix} sed -i 's_/usr/share/jupyter/kernels/_/usr/local/share/jupyter/kernels/_g' /usr/local/share/jupyter/kernels/ganymede*/kernel.json \
-			`, map[string]string{
+				&& {prefix} sed -i \
+					's_/usr/share/jupyter/kernels/_/usr/local/share/jupyter/kernels/_g' \
+					/usr/local/share/jupyter/kernels/ganymede*/kernel.json`, map[string]string{
 			"prefix": utils.GetCommandPrefix(false, map[string]uint32{
 				"/usr/share/jupyter/":       unix.W_OK | unix.R_OK,
 				"/usr/local/share/jupyter/": unix.W_OK | unix.R_OK,
@@ -56,6 +57,7 @@ func init() {
 	GanymedeCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
 	GanymedeCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
 	GanymedeCmd.Flags().Bool("sudo", false, "Force using sudo.")
-	GanymedeCmd.Flags().String("profile-dir", filepath.Join(utils.UserHomeDir(), ".ipython"), "The directory for storing IPython configuration files.")
+	GanymedeCmd.Flags().String("profile-dir", filepath.Join(utils.UserHomeDir(), ".ipython"),
+		"The directory for storing IPython configuration files.")
 	utils.AddPythonFlags(GanymedeCmd)
 }
