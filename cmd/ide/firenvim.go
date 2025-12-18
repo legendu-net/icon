@@ -18,7 +18,8 @@ func firenvim(cmd *cobra.Command, _ []string) {
 		utils.RunCmd(`nvim --headless +"call firenvim#install(0)" +qall`)
 		switch runtime.GOOS {
 		case "linux":
-			log.Println("\nPlease follow step 5 in https://www.legendu.net/misc/blog/firenvim-brings-neovim-into-your-browser/#installation to configure a shortcut!")
+			url := "https://www.legendu.net/misc/blog/firenvim-brings-neovim-into-your-browser/#installation"
+			log.Println("\nPlease follow step 5 in %s to configure a shortcut!", url)
 		case "darwin":
 		}
 	}
