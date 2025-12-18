@@ -55,7 +55,9 @@ func assetNameContainKeywords(name string, keywords, keyworkdsExclude []string) 
 
 func filterReleases(url, constraint string) ReleaseInfo {
 	log.Printf("Extracting release from %s with the constraint %s", url, constraint)
-	bytes, err := utils.HTTPGetAsBytes(url, 3, 120)
+	const numRetry = 3
+	const initialWaitingSeconds = 120
+	bytes, err := utils.HTTPGetAsBytes(url, numRetry, initialWaitingSeconds)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -76,7 +78,9 @@ func filterReleases(url, constraint string) ReleaseInfo {
 
 func GetLatestRelease(releaseURL string) ReleaseInfo {
 	url := releaseURL + "/latest"
-	bytes, err := utils.HTTPGetAsBytes(url, 3, 120)
+	const numRetry = 3
+	const initialWaitingSeconds = 120
+	bytes, err := utils.HTTPGetAsBytes(url, numRetry, initialWaitingSeconds)
 	if err != nil {
 		log.Fatal(err)
 	}
