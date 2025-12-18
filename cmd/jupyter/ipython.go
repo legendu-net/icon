@@ -60,6 +60,7 @@ func init() {
 	IpythonCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
 	IpythonCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
 	IpythonCmd.Flags().Bool("sudo", false, "Force using sudo.")
-	IpythonCmd.Flags().String("profile-dir", filepath.Join(utils.UserHomeDir(), ".ipython"), "The directory for storing IPython configuration files.")
+	IpythonCmd.Flags().String("profile-dir", filepath.Join(utils.UserHomeDir(), ".ipython"),
+		"The directory for storing IPython configuration files.")
 	utils.AddPythonFlags(IpythonCmd)
 }

@@ -72,7 +72,8 @@ func perf(cmd *cobra.Command, args []string) {
 				})
 				utils.RunCmd(command)
 			} else if utils.IsUbuntuSeries() {
-				command := utils.Format("{prefix} apt-get purge {yes_s} linux-tools-common linux-tools-generic linux-tools-$(uname -r)", map[string]string{
+				command := utils.Format(`{prefix} apt-get purge {yes_s} \
+						linux-tools-common linux-tools-generic linux-tools-$(uname -r)`, map[string]string{
 					"prefix": utils.GetCommandPrefix(
 						true,
 						map[string]uint32{},
