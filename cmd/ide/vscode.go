@@ -11,8 +11,7 @@ import (
 // Install and configure Visual Studio Code.
 func vscode(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "install") {
-		switch runtime.GOOS {
-		case "linux":
+		if utils.IsLinux(){
 			if utils.IsDebianUbuntuSeries() {
 				command := utils.Format("{prefix} snap install --classic code", map[string]string{
 					"prefix": utils.GetCommandPrefix(
@@ -32,7 +31,7 @@ func vscode(cmd *cobra.Command, _ []string) {
 				})
 				utils.RunCmd(command)
 			}
-		case "darwin":
+		} else {
 			command := "brew cask install visual-studio-code"
 			utils.RunCmd(command)
 		}
@@ -53,8 +52,7 @@ func vscode(cmd *cobra.Command, _ []string) {
 			!utils.GetBoolFlag(cmd, "no-backup"), utils.GetBoolFlag(cmd, "copy"))
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
-		switch runtime.GOOS {
-		case "linux":
+		if utils.IsLinux() {
 			if utils.IsDebianUbuntuSeries() {
 				command := utils.Format("{prefix} apt-get purge {yes_s} vscode", map[string]string{
 					"prefix": utils.GetCommandPrefix(
@@ -73,7 +71,7 @@ func vscode(cmd *cobra.Command, _ []string) {
 				})
 				utils.RunCmd(command)
 			}
-		case "darwin":
+		} else {
 			command := "brew cask uninstall visual-studio-code"
 			utils.RunCmd(command)
 		}

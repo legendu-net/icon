@@ -133,7 +133,10 @@ func DownloadGitHubRelease(repo, ver string, keywords map[string][]string, keywo
 		}
 	}
 	// download the asset
-	utils.DownloadFile(browserDownloadURL, output, false)
+	_, err := utils.DownloadFile(browserDownloadURL, output, false)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 var DownloadGitHubReleaseCmd = &cobra.Command{

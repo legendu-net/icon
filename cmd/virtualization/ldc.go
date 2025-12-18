@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"path/filepath"
-	"runtime"
 	"strconv"
 	"strings"
 
@@ -131,7 +130,7 @@ func ldc(cmd *cobra.Command, args []string) {
 	if detach {
 		command[2] = "-d"
 	}
-	if runtime.GOOS == "linux" {
+	if utils.IsLinux() {
 		memStat := utils.VirtualMemory()
 		memory := int(0.8 * float64(memStat.Total))
 		command = append(command, "--memory="+strconv.Itoa(memory)+"b")

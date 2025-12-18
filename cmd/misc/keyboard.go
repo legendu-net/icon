@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"path/filepath"
-	"runtime"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -87,14 +86,12 @@ func keyboard(cmd *cobra.Command, _ []string) {
 	}
 	if utils.GetBoolFlag(cmd, "config") {
 		icon.FetchConfigData(false, "")
-		switch runtime.GOOS {
-		case "linux":
-		case "darwin":
+		if utils.IsLinux() {
+		} else {
 			ConfigDefaultKeybindings()
 		}
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
-		// nothing to uninstall
 	}
 }
 

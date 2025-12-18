@@ -3,13 +3,15 @@ package dev
 import (
 	"os"
 	"path/filepath"
-	"runtime"
 
 	"github.com/spf13/cobra"
 	"golang.org/x/sys/unix"
 	"legendu.net/icon/cmd/network"
 	"legendu.net/icon/utils"
 )
+
+const Linux = "linux"
+const Darwin = "darwin"
 
 func linkRust(cmd *cobra.Command, cargoHome string) {
 	linkToDir := utils.GetStringFlag(cmd, "link-to-dir")
@@ -55,8 +57,8 @@ func installSccache() {
 		"common": {"tar.gz"},
 		"amd64":  {"x86_64"},
 		"arm64":  {"aarch64"},
-		"linux":  {"unknown", "linux", "musl"},
-		"darwin": {"apple", "darwin"},
+		Linux:  {"unknown", Linux, "musl"},
+		Darwin: {"apple", Darwin},
 	}, []string{"pre", "dist", "sha256"}, file)
 	command := utils.Format("{prefix} tar --wildcards --strip-components=1 -C /usr/local/bin/ -zxvf {file} */sccache", map[string]string{
 		"prefix": utils.GetCommandPrefix(false, map[string]uint32{
@@ -75,8 +77,8 @@ func installCargoBinstall() {
 		"common": {"tgz"},
 		"amd64":  {"x86_64"},
 		"arm64":  {"aarch64"},
-		"linux":  {"unknown", "linux", "gnu"},
-		"darwin": {"apple", "darwin"},
+		Linux:  {"unknown", Linux, "gnu"},
+ 		Darwin: {"apple", Darwin},
 	}, []string{"pre", "full"}, file)
 	command := utils.Format("{prefix} tar -C /usr/local/bin/ -zxvf {file}", map[string]string{
 		"prefix": utils.GetCommandPrefix(false, map[string]uint32{
@@ -99,11 +101,7 @@ func rust(cmd *cobra.Command, _ []string) {
 	}
 	toolchain := utils.GetStringFlag(cmd, "toolchain")
 	if utils.GetBoolFlag(cmd, "install") {
-		switch runtime.GOOS {
-		case "darwin":
-			utils.BrewInstallSafe([]string{"pkg-config", "openssl"})
-			installRustNix(rustupHome, cargoHome, toolchain)
-		case "linux":
+		if utils.IsLinux() {
 			if utils.IsDebianUbuntuSeries() {
 				command := utils.Format(`{prefix} apt-get update \
 						&& {prefix} apt-get install -y gcc cmake libssl-dev pkg-config`, map[string]string{
@@ -111,6 +109,9 @@ func rust(cmd *cobra.Command, _ []string) {
 				})
 				utils.RunCmd(command)
 			}
+			installRustNix(rustupHome, cargoHome, toolchain)
+		} else {
+			utils.BrewInstallSafe([]string{"pkg-config", "openssl"})
 			installRustNix(rustupHome, cargoHome, toolchain)
 		}
 	}
