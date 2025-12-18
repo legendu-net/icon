@@ -35,18 +35,18 @@ func installGitUI(cmd *cobra.Command) {
 	}
 }
 
-func linkGitUiFiles(baseDir string, backup, copyPath bool) {
+func linkGitUIFiles(baseDir string, backup, copyPath bool) {
 	utils.SymlinkIntoDir("~/.config/icon-data/git/gitui/key_bindings.ron", filepath.Join(baseDir, "gitui"),
 		backup, copyPath)
 }
 
 func configGitUI(cmd *cobra.Command) {
 	if utils.GetBoolFlag(cmd, "gitui") {
-		linkGitUiFiles("~/.config", !utils.GetBoolFlag(cmd, "no-backup"), utils.GetBoolFlag(cmd, "copy"))
+		linkGitUIFiles("~/.config", !utils.GetBoolFlag(cmd, "no-backup"), utils.GetBoolFlag(cmd, "copy"))
 		if utils.IsLinux() {
 			baseDir := os.Getenv("XDG_CONFIG_HOME")
 			if baseDir != "" {
-				linkGitUiFiles(baseDir,
+				linkGitUIFiles(baseDir,
 					!utils.GetBoolFlag(cmd, "no-backup"), utils.GetBoolFlag(cmd, "copy"))
 			}
 		}
@@ -70,7 +70,7 @@ func installGitDelta(cmd *cobra.Command) {
 			true,
 			map[string]uint32{},
 		),
-		"yes_s": utils.BuildYesFlag(cmd),
+		"yesStr": utils.BuildYesFlag(cmd),
 		"file":  file,
 	})
 	utils.RunCmd(command)
@@ -94,21 +94,21 @@ func git(cmd *cobra.Command, args []string) {
 	if utils.GetBoolFlag(cmd, "install") {
 		if utils.IsLinux() {
 			if utils.IsDebianUbuntuSeries() {
-				command := utils.Format(`{prefix} apt-get update && {prefix} apt-get install {yes_s} git git-lfs`, map[string]string{
+				command := utils.Format(`{prefix} apt-get update && {prefix} apt-get install {yesStr} git git-lfs`, map[string]string{
 					"prefix": utils.GetCommandPrefix(
 						true,
 						map[string]uint32{},
 					),
-					"yes_s": utils.BuildYesFlag(cmd),
+					"yesStr": utils.BuildYesFlag(cmd),
 				})
 				utils.RunCmd(command)
 			} else if utils.IsFedoraSeries() {
-				command := utils.Format("{prefix} dnf {yes_s} install git", map[string]string{
+				command := utils.Format("{prefix} dnf {yesStr} install git", map[string]string{
 					"prefix": utils.GetCommandPrefix(
 						true,
 						map[string]uint32{},
 					),
-					"yes_s": utils.BuildYesFlag(cmd),
+					"yesStr": utils.BuildYesFlag(cmd),
 				})
 				utils.RunCmd(command)
 			}
@@ -138,7 +138,7 @@ func git(cmd *cobra.Command, args []string) {
 		utils.RunCmd(command)
 		if utils.IsLinux() {
 			if utils.IsDebianUbuntuSeries() {
-				command := utils.Format("{prefix} apt-get purge {yes_s} git git-lfs", map[string]string{
+				command := utils.Format("{prefix} apt-get purge {yesStr} git git-lfs", map[string]string{
 					"prefix": utils.GetCommandPrefix(
 						true,
 						map[string]uint32{},
@@ -146,7 +146,7 @@ func git(cmd *cobra.Command, args []string) {
 				})
 				utils.RunCmd(command)
 			} else if utils.IsFedoraSeries() {
-				command := utils.Format("{prefix} dnf {yes_s} remove git", map[string]string{
+				command := utils.Format("{prefix} dnf {yesStr} remove git", map[string]string{
 					"prefix": utils.GetCommandPrefix(
 						true,
 						map[string]uint32{},

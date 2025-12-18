@@ -3,7 +3,6 @@ package shell
 import (
 	"log"
 	"path/filepath"
-	"runtime"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -78,15 +77,14 @@ func generateCrazyCompletions() {
 // Install and config the fish shell.
 func fish(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "install") {
-		switch runtime.GOOS {
-		case "linux":
+		if utils.IsLinux() {
 			file := downloadFishFromGitHub(utils.GetStringFlag(cmd, "version"))
 			command := utils.Format(`{prefix} tar --xz -xvf {file} -C /usr/bin/`, map[string]string{
 				"prefix": utils.GetCommandPrefix(true, map[string]uint32{}),
 				"file":   file,
 			})
 			utils.RunCmd(command)
-		case "darwin":
+		} else {
 			utils.RunCmd("brew install fish")
 		}
 	}
@@ -101,13 +99,12 @@ func fish(cmd *cobra.Command, _ []string) {
 		generateCrazyCompletions()
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
-		switch runtime.GOOS {
-		case "linux":
+		if utils.IsLinux() {
 			command := utils.Format(`{prefix} rm /usr/bin/fish`, map[string]string{
 				"prefix": utils.GetCommandPrefix(true, map[string]uint32{}),
 			})
 			utils.RunCmd(command)
-		case "darwin":
+		} else {
 			utils.RunCmd("brew uninstall fish")
 		}
 	}

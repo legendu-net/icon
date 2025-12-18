@@ -1,8 +1,6 @@
 package misc
 
 import (
-	"runtime"
-
 	"github.com/spf13/cobra"
 	"legendu.net/icon/utils"
 )
@@ -10,41 +8,38 @@ import (
 // Install and configure the KeepassXC terminal.
 func keepassxc(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "install") {
-		switch runtime.GOOS {
-		case "linux":
+		if utils.IsLinux() {
 			if utils.IsDebianUbuntuSeries() {
-				command := utils.Format("{prefix} apt-get update && {prefix} apt-get install {yes_s} keepassxc", map[string]string{
+				command := utils.Format("{prefix} apt-get update && {prefix} apt-get install {yesStr} keepassxc", map[string]string{
 					"prefix": utils.GetCommandPrefix(true, map[string]uint32{}),
-					"yes_s":  utils.BuildYesFlag(cmd),
+					"yesStr":  utils.BuildYesFlag(cmd),
 				})
 				utils.RunCmd(command)
 			} else if utils.IsFedoraSeries() {
-				command := utils.Format("{prefix} dnf {yes_s} install keepassxc", map[string]string{
+				command := utils.Format("{prefix} dnf {yesStr} install keepassxc", map[string]string{
 					"prefix": utils.GetCommandPrefix(true, map[string]uint32{}),
-					"yes_s":  utils.BuildYesFlag(cmd),
+					"yesStr":  utils.BuildYesFlag(cmd),
 				})
 				utils.RunCmd(command)
 			}
-		case "darwin":
+		} else {
 			utils.RunCmd("brew install --cask keepassxc")
 		}
 	}
 	if utils.GetBoolFlag(cmd, "config") {
-		switch runtime.GOOS {
-		case "darwin":
+		if utils.IsLinux() {
+		} else {
 			utils.SymlinkIntoDir("/Applications/KeePassXC.app/Contents/MacOS/keepassxc-cli", "~/.local/bin", false, false)
-		case "linux":
 		}
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
-		switch runtime.GOOS {
-		case "linux":
-			command := utils.Format("{prefix} apt-get purge {yes_s} keepassxc", map[string]string{
+		if utils.IsLinux() {
+			command := utils.Format("{prefix} apt-get purge {yesStr} keepassxc", map[string]string{
 				"prefix": utils.GetCommandPrefix(true, map[string]uint32{}),
-				"yes_s":  utils.BuildYesFlag(cmd),
+				"yesStr":  utils.BuildYesFlag(cmd),
 			})
 			utils.RunCmd(command)
-		case "darwin":
+		} else {
 			utils.RunCmd("brew uninstall --cask keepassxc")
 		}
 	}

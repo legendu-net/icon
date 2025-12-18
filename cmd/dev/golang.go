@@ -81,8 +81,7 @@ func golang(cmd *cobra.Command, _ []string) {
 		installGoPls(prefix)
 	}
 	if utils.GetBoolFlag(cmd, "config") {
-		switch runtime.GOOS {
-		case "linux":
+		if utils.IsLinux() {
 			usrLocalBin := "/usr/local/bin"
 			goBin := "/usr/local/go/bin"
 			entries := utils.ReadDir(goBin)
@@ -90,7 +89,7 @@ func golang(cmd *cobra.Command, _ []string) {
 				file := filepath.Join(goBin, entry.Name())
 				utils.SymlinkIntoDir(file, usrLocalBin, false, false)
 			}
-		case "darwin":
+		} else {
 		}
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
