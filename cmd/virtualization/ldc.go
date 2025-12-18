@@ -132,7 +132,8 @@ func ldc(cmd *cobra.Command, args []string) {
 	}
 	if utils.IsLinux() {
 		memStat := utils.VirtualMemory()
-		memory := int(0.8 * float64(memStat.Total))
+		const maxAllowedRatioOfMemory = 0.8
+		memory := int(float64(memStat.Total) * maxAllowedRatioOfMemory)
 		command = append(command, "--memory="+strconv.Itoa(memory)+"b")
 		cpuInfo := utils.CPUInfo()
 		cpus := utils.Max(len(cpuInfo)-1, 1)

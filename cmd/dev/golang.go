@@ -25,7 +25,7 @@ func getGolangVersion() string {
 	}
 	defer resp.Body.Close()
 	html := utils.ReadAllAsText(resp.Body)
-	if resp.StatusCode > 399 {
+	if utils.IsErrorHTTPResponse(resp) {
 		log.Fatal("...")
 	}
 	re := regexp.MustCompile(`tag/go(\d+\.\d+\.\d+)`)

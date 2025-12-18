@@ -10,6 +10,11 @@ import (
 	"time"
 )
 
+func IsErrorHTTPResponse(resp *http.Response) bool {
+	//nolint:mnd // good readability in the context
+	return resp.StatusCode >= 400
+}
+
 // HTTPGetAsBytes performs an HTTP GET request to the specified URL and returns the response body as a byte slice.
 //
 // @param url The URL to send the HTTP GET request to.
@@ -26,9 +31,12 @@ func HTTPGetAsBytes(url string, retry int8, initialWaitingSeconds int32) ([]byte
 		}
 		return []byte{}, fmt.Errorf("failed to GET the URL '%s': %w", url, err)
 	}
-	if resp.StatusCode > 399 {
+	if IsErrorHTTPResponse(resp) {
 		if resp.Header.Get("x-ratelimit-remaining") == "0" {
-			time.Sleep(time.Until(time.Unix(ParseInt(resp.Header.Get("x-ratelimit-reset"))+10, 0)))
+			rateLimitResetInSeconds := ParseInt(resp.Header.Get("x-ratelimit-reset"))
+			//nolint:mnd // good readability in the context
+			rateLimitResetTime := time.Unix(rateLimitResetInSeconds+10, 0)
+			time.Sleep(time.Until(rateLimitResetTime))
 			return HTTPGetAsBytes(url, retry, initialWaitingSeconds)
 		}
 		if retry > 0 {
@@ -63,7 +71,7 @@ func HTTPGetAsBytes(url string, retry int8, initialWaitingSeconds int32) ([]byte
 //
 // @param url The URL to send the HTTP GET request to.
 // @param retry The number of times to retry the request if it fails or encounters a rate limit.
-// @param initial_waiting_seconds The initial number of seconds to wait before retrying the request.
+// @param initialWaitingSeconds The initial number of seconds to wait before retrying the request.
 //
 // @return The response body as a string.
 func HTTPGetAsString(url string, retry int8, initialWaitingSeconds int32) string {

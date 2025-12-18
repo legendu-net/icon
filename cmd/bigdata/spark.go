@@ -19,7 +19,9 @@ import (
 // Get the latest version of Spark.
 func getSparkVersion() string {
 	log.Printf("Parsing the latest version of Spark ...")
-	html := utils.HTTPGetAsString("https://spark.apache.org/downloads.html", 3, 120)
+	const numRetry = 3
+	const initialWaitingSeconds = 120
+	html := utils.HTTPGetAsString("https://spark.apache.org/downloads.html", numRetry, initialWaitingSeconds)
 	re := regexp.MustCompile(`Latest Release \(Spark (\d.\d.\d)\)`)
 	for _, line := range strings.Split(html, "\n") {
 		match := re.FindString(line)
@@ -52,7 +54,7 @@ func getSparkDownloadUrl(sparkVersion, hadoopVersion string) (string, string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	if resp.StatusCode > 399 {
+	if utils.IsErrorHTTPResponse(resp) {
 		log.Fatal("HTTP request got an error response with the status code ", resp.StatusCode)
 	}
 	html := string(body)
