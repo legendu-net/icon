@@ -75,6 +75,7 @@ func ConfigDefaultKeybindings() {
 	keyBindings := readDefaultKeybindingsFromYaml()
 	defaultKeyBindings = removeDefaultKeyBindings(defaultKeyBindings, keyBindings)
 	defaultKeyBindings = addDefaultKeyBindings(defaultKeyBindings, keyBindings)
+	//nolint:mnd // readable
 	utils.WriteTextFile(file, strings.Join(defaultKeyBindings, "\n"), 0o600)
 	fmt.Printf("%s has been updated using keyboard/DefaultKeyBinding.yaml.\n", file)
 }
