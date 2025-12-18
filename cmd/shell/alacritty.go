@@ -1,8 +1,6 @@
 package shell
 
 import (
-	"runtime"
-
 	"github.com/spf13/cobra"
 	"legendu.net/icon/utils"
 )
@@ -10,8 +8,7 @@ import (
 // Install and configure the Alacritty terminal.
 func alacritty(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "install") {
-		switch runtime.GOOS {
-		case "linux":
+		if utils.IsLinux() {
 			if utils.IsDebianUbuntuSeries() {
 				command := utils.Format(`{prefix} apt-get update && {prefix} apt-get install {yes_s} \
 					cmake pkg-config python3 \
@@ -43,16 +40,15 @@ func alacritty(cmd *cobra.Command, _ []string) {
 				"prefix": utils.GetCommandPrefix(true, map[string]uint32{}),
 			})
 			utils.RunCmd(command)
-		case "darwin":
+		} else {
 			utils.RunCmd("brew install --cask alacritty")
 		}
 	}
 	if utils.GetBoolFlag(cmd, "config") {
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
-		switch runtime.GOOS {
-		case "linux":
-		case "darwin":
+		if utils.IsLinux() {
+		} else {
 			utils.RunCmd("brew uninstall --cask alacritty")
 		}
 	}

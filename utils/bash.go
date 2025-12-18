@@ -3,7 +3,6 @@ package utils
 import (
 	"log"
 	"path/filepath"
-	"runtime"
 	"strings"
 )
 
@@ -28,7 +27,7 @@ fi
 `,
 		true,
 	)
-	if runtime.GOOS == "linux" {
+	if IsLinux() {
 		sourceIn := `
 # source in ~/.bashrc
 if [[ -f $HOME/.bashrc ]]; then
@@ -79,7 +78,7 @@ done
 func GetBashConfigFile() string {
 	home := UserHomeDir()
 	file := ".bash_profile"
-	if runtime.GOOS == "linux" {
+	if IsLinux() {
 		file = ".bashrc"
 	}
 	return filepath.Join(home, file)

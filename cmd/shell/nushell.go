@@ -2,7 +2,6 @@ package shell
 
 import (
 	"log"
-	"runtime"
 
 	"github.com/spf13/cobra"
 	"legendu.net/icon/cmd/network"
@@ -25,10 +24,7 @@ func downloadNushellFromGitHub(version string) string {
 // Install nushell.
 func nushell(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "install") {
-		switch runtime.GOOS {
-		case "darwin":
-			utils.BrewInstallSafe([]string{"nushell"})
-		case "linux":
+		if utils.IsLinux() {
 			file := downloadNushellFromGitHub(utils.GetStringFlag(cmd, "version"))
 			dir := utils.GetStringFlag(cmd, "dir")
 			utils.Format(`mkdir -p {dir} \
@@ -37,6 +33,8 @@ func nushell(cmd *cobra.Command, _ []string) {
 				"dir":  dir,
 			})
 			log.Printf("Nushell has been installed into %s.\n", dir)
+		} else {
+			utils.BrewInstallSafe([]string{"nushell"})
 		}
 	}
 	if utils.GetBoolFlag(cmd, "config") {

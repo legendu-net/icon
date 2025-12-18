@@ -4,7 +4,6 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"runtime"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -93,8 +92,7 @@ func configGitProxy(cmd *cobra.Command) {
 func git(cmd *cobra.Command, args []string) {
 	git := utils.GetStringFlag(cmd, "git")
 	if utils.GetBoolFlag(cmd, "install") {
-		switch runtime.GOOS {
-		case "linux":
+		if utils.IsLinux() {
 			if utils.IsDebianUbuntuSeries() {
 				command := utils.Format(`{prefix} apt-get update && {prefix} apt-get install {yes_s} git git-lfs`, map[string]string{
 					"prefix": utils.GetCommandPrefix(
@@ -116,7 +114,7 @@ func git(cmd *cobra.Command, args []string) {
 			}
 			installGitDelta(cmd)
 			installGitUI(cmd)
-		case "darwin":
+		} else {
 			utils.BrewInstallSafe([]string{"git", "git-lfs"})
 		}
 		command := utils.Format("{git} lfs install", map[string]string{
@@ -138,10 +136,7 @@ func git(cmd *cobra.Command, args []string) {
 			"git": git,
 		})
 		utils.RunCmd(command)
-		switch runtime.GOOS {
-		case "darwin":
-			utils.RunCmd("brew uninstall git git-lfs")
-		case "linux":
+		if utils.IsLinux() {
 			if utils.IsDebianUbuntuSeries() {
 				command := utils.Format("{prefix} apt-get purge {yes_s} git git-lfs", map[string]string{
 					"prefix": utils.GetCommandPrefix(
@@ -159,6 +154,8 @@ func git(cmd *cobra.Command, args []string) {
 				})
 				utils.RunCmd(command)
 			}
+		} else {
+			utils.RunCmd("brew uninstall git git-lfs")
 		}
 	}
 }
