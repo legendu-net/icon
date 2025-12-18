@@ -50,7 +50,7 @@ func CopyFileToDir(sourceFile, destinationDir string) {
 // @param destinationDir The path to the destination directory where the source directory
 //
 //	and its contents will be copied.
-func CopyDir(sourceDir string, destinationDir string) {
+func CopyDir(sourceDir, destinationDir string) {
 	MkdirAll(destinationDir, "")
 	for _, entry := range ReadDir(sourceDir) {
 		if entry.IsDir() {

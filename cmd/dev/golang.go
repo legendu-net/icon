@@ -38,7 +38,10 @@ func installGoLang(prefix string) {
 		"os":   runtime.GOOS,
 		"arch": utils.HostKernelArch(),
 	})
-	goTgz := utils.DownloadFile(url, "go_*.tar.gz", true)
+	goTgz, err := utils.DownloadFile(url, "go_*.tar.gz", true)
+	if err != nil {
+		log.Fatal(err)
+	}
 	cmd := utils.Format(`{prefix} rm -rf /usr/local/go \
 				&& {prefix} tar -C /usr/local/ -xzf {goTgz}`,
 		map[string]string{

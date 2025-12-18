@@ -44,5 +44,4 @@ func init() {
 	PyTorchCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
 	PyTorchCmd.Flags().String("cuda-version", "", "The version of CUDA. If not specified, the CPU version is used.")
 	utils.AddPythonFlags(PyTorchCmd)
-	// rootCmd.AddCommand(ipythonCmd)
 }

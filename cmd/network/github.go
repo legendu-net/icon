@@ -55,8 +55,12 @@ func assetNameContainKeywords(name string, keywords, keyworkdsExclude []string) 
 
 func filterReleases(url, constraint string) ReleaseInfo {
 	log.Printf("Extracting release from %s with the constraint %s", url, constraint)
+	bytes, err := utils.HTTPGetAsBytes(url, 3, 120)
+	if err != nil {
+		log.Fatal(err)
+	}
 	var releases []ReleaseInfo
-	err := json.Unmarshal(utils.HTTPGetAsBytes(url, 3, 120), &releases)
+	err = json.Unmarshal(bytes, &releases)
 	if err != nil {
 		log.Fatalf("Failed to parse TOML: %v", err)
 	}
@@ -72,8 +76,12 @@ func filterReleases(url, constraint string) ReleaseInfo {
 
 func GetLatestRelease(releaseURL string) ReleaseInfo {
 	url := releaseURL + "/latest"
+	bytes, err := utils.HTTPGetAsBytes(url, 3, 120)
+	if err != nil {
+		log.Fatal(err)
+	}
 	var releaseInfo ReleaseInfo
-	err := json.Unmarshal(utils.HTTPGetAsBytes(url, 3, 120), &releaseInfo)
+	err = json.Unmarshal(bytes, &releaseInfo)
 	if err != nil {
 		log.Fatal("ERROR - ", err)
 	}
@@ -96,22 +104,22 @@ func DownloadGitHubReleaseArgs(cmd *cobra.Command, _ []string) {
 // Download a release from GitHub.
 // @param args: The arguments to parse.
 // If None, the arguments from command-line are parsed.
-func DownloadGitHubRelease(repo string, version string, keywords map[string][]string, keywordsExclude []string, output string) {
+func DownloadGitHubRelease(repo, ver string, keywords map[string][]string, keywordsExclude []string, output string) {
 	keywords_ := utils.BuildKernelOSKeywords(keywords)
 	log.Printf(`Download release from the GitHub repository %s satisfying the following conditions:
 	Version: %s
 	Contains: %s
 	Does not contain: %s
 	Write to: %s
-	`, repo, version, strings.Join(keywords_, ", "), strings.Join(keywordsExclude, ", "), output)
+	`, repo, ver, strings.Join(keywords_, ", "), strings.Join(keywordsExclude, ", "), output)
 	// form the release URL
 	releaseURL := GetReleaseURL(repo)
 	log.Printf("Release URL: %s\n", releaseURL)
 	var releaseInfo ReleaseInfo
-	if version == "" {
+	if ver == "" {
 		releaseInfo = GetLatestRelease(releaseURL)
 	} else {
-		releaseInfo = filterReleases(releaseURL, version)
+		releaseInfo = filterReleases(releaseURL, ver)
 	}
 	// parse browser download url
 	var browserDownloadURL string
@@ -154,5 +162,4 @@ func init() {
 	if err != nil {
 		log.Fatal("ERROR - ", err)
 	}
-	// rootCmd.AddCommand(downloadgitHubReleaseCmd)
 }

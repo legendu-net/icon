@@ -36,9 +36,9 @@ func installGitUI(cmd *cobra.Command) {
 	}
 }
 
-func linkGitUiFiles(baseDir string, backup bool, copy bool) {
+func linkGitUiFiles(baseDir string, backup, copyPath bool) {
 	utils.SymlinkIntoDir("~/.config/icon-data/git/gitui/key_bindings.ron", filepath.Join(baseDir, "gitui"),
-		backup, copy)
+		backup, copyPath)
 }
 
 func configGitUI(cmd *cobra.Command) {

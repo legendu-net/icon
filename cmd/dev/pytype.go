@@ -29,7 +29,7 @@ func pytype(cmd *cobra.Command, _ []string) {
 		destFile := filepath.Join(utils.GetStringFlag(cmd, "dest-dir"), "pyproject.toml")
 		var destMap orderedmap.OrderedMap[string, any]
 		if utils.ExistsFile(destFile) {
-			err := toml.Unmarshal(utils.ReadFile(destFile), &destMap)
+			err = toml.Unmarshal(utils.ReadFile(destFile), &destMap)
 			if err != nil {
 				log.Fatalf("Failed to parse TOML: %v", err)
 			}
@@ -38,7 +38,6 @@ func pytype(cmd *cobra.Command, _ []string) {
 			destMap = srcMap
 		}
 		bytes, err := toml.Marshal(destMap)
-		//bytes, err := toml.Marshal(srcMap)
 		if err != nil {
 			log.Fatal("ERROR - ", err)
 		}

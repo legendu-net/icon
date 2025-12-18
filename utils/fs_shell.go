@@ -97,7 +97,7 @@ func MkdirAll(path, perm string) {
 //
 // @param path The path to the source file/directory.
 // @param dstLink The path where the symbolic link will be created.
-func Symlink(path string, dstLink string, backup bool, copy bool) {
+func Symlink(path, dstLink string, backup, copyPath bool) {
 	path = NormalizePath(path)
 	dstLink = NormalizePath(dstLink)
 	if backup {
@@ -111,7 +111,7 @@ func Symlink(path string, dstLink string, backup bool, copy bool) {
 		path:    unix.R_OK,
 		dstLink: unix.W_OK | unix.R_OK,
 	})
-	if copy {
+	if copyPath {
 		cmd := Format("{prefix} cp -ir {path} {dstLink}", map[string]string{
 			"prefix":  prefix,
 			"path":    path,
@@ -128,22 +128,22 @@ func Symlink(path string, dstLink string, backup bool, copy bool) {
 	}
 }
 
-func SymlinkIntoDir(path string, dstDir string, backup bool, copy bool) {
-	Symlink(path, filepath.Join(dstDir, filepath.Base(path)), backup, copy)
+func SymlinkIntoDir(path, dstDir string, backup, copyPath bool) {
+	Symlink(path, filepath.Join(dstDir, filepath.Base(path)), backup, copyPath)
 }
 
-func Rename(original string, new string) {
+func Rename(originalPath, newPath string) {
 	prefix := GetCommandPrefix(false, map[string]uint32{
-		original: unix.W_OK | unix.R_OK,
-		new:      unix.W_OK | unix.R_OK,
+		originalPath: unix.W_OK | unix.R_OK,
+		newPath:      unix.W_OK | unix.R_OK,
 	})
-	cmd := Format("{prefix} mv {original} {new}", map[string]string{
-		"prefix":   prefix,
-		"original": original,
-		"new":      new,
+	cmd := Format("{prefix} mv {originalPath} {newPath}", map[string]string{
+		"prefix":       prefix,
+		"originalPath": originalPath,
+		"newPath":      newPath,
 	})
 	RunCmd(cmd)
-	fmt.Printf("The path %s has been renamed to %s.\n", original, new)
+	fmt.Printf("The path %s has been renamed to %s.\n", originalPath, newPath)
 }
 
 func Backup(original, backup string) {
