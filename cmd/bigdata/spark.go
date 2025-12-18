@@ -125,7 +125,7 @@ func spark(cmd *cobra.Command, _ []string) {
 			map[string]string{
 				"prefix":        prefix,
 				"conf":          strings.ReplaceAll(text, "$SPARK_HOME", sparkHome),
-				"sparkDefaults": filepath.Join(sparkHome, "conf/spark-defaults.conf"),
+				"sparkDefaults": filepath.Join(sparkHome, "conf", "spark-defaults.conf"),
 			},
 		)
 		utils.RunCmd(cmd)

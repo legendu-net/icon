@@ -8,7 +8,8 @@ import (
 )
 
 func linkArrowDBProfileFromHost(backup, copyPath bool) {
-	srcProfile := filepath.Join("/home_host", utils.GetCurrentUser().Name, ".arrowdb_profile")
+	//nolint:gocritic // filepathJoin: "/" is intentional to start an absolute path
+	srcProfile := filepath.Join("/", "home_host", utils.GetCurrentUser().Name, ".arrowdb_profile")
 	dstProfile := filepath.Join(utils.UserHomeDir(), ".arrowdb_profile")
 	if utils.ExistsFile(srcProfile) {
 		// inside a Docker container, link profile from host
