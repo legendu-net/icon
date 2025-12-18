@@ -27,8 +27,7 @@ func ganymede(cmd *cobra.Command, _ []string) {
 				&& {prefix} cp -r /usr/share/jupyter/kernels/ganymede-*-java-* /usr/local/share/jupyter/kernels/ \
 				&& {prefix} sed -i \
 					's_/usr/share/jupyter/kernels/_/usr/local/share/jupyter/kernels/_g' \
-					/usr/local/share/jupyter/kernels/ganymede*/kernel.json
-			`, map[string]string{
+					/usr/local/share/jupyter/kernels/ganymede*/kernel.json`, map[string]string{
 			"prefix": utils.GetCommandPrefix(false, map[string]uint32{
 				"/usr/share/jupyter/":       unix.W_OK | unix.R_OK,
 				"/usr/local/share/jupyter/": unix.W_OK | unix.R_OK,
