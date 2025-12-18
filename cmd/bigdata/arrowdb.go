@@ -1,19 +1,18 @@
 package bigdata
 
 import (
-	//"embed"
 	"path/filepath"
 
 	"github.com/spf13/cobra"
 	"legendu.net/icon/utils"
 )
 
-func linkArrowDbProfileFromHost(backup, copy bool) {
+func linkArrowDBProfileFromHost(backup, copyPath bool) {
 	srcProfile := filepath.Join("/home_host", utils.GetCurrentUser().Name, ".arrowdb_profile")
 	dstProfile := filepath.Join(utils.UserHomeDir(), ".arrowdb_profile")
 	if utils.ExistsFile(srcProfile) {
 		// inside a Docker container, link profile from host
-		utils.Symlink(srcProfile, dstProfile, backup, copy)
+		utils.Symlink(srcProfile, dstProfile, backup, copyPath)
 	}
 }
 
@@ -30,7 +29,7 @@ func arrowDB(cmd *cobra.Command, _ []string) {
 		utils.RunCmd(command)
 	}
 	if utils.GetBoolFlag(cmd, "config") {
-		linkArrowDbProfileFromHost(!utils.GetBoolFlag(cmd, "no-backup"), utils.GetBoolFlag(cmd, "copy"))
+		linkArrowDBProfileFromHost(!utils.GetBoolFlag(cmd, "no-backup"), utils.GetBoolFlag(cmd, "copy"))
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
 		command := utils.Format("{prefix} {pip_uninstall} arrowdb", map[string]string{

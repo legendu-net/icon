@@ -68,9 +68,9 @@ func spark(cmd *cobra.Command, _ []string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	//if sparkVersion == "" {
-	//	sparkVersion = getSparkVersion()
-	//}
+	// if sparkVersion == "" {
+	//	 sparkVersion = getSparkVersion()
+	// }
 	// get Hadoop version
 	hadoopVersion, err := cmd.Flags().GetString("hadoop-version")
 	if err != nil {
@@ -88,7 +88,10 @@ func spark(cmd *cobra.Command, _ []string) {
 		dir: unix.W_OK | unix.R_OK,
 	})
 	if utils.GetBoolFlag(cmd, "install") {
-		sparkTgz := utils.DownloadFile(url, "spark.tgz", true)
+		sparkTgz, err := utils.DownloadFile(url, "spark.tgz", true)
+		if err != nil {
+			log.Fatal(err)
+		}
 		log.Printf("Installing Spark into the directory %s ...\n", sparkHome)
 		cmd := utils.Format("{prefix} mkdir -p {dir} && {prefix} tar -zxf {sparkTgz} -C {dir} && rm {sparkTgz}", map[string]string{
 			"prefix":   prefix,

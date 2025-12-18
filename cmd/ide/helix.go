@@ -17,7 +17,7 @@ func helix(cmd *cobra.Command, _ []string) {
 	)
 }
 
-func Helix(install, config, uninstall bool, yes_s string) {
+func Helix(install, config, uninstall bool, yesStr string) {
 	if install {
 		switch runtime.GOOS {
 		case "darwin":
@@ -33,21 +33,21 @@ func Helix(install, config, uninstall bool, yes_s string) {
 					})
 					utils.RunCmd(command)
 				}
-				command := utils.Format("{prefix} apt-get update && {prefix} apt-get install {yes_s} helix", map[string]string{
+				command := utils.Format("{prefix} apt-get update && {prefix} apt-get install {yesStr} helix", map[string]string{
 					"prefix": utils.GetCommandPrefix(
 						true,
 						map[string]uint32{},
 					),
-					"yes_s": yes_s,
+					"yesStr": yesStr,
 				})
 				utils.RunCmd(command)
 			} else if utils.IsFedoraSeries() {
-				command := utils.Format("{prefix} dnf copr enable varlad/helix && {prefix} dnf {yes_s} install helix", map[string]string{
+				command := utils.Format("{prefix} dnf copr enable varlad/helix && {prefix} dnf {yesStr} install helix", map[string]string{
 					"prefix": utils.GetCommandPrefix(
 						true,
 						map[string]uint32{},
 					),
-					"yes_s": yes_s,
+					"yesStr": yesStr,
 				})
 				utils.RunCmd(command)
 			}
@@ -61,16 +61,16 @@ func Helix(install, config, uninstall bool, yes_s string) {
 			utils.RunCmd("brew uninstall helix")
 		case "linux":
 			if utils.IsDebianUbuntuSeries() {
-				command := utils.Format("{prefix} apt-get purge {yes_s} helix", map[string]string{
+				command := utils.Format("{prefix} apt-get purge {yesStr} helix", map[string]string{
 					"prefix": utils.GetCommandPrefix(
 						true,
 						map[string]uint32{},
 					),
-					"yes_s": yes_s,
+					"yesStr": yesStr,
 				})
 				utils.RunCmd(command)
 			} else if utils.IsFedoraSeries() {
-				command := utils.Format("{prefix} dnf {yes_s} remove helix", map[string]string{
+				command := utils.Format("{prefix} dnf {yesStr} remove helix", map[string]string{
 					"prefix": utils.GetCommandPrefix(
 						true,
 						map[string]uint32{},

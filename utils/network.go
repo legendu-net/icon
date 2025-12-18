@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -16,14 +17,14 @@ import (
 // @param initialWaitingSeconds The initial number of seconds to wait before retrying the request.
 //
 // @return The response body as a byte slice.
-func HTTPGetAsBytes(url string, retry int8, initialWaitingSeconds int32) []byte {
+func HTTPGetAsBytes(url string, retry int8, initialWaitingSeconds int32) ([]byte, error) {
 	resp, err := http.Get(url)
 	if err != nil {
 		if retry > 0 {
 			time.Sleep(time.Duration(initialWaitingSeconds) * time.Second)
 			return HTTPGetAsBytes(url, retry-1, initialWaitingSeconds*2)
 		}
-		log.Fatal("The HTTP GET request on the URL ", url, " got the following error:\n", err)
+		return []byte{}, fmt.Errorf("failed to GET the URL '%s': %w", url, err)
 	}
 	if resp.StatusCode > 399 {
 		if resp.Header.Get("x-ratelimit-remaining") == "0" {
@@ -34,19 +35,16 @@ func HTTPGetAsBytes(url string, retry int8, initialWaitingSeconds int32) []byte 
 			time.Sleep(time.Duration(initialWaitingSeconds) * time.Second)
 			return HTTPGetAsBytes(url, retry-1, initialWaitingSeconds*2)
 		}
-		log.Fatal(
-			"The HTTP GET request on the URL ", url, " got an error response with the status code ",
+		return []byte{}, fmt.Errorf(
+			`the HTTP GET request on the URL %s got an error response with the status code %d.
+			x-ratelimit-limit: %s 
+			x-ratelimit-remaining: %s 
+			x-ratelimit-reset: %s`,
+			url,
 			resp.StatusCode,
-			"\n",
-			"x-ratelimit-limit: ",
 			resp.Header.Get("x-ratelimit-limit"),
-			"\n",
-			"x-ratelimit-remaining: ",
 			resp.Header.Get("x-ratelimit-remaining"),
-			"\n",
-			"x-ratelimit-reset: ",
-			time.Unix(ParseInt(resp.Header.Get("x-ratelimit-reset")), 0).Local(),
-			"\n",
+			time.Unix(ParseInt(resp.Header.Get("x-ratelimit-reset")), 0).Local().Format(time.RFC3339),
 		)
 	}
 	defer resp.Body.Close()
@@ -56,9 +54,9 @@ func HTTPGetAsBytes(url string, retry int8, initialWaitingSeconds int32) []byte 
 			time.Sleep(time.Duration(initialWaitingSeconds) * time.Second)
 			return HTTPGetAsBytes(url, retry-1, initialWaitingSeconds*2)
 		}
-		log.Fatal("Reading the response body of the http GET request on the url ", url, " got the following error:\n", err)
+		return []byte{}, fmt.Errorf("failed to read the response body: %w", err)
 	}
-	return body
+	return body, nil
 }
 
 // HttpGetAsString performs an HTTP GET request to the specified URL and returns the response body as a string.
@@ -69,7 +67,11 @@ func HTTPGetAsBytes(url string, retry int8, initialWaitingSeconds int32) []byte 
 //
 // @return The response body as a string.
 func HTTPGetAsString(url string, retry int8, initialWaitingSeconds int32) string {
-	return string(HTTPGetAsBytes(url, retry, initialWaitingSeconds))
+	bytes, err := HTTPGetAsBytes(url, retry, initialWaitingSeconds)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return string(bytes)
 }
 
 // Download file from the given URL.
@@ -79,7 +81,7 @@ func HTTPGetAsString(url string, retry int8, initialWaitingSeconds int32) string
 // @param useTempDir If true, the file will be saved to a temporary directory.
 //
 // @return The local path where the downloaded file is saved.
-func DownloadFile(url, name string, useTempDir bool) string {
+func DownloadFile(url, name string, useTempDir bool) (string, error) {
 	var out *os.File
 	var err error
 	if useTempDir {
@@ -87,18 +89,18 @@ func DownloadFile(url, name string, useTempDir bool) string {
 	}
 	out, err = os.Create(name)
 	if err != nil {
-		log.Fatal("ERROR - ", err, ": ", name)
+		return "", fmt.Errorf("failed to create file '%s': %w", name, err)
 	}
 	defer out.Close()
 	log.Printf("Downloading %s to %s\n", url, out.Name())
 	resp, err := http.Get(url)
 	if err != nil {
-		log.Fatal("ERROR - ", err)
+		return "", fmt.Errorf("failed to GET the url '%s': %w", url, err)
 	}
 	defer resp.Body.Close()
 	_, err = io.Copy(out, resp.Body)
 	if err != nil {
-		log.Fatal("ERROR - ", err)
+		return "", fmt.Errorf("failed to write the response body to '%s': %w", name, err)
 	}
-	return out.Name()
+	return out.Name(), nil
 }

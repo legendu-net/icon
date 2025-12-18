@@ -18,7 +18,7 @@ func neovim(cmd *cobra.Command, _ []string) {
 		!utils.GetBoolFlag(cmd, "no-backup"), utils.GetBoolFlag(cmd, "copy"))
 }
 
-func Neovim(install bool, config bool, uninstall bool, yes_s string, backup bool, copy bool) {
+func Neovim(install, config, uninstall bool, yesStr string, backup, copyPath bool) {
 	if install {
 		switch runtime.GOOS {
 		case "darwin":
@@ -26,31 +26,31 @@ func Neovim(install bool, config bool, uninstall bool, yes_s string, backup bool
 		case "linux":
 			if utils.IsDebianUbuntuSeries() {
 				if utils.IsUbuntuSeries() {
-					command := utils.Format(`{prefix} apt-get update && {prefix} apt-get install {yes_s} gnupg \
-						&& {prefix} add-apt-repository {yes_s} ppa:neovim-ppa/unstable`, map[string]string{
+					command := utils.Format(`{prefix} apt-get update && {prefix} apt-get install {yesStr} gnupg \
+						&& {prefix} add-apt-repository {yesStr} ppa:neovim-ppa/unstable`, map[string]string{
 						"prefix": utils.GetCommandPrefix(
 							true,
 							map[string]uint32{},
 						),
-						"yes_s": yes_s,
+						"yesStr": yesStr,
 					})
 					utils.RunCmd(command)
 				}
-				command := utils.Format("{prefix} apt-get update && {prefix} apt-get install {yes_s} neovim", map[string]string{
+				command := utils.Format("{prefix} apt-get update && {prefix} apt-get install {yesStr} neovim", map[string]string{
 					"prefix": utils.GetCommandPrefix(
 						true,
 						map[string]uint32{},
 					),
-					"yes_s": yes_s,
+					"yesStr": yesStr,
 				})
 				utils.RunCmd(command)
 			} else if utils.IsFedoraSeries() {
-				command := utils.Format("{prefix} dnf {yes_s} install neovim", map[string]string{
+				command := utils.Format("{prefix} dnf {yesStr} install neovim", map[string]string{
 					"prefix": utils.GetCommandPrefix(
 						true,
 						map[string]uint32{},
 					),
-					"yes_s": yes_s,
+					"yesStr": yesStr,
 				})
 				utils.RunCmd(command)
 			}
@@ -59,7 +59,7 @@ func Neovim(install bool, config bool, uninstall bool, yes_s string, backup bool
 	if config {
 		icon.FetchConfigData(false, "")
 		dir := "~/.config/nvim"
-		utils.Symlink("~/.config/icon-data/nvim", dir, backup, copy)
+		utils.Symlink("~/.config/icon-data/nvim", dir, backup, copyPath)
 	}
 	if uninstall {
 		switch runtime.GOOS {
@@ -67,16 +67,16 @@ func Neovim(install bool, config bool, uninstall bool, yes_s string, backup bool
 			utils.RunCmd("brew uninstall neovim")
 		case "linux":
 			if utils.IsDebianUbuntuSeries() {
-				command := utils.Format("{prefix} apt-get purge {yes_s} neovim", map[string]string{
+				command := utils.Format("{prefix} apt-get purge {yesStr} neovim", map[string]string{
 					"prefix": utils.GetCommandPrefix(
 						true,
 						map[string]uint32{},
 					),
-					"yes_s": yes_s,
+					"yesStr": yesStr,
 				})
 				utils.RunCmd(command)
 			} else if utils.IsFedoraSeries() {
-				command := utils.Format("{prefix} dnf {yes_s} remove neovim", map[string]string{
+				command := utils.Format("{prefix} dnf {yesStr} remove neovim", map[string]string{
 					"prefix": utils.GetCommandPrefix(
 						true,
 						map[string]uint32{},

@@ -1,7 +1,6 @@
 package misc
 
 import (
-	//"log"
 	"fmt"
 	"log"
 	"path/filepath"
