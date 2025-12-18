@@ -19,7 +19,7 @@ func firenvim(cmd *cobra.Command, _ []string) {
 		switch runtime.GOOS {
 		case "linux":
 			url := "https://www.legendu.net/misc/blog/firenvim-brings-neovim-into-your-browser/#installation"
-			log.Println("\nPlease follow step 5 in %s to configure a shortcut!", url)
+			log.Printf("\nPlease follow step 5 in %s to configure a shortcut!\n", url)
 		case "darwin":
 		}
 	}

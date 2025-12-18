@@ -64,7 +64,7 @@ func getDockerImageCommand(imageName string) string {
 	return ""
 }
 
-func appendDockerImageCommand(command *[]string, args *[]string) {
+func appendDockerImageCommand(command, args *[]string) {
 	*command = append(*command, *args...)
 	if len(*args) == 1 {
 		*command = append(*command, getDockerImageCommand((*args)[0]))

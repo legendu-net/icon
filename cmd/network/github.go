@@ -39,7 +39,7 @@ type ReleaseInfo struct {
 	Assets  []AssetInfo `json:"assets"`
 }
 
-func assetNameContainKeywords(name string, keywords []string, keyworkdsExclude []string) bool {
+func assetNameContainKeywords(name string, keywords, keyworkdsExclude []string) bool {
 	for _, keyword := range keywords {
 		if !strings.Contains(name, keyword) {
 			return false
@@ -53,7 +53,7 @@ func assetNameContainKeywords(name string, keywords []string, keyworkdsExclude [
 	return true
 }
 
-func filterReleases(url string, constraint string) ReleaseInfo {
+func filterReleases(url, constraint string) ReleaseInfo {
 	log.Printf("Extracting release from %s with the constraint %s", url, constraint)
 	var releases []ReleaseInfo
 	err := json.Unmarshal(utils.HTTPGetAsBytes(url, 3, 120), &releases)

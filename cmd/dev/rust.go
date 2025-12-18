@@ -22,7 +22,7 @@ func linkRust(cmd *cobra.Command, cargoHome string) {
 	}
 }
 
-func installRustNix(rustupHome string, cargoHome string, toolchain string) {
+func installRustNix(rustupHome, cargoHome, toolchain string) {
 	command := utils.Format(`
 		curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | {prefix} bash -s -- --default-toolchain {toolchain} -y \
 		&& {cargoHome}/bin/rustup component add rust-src rustfmt clippy \
