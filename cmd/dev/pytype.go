@@ -41,6 +41,7 @@ func pytype(cmd *cobra.Command, _ []string) {
 		if err != nil {
 			log.Fatal("ERROR - ", err)
 		}
+		//nolint:mnd // readable
 		utils.WriteFile(destFile, bytes, 0o600)
 		log.Printf("pytype is configured via %s.", destFile)
 	}

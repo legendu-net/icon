@@ -30,6 +30,7 @@ func adjustPathInConfig() {
 	pattern := "IdentityFile=/Users/"
 	if strings.Contains(text, pattern) {
 		text = strings.ReplaceAll(text, pattern, "IdentityFile=/home/")
+		//nolint:mnd // readable
 		utils.WriteTextFile(path, text, 0o600)
 	}
 }
