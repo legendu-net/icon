@@ -2,6 +2,7 @@ package dev
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"path/filepath"
@@ -13,28 +14,33 @@ import (
 	"legendu.net/icon/utils"
 )
 
-func getGolangVersion() string {
+func getGolangVersion() (string, error) {
+	url := "https://github.com/golang/go/tags"
 	req, err := http.NewRequestWithContext(context.Background(),
 		http.MethodGet, "https://github.com/golang/go/tags", http.NoBody)
 	if err != nil {
-		log.Fatal(err)
+		return "", fmt.Errorf("failed to create a HTTP GET request to the URL '%s' with context: %w", url, err)
 	}
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		log.Fatal(err)
+		return "", fmt.Errorf("the HTTP GET request to the URL '%s' failed: %w", url, err)
 	}
 	defer resp.Body.Close()
 	html := utils.ReadAllAsText(resp.Body)
 	if utils.IsErrorHTTPResponse(resp) {
-		log.Fatal("...")
+		return "", fmt.Errorf("failed to read the body of the response of the HTTP GET request: %w", err)
 	}
 	re := regexp.MustCompile(`tag/go(\d+\.\d+\.\d+)`)
-	return re.FindStringSubmatch(html)[1]
+	return re.FindStringSubmatch(html)[1], nil
 }
 
 func installGoLang(prefix string) {
+	ver, err := getGolangVersion()
+	if err != nil {
+		log.Fatal(err)
+	}
 	url := utils.Format("https://go.dev/dl/go{ver}.{os}-{arch}.tar.gz", map[string]string{
-		"ver":  getGolangVersion(),
+		"ver":  ver,
 		"os":   runtime.GOOS,
 		"arch": utils.HostKernelArch(),
 	})
