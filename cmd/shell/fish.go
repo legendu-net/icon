@@ -110,18 +110,19 @@ func fish(cmd *cobra.Command, _ []string) {
 	}
 }
 
-var FishCmd = &cobra.Command{
+var fishCmd = &cobra.Command{
 	Use:     "fish",
 	Aliases: []string{},
 	Short:   "Install and configure the fish shell.",
 	Run:     fish,
 }
 
-func init() {
-	FishCmd.Flags().BoolP("install", "i", false, "If specified, install the fish shell.")
-	FishCmd.Flags().Bool("uninstall", false, "If specified, uninstall the fish shell.")
-	FishCmd.Flags().BoolP("config", "c", false, "If specified, configure the fish shell.")
-	FishCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
-	FishCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
-	FishCmd.Flags().StringP("version", "v", "", "The version of the release.")
+func ConfigFishCmd(rootCmd *cobra.Command) {
+	fishCmd.Flags().BoolP("install", "i", false, "If specified, install the fish shell.")
+	fishCmd.Flags().Bool("uninstall", false, "If specified, uninstall the fish shell.")
+	fishCmd.Flags().BoolP("config", "c", false, "If specified, configure the fish shell.")
+	fishCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
+	fishCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
+	fishCmd.Flags().StringP("version", "v", "", "The version of the release.")
+	rootCmd.AddCommand(fishCmd)
 }

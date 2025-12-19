@@ -19,13 +19,14 @@ func update(cmd *cobra.Command, _ []string) {
 	utils.RunCmd(command)
 }
 
-var UpdateCmd = &cobra.Command{
+var updateCmd = &cobra.Command{
 	Use:     "update",
 	Aliases: []string{"upd"},
 	Short:   "Update icon.",
 	Run:     update,
 }
 
-func init() {
-	UpdateCmd.Flags().StringP("install-dir", "d", "/usr/local/bin", "The directory for installing icon.")
+func ConfigUpdateCmd(rootCmd *cobra.Command) {
+	updateCmd.Flags().StringP("install-dir", "d", "/usr/local/bin", "The directory for installing icon.")
+	rootCmd.AddCommand(updateCmd)
 }

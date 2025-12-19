@@ -45,7 +45,7 @@ func keepassxc(cmd *cobra.Command, _ []string) {
 	}
 }
 
-var KeepassXCCmd = &cobra.Command{
+var keepassXCCmd = &cobra.Command{
 	Use:     "keepassxc",
 	Aliases: []string{},
 	Short:   "Install and configure the KeepassXC terminal.",
@@ -53,11 +53,12 @@ var KeepassXCCmd = &cobra.Command{
 	Run: keepassxc,
 }
 
-func init() {
-	KeepassXCCmd.Flags().BoolP("install", "i", false, "Install the keepassxc terminal.")
-	KeepassXCCmd.Flags().Bool("uninstall", false, "Uninstall keepassxc terminal.")
-	KeepassXCCmd.Flags().BoolP("config", "c", false, "Configure the keepassxc terminal.")
-	KeepassXCCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
-	KeepassXCCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
-	KeepassXCCmd.Flags().BoolP("yes", "y", false, "Automatically yes to prompt questions.")
+func ConfigKeepassXCCmd(rootCmd *cobra.Command) {
+	keepassXCCmd.Flags().BoolP("install", "i", false, "Install the keepassxc terminal.")
+	keepassXCCmd.Flags().Bool("uninstall", false, "Uninstall keepassxc terminal.")
+	keepassXCCmd.Flags().BoolP("config", "c", false, "Configure the keepassxc terminal.")
+	keepassXCCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
+	keepassXCCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
+	keepassXCCmd.Flags().BoolP("yes", "y", false, "Automatically yes to prompt questions.")
+	rootCmd.AddCommand(keepassXCCmd)
 }

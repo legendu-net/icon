@@ -149,7 +149,7 @@ func spark(cmd *cobra.Command, _ []string) {
 	}
 }
 
-var SparkCmd = &cobra.Command{
+var sparkCmd = &cobra.Command{
 	Use:     "spark",
 	Aliases: []string{},
 	Short:   "Install and configure Spark.",
@@ -157,7 +157,7 @@ var SparkCmd = &cobra.Command{
 	Run: spark,
 }
 
-func init() {
+func ConfigSparkCmd(rootCmd *cobra.Command) {
 	/*
 	   subparser.add_argument(
 	       "-s",
@@ -172,12 +172,13 @@ func init() {
 	           "which containing SQL code for creating tables."
 	   )
 	*/
-	SparkCmd.Flags().String("spark-version", "4.0.0", "The version of Spark version to install.")
-	SparkCmd.Flags().String("hadoop-version", "3", "The version of Spark version to install.")
-	SparkCmd.Flags().StringP("directory", "d", "/opt", "The directory to install Spark.")
-	SparkCmd.Flags().BoolP("install", "i", false, "Install Spark.")
-	SparkCmd.Flags().BoolP("uninstall", "u", false, "Uninstall Spark.")
-	SparkCmd.Flags().BoolP("config", "c", false, "Configure Spark.")
-	SparkCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
-	SparkCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
+	sparkCmd.Flags().String("spark-version", "4.0.0", "The version of Spark version to install.")
+	sparkCmd.Flags().String("hadoop-version", "3", "The version of Spark version to install.")
+	sparkCmd.Flags().StringP("directory", "d", "/opt", "The directory to install Spark.")
+	sparkCmd.Flags().BoolP("install", "i", false, "Install Spark.")
+	sparkCmd.Flags().BoolP("uninstall", "u", false, "Uninstall Spark.")
+	sparkCmd.Flags().BoolP("config", "c", false, "Configure Spark.")
+	sparkCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
+	sparkCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
+	rootCmd.AddCommand(sparkCmd)
 }

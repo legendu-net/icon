@@ -42,7 +42,7 @@ func ganymede(cmd *cobra.Command, _ []string) {
 	}
 }
 
-var GanymedeCmd = &cobra.Command{
+var ganymedeCmd = &cobra.Command{
 	Use:     "ganymede",
 	Aliases: []string{"gmd"},
 	Short:   "Install and configure Ganymede.",
@@ -50,14 +50,12 @@ var GanymedeCmd = &cobra.Command{
 	Run: ganymede,
 }
 
-func init() {
-	GanymedeCmd.Flags().BoolP("install", "i", false, "Install Ganymede.")
-	GanymedeCmd.Flags().Bool("uninstall", false, "Uninstall Ganymede.")
-	GanymedeCmd.Flags().BoolP("config", "c", false, "Configure Ganymede.")
-	GanymedeCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
-	GanymedeCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
-	GanymedeCmd.Flags().Bool("sudo", false, "Force using sudo.")
-	GanymedeCmd.Flags().String("profile-dir", filepath.Join(utils.UserHomeDir(), ".ipython"),
-		"The directory for storing IPython configuration files.")
-	utils.AddPythonFlags(GanymedeCmd)
+func ConfigGanymedeCmd(rootCmd *cobra.Command) {
+	ganymedeCmd.Flags().BoolP("install", "i", false, "Install Ganymede.")
+	ganymedeCmd.Flags().Bool("uninstall", false, "Uninstall Ganymede.")
+	ganymedeCmd.Flags().BoolP("config", "c", false, "Configure Ganymede.")
+	ganymedeCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
+	ganymedeCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
+	utils.AddPythonFlags(ganymedeCmd)
+	rootCmd.AddCommand(ganymedeCmd)
 }

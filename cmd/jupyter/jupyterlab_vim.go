@@ -41,7 +41,7 @@ func jupyterlabVim(cmd *cobra.Command, _ []string) {
 	}
 }
 
-var JLabVimCmd = &cobra.Command{
+var jLabVimCmd = &cobra.Command{
 	Use:     "jupyterlab_vim",
 	Aliases: []string{"jlab_vim", "jlabvim", "jvim"},
 	Short:   "Install and configure the jupyterlab_vim extension for JupyterLab.",
@@ -49,14 +49,15 @@ var JLabVimCmd = &cobra.Command{
 	Run: jupyterlabVim,
 }
 
-func init() {
-	JLabVimCmd.Flags().BoolP("install", "i", false, "Install the jupyterlab_vim extension for JupyterLab.")
-	JLabVimCmd.Flags().Bool("uninstall", false, "Uninstall the jupyterlab_vim extension for JupyterLab.")
-	JLabVimCmd.Flags().BoolP("config", "c", false, "Configure the jupyterlab_vim extension for JupyterLab.")
-	JLabVimCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
-	JLabVimCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
-	JLabVimCmd.Flags().Bool("sudo", false, "Force using sudo.")
-	JLabVimCmd.Flags().Bool("enable", false, "Enable the jupyterlab_vim extension for JupyterLab.")
-	JLabVimCmd.Flags().Bool("disable", false, "Disable the jupyterlab_vim extension for JupyterLab.")
-	utils.AddPythonFlags(JLabVimCmd)
+func ConfigJLabVimCmd(rootCmd *cobra.Command) {
+	jLabVimCmd.Flags().BoolP("install", "i", false, "Install the jupyterlab_vim extension for JupyterLab.")
+	jLabVimCmd.Flags().Bool("uninstall", false, "Uninstall the jupyterlab_vim extension for JupyterLab.")
+	jLabVimCmd.Flags().BoolP("config", "c", false, "Configure the jupyterlab_vim extension for JupyterLab.")
+	jLabVimCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
+	jLabVimCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
+	jLabVimCmd.Flags().Bool("sudo", false, "Force using sudo.")
+	jLabVimCmd.Flags().Bool("enable", false, "Enable the jupyterlab_vim extension for JupyterLab.")
+	jLabVimCmd.Flags().Bool("disable", false, "Disable the jupyterlab_vim extension for JupyterLab.")
+	utils.AddPythonFlags(jLabVimCmd)
+	rootCmd.AddCommand(jLabVimCmd)
 }

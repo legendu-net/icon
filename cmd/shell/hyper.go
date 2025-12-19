@@ -70,7 +70,7 @@ func hyper(cmd *cobra.Command, _ []string) {
 	}
 }
 
-var HyperCmd = &cobra.Command{
+var hyperCmd = &cobra.Command{
 	Use:     "hyper",
 	Aliases: []string{},
 	Short:   "Install and configure the Hyper terminal.",
@@ -78,12 +78,13 @@ var HyperCmd = &cobra.Command{
 	Run: hyper,
 }
 
-func init() {
-	HyperCmd.Flags().BoolP("install", "i", false, "Install the Hyper terminal.")
-	HyperCmd.Flags().Bool("uninstall", false, "Uninstall Hyper terminal.")
-	HyperCmd.Flags().BoolP("config", "c", false, "Configure the Hyper terminal.")
-	HyperCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
-	HyperCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
-	HyperCmd.Flags().BoolP("yes", "y", false, "Automatically yes to prompt questions.")
-	HyperCmd.Flags().StringP("version", "v", "", "The version of the release.")
+func ConfigHyperCmd(rootCmd *cobra.Command) {
+	hyperCmd.Flags().BoolP("install", "i", false, "Install the Hyper terminal.")
+	hyperCmd.Flags().Bool("uninstall", false, "Uninstall Hyper terminal.")
+	hyperCmd.Flags().BoolP("config", "c", false, "Configure the Hyper terminal.")
+	hyperCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
+	hyperCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
+	hyperCmd.Flags().BoolP("yes", "y", false, "Automatically yes to prompt questions.")
+	hyperCmd.Flags().StringP("version", "v", "", "The version of the release.")
+	rootCmd.AddCommand(hyperCmd)
 }

@@ -96,7 +96,7 @@ func keyboard(cmd *cobra.Command, _ []string) {
 	}
 }
 
-var KeyboardCmd = &cobra.Command{
+var keyboardCmd = &cobra.Command{
 	Use:     "keyboard",
 	Aliases: []string{"kb"},
 	Short:   "Configure keyboard related.",
@@ -104,10 +104,11 @@ var KeyboardCmd = &cobra.Command{
 	Run: keyboard,
 }
 
-func init() {
-	KeyboardCmd.Flags().BoolP("install", "i", false, "Install keyboard related tools.")
-	KeyboardCmd.Flags().Bool("uninstall", false, "Uninstall keyboard related terminal.")
-	KeyboardCmd.Flags().BoolP("config", "c", false, "Configure keyboard related.")
-	KeyboardCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
-	KeyboardCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
+func ConfigKeyboardCmd(rootCmd *cobra.Command) {
+	keyboardCmd.Flags().BoolP("install", "i", false, "Install keyboard related tools.")
+	keyboardCmd.Flags().Bool("uninstall", false, "Uninstall keyboard related terminal.")
+	keyboardCmd.Flags().BoolP("config", "c", false, "Configure keyboard related.")
+	keyboardCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
+	keyboardCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
+	rootCmd.AddCommand(keyboardCmd)
 }

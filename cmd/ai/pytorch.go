@@ -28,7 +28,7 @@ func pytorch(cmd *cobra.Command, _ []string) {
 	}
 }
 
-var PyTorchCmd = &cobra.Command{
+var pyTorchCmd = &cobra.Command{
 	Use:     "pytorch",
 	Aliases: []string{"torch"},
 	Short:   "Install and configure PyTorch.",
@@ -36,12 +36,13 @@ var PyTorchCmd = &cobra.Command{
 	Run: pytorch,
 }
 
-func init() {
-	PyTorchCmd.Flags().BoolP("install", "i", false, "Install IPython.")
-	PyTorchCmd.Flags().Bool("uninstall", false, "Uninstall IPython.")
-	PyTorchCmd.Flags().BoolP("config", "c", false, "Configure IPython.")
-	PyTorchCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
-	PyTorchCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
-	PyTorchCmd.Flags().String("cuda-version", "", "The version of CUDA. If not specified, the CPU version is used.")
-	utils.AddPythonFlags(PyTorchCmd)
+func ConfigPyTorchCmd(rootCmd *cobra.Command) {
+	pyTorchCmd.Flags().BoolP("install", "i", false, "Install IPython.")
+	pyTorchCmd.Flags().Bool("uninstall", false, "Uninstall IPython.")
+	pyTorchCmd.Flags().BoolP("config", "c", false, "Configure IPython.")
+	pyTorchCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
+	pyTorchCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
+	pyTorchCmd.Flags().String("cuda-version", "", "The version of CUDA. If not specified, the CPU version is used.")
+	utils.AddPythonFlags(pyTorchCmd)
+	rootCmd.AddCommand(pyTorchCmd)
 }

@@ -37,14 +37,15 @@ func data(cmd *cobra.Command, _ []string) {
 	FetchConfigData(utils.GetBoolFlag(cmd, "force"), utils.GetStringFlag(cmd, "git-url"))
 }
 
-var DataCmd = &cobra.Command{
+var dataCmd = &cobra.Command{
 	Use:     "data",
 	Aliases: []string{"d"},
 	Short:   "Pull data for icon from GitHub into ~/.config/icon-data.",
 	Run:     data,
 }
 
-func init() {
-	DataCmd.Flags().StringP("git-url", "g", GitURL, "The Git repo URL for icon-data.")
-	DataCmd.Flags().Bool("force", false, "Force pulling data if it alreay exists.")
+func ConfigDataCmd(rootCmd *cobra.Command) {
+	dataCmd.Flags().StringP("git-url", "g", GitURL, "The Git repo URL for icon-data.")
+	dataCmd.Flags().Bool("force", false, "Force pulling data if it alreay exists.")
+	rootCmd.AddCommand(dataCmd)
 }

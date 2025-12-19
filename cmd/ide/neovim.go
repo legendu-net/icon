@@ -88,7 +88,7 @@ func Neovim(install, config, uninstall bool, yesStr string, backup, copyPath boo
 	}
 }
 
-var NeovimCmd = &cobra.Command{
+var neovimCmd = &cobra.Command{
 	Use:     "neovim",
 	Aliases: []string{"nvim"},
 	Short:   "Install and configure neovim.",
@@ -96,11 +96,12 @@ var NeovimCmd = &cobra.Command{
 	Run: neovim,
 }
 
-func init() {
-	NeovimCmd.Flags().BoolP("install", "i", false, "Install neovim.")
-	NeovimCmd.Flags().Bool("uninstall", false, "Uninstall neovim.")
-	NeovimCmd.Flags().BoolP("config", "c", false, "Configure neovim.")
-	NeovimCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
-	NeovimCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
-	NeovimCmd.Flags().BoolP("yes", "y", false, "Automatically yes to prompt questions.")
+func ConfigNeovimCmd(rootCmd *cobra.Command) {
+	neovimCmd.Flags().BoolP("install", "i", false, "Install neovim.")
+	neovimCmd.Flags().Bool("uninstall", false, "Uninstall neovim.")
+	neovimCmd.Flags().BoolP("config", "c", false, "Configure neovim.")
+	neovimCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
+	neovimCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
+	neovimCmd.Flags().BoolP("yes", "y", false, "Automatically yes to prompt questions.")
+	rootCmd.AddCommand(neovimCmd)
 }

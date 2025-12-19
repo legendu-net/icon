@@ -76,7 +76,7 @@ func docker(cmd *cobra.Command, _ []string) {
 	}
 }
 
-var DockerCmd = &cobra.Command{
+var dockerCmd = &cobra.Command{
 	Use:     "docker",
 	Aliases: []string{},
 	Short:   "Install and configure Docker.",
@@ -84,13 +84,14 @@ var DockerCmd = &cobra.Command{
 	Run: docker,
 }
 
-func init() {
-	DockerCmd.Flags().BoolP("install", "i", false, "Install Rust.")
-	DockerCmd.Flags().BoolP("config", "c", false, "Configure Rust.")
-	DockerCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
-	DockerCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
-	DockerCmd.Flags().BoolP("uninstall", "u", false, "Uninstall Rust.")
-	DockerCmd.Flags().BoolP("yes", "y", false, "Automatically yes to prompt questions.")
+func ConfigDockerCmd(rootCmd *cobra.Command) {
+	dockerCmd.Flags().BoolP("install", "i", false, "Install Rust.")
+	dockerCmd.Flags().BoolP("config", "c", false, "Configure Rust.")
+	dockerCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
+	dockerCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
+	dockerCmd.Flags().BoolP("uninstall", "u", false, "Uninstall Rust.")
+	dockerCmd.Flags().BoolP("yes", "y", false, "Automatically yes to prompt questions.")
 	user := utils.GetCurrentUser().Username
-	DockerCmd.Flags().String("user-to-docker", utils.IfElseString(user == "root", "", user), "Add the specified user to the docker group.")
+	dockerCmd.Flags().String("user-to-docker", utils.IfElseString(user == "root", "", user), "Add the specified user to the docker group.")
+	rootCmd.AddCommand(dockerCmd)
 }

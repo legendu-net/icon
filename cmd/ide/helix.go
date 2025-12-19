@@ -78,7 +78,7 @@ func Helix(install, config, uninstall bool, yesStr string) {
 	}
 }
 
-var HelixCmd = &cobra.Command{
+var helixCmd = &cobra.Command{
 	Use:     "helix",
 	Aliases: []string{"nvim"},
 	Short:   "Install and configure helix.",
@@ -86,11 +86,12 @@ var HelixCmd = &cobra.Command{
 	Run: helix,
 }
 
-func init() {
-	HelixCmd.Flags().BoolP("install", "i", false, "Install helix.")
-	HelixCmd.Flags().Bool("uninstall", false, "Uninstall helix.")
-	HelixCmd.Flags().BoolP("config", "c", false, "Configure helix.")
-	HelixCmd.Flags().BoolP("yes", "y", false, "Automatically yes to prompt questions.")
-	HelixCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
-	HelixCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
+func ConfigHelixCmd(rootCmd *cobra.Command) {
+	helixCmd.Flags().BoolP("install", "i", false, "Install helix.")
+	helixCmd.Flags().Bool("uninstall", false, "Uninstall helix.")
+	helixCmd.Flags().BoolP("config", "c", false, "Configure helix.")
+	helixCmd.Flags().BoolP("yes", "y", false, "Automatically yes to prompt questions.")
+	helixCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
+	helixCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
+	rootCmd.AddCommand(helixCmd)
 }

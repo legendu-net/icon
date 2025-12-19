@@ -30,7 +30,7 @@ func jupyterBook(cmd *cobra.Command, _ []string) {
 	}
 }
 
-var JupyterBookCmd = &cobra.Command{
+var jupyterBookCmd = &cobra.Command{
 	Use:     "jupyter_book",
 	Aliases: []string{"jb", "jbook"},
 	Short:   "Install and configure jupyter_book.",
@@ -38,11 +38,12 @@ var JupyterBookCmd = &cobra.Command{
 	Run: jupyterBook,
 }
 
-func init() {
-	JupyterBookCmd.Flags().BoolP("install", "i", false, "Install jupyter_book.")
-	JupyterBookCmd.Flags().Bool("uninstall", false, "Uninstall jupyter_book.")
-	JupyterBookCmd.Flags().BoolP("config", "c", false, "Configure jupyter_book.")
-	JupyterBookCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
-	JupyterBookCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
-	utils.AddPythonFlags(JupyterBookCmd)
+func ConfigJupyterBookCmd(rootCmd *cobra.Command) {
+	jupyterBookCmd.Flags().BoolP("install", "i", false, "Install jupyter_book.")
+	jupyterBookCmd.Flags().Bool("uninstall", false, "Uninstall jupyter_book.")
+	jupyterBookCmd.Flags().BoolP("config", "c", false, "Configure jupyter_book.")
+	jupyterBookCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
+	jupyterBookCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
+	utils.AddPythonFlags(jupyterBookCmd)
+	rootCmd.AddCommand(jupyterBookCmd)
 }

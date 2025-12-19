@@ -7,7 +7,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var CompletionCmd = &cobra.Command{
+var completionCmd = &cobra.Command{
 	Use:   "completion [bash|zsh|fish]",
 	Short: "Generate completion script",
 	Long: `To load completions:
@@ -56,5 +56,6 @@ $ icon completion fish > ~/.config/fish/completions/icon.fish
 	},
 }
 
-func init() {
+func ConfigCompletionCmd(rootCmd *cobra.Command) {
+	rootCmd.AddCommand(completionCmd)
 }

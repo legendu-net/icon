@@ -96,7 +96,7 @@ func golang(cmd *cobra.Command, _ []string) {
 	}
 }
 
-var GolangCmd = &cobra.Command{
+var golangCmd = &cobra.Command{
 	Use:     "golang",
 	Aliases: []string{"go"},
 	Short:   "Install and configure Golang.",
@@ -104,10 +104,11 @@ var GolangCmd = &cobra.Command{
 	Run: golang,
 }
 
-func init() {
-	GolangCmd.Flags().BoolP("install", "i", false, "Install Golang.")
-	GolangCmd.Flags().BoolP("uninstall", "u", false, "Uninstall Golang.")
-	GolangCmd.Flags().BoolP("config", "c", false, "Configure Golang.")
-	GolangCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
-	GolangCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
+func ConfigGolangCmd(rootCmd *cobra.Command) {
+	golangCmd.Flags().BoolP("install", "i", false, "Install Golang.")
+	golangCmd.Flags().BoolP("uninstall", "u", false, "Uninstall Golang.")
+	golangCmd.Flags().BoolP("config", "c", false, "Configure Golang.")
+	golangCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
+	golangCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
+	rootCmd.AddCommand(golangCmd)
 }
