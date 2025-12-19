@@ -143,7 +143,7 @@ func DownloadGitHubRelease(repo, ver string, keywords map[string][]string, keywo
 	}
 }
 
-var DownloadGitHubReleaseCmd = &cobra.Command{
+var downloadGitHubReleaseCmd = &cobra.Command{
 	Use:     "download_github_release",
 	Aliases: []string{"download_github", "from_github", "github_release"},
 	Short:   "Download file from GitHub.",
@@ -151,22 +151,23 @@ var DownloadGitHubReleaseCmd = &cobra.Command{
 	Run: DownloadGitHubReleaseArgs,
 }
 
-func init() {
-	DownloadGitHubReleaseCmd.Flags().StringP("repo", "r", "", "A GitHub repo of the form 'user_name/repo_name'.")
-	err := DownloadGitHubReleaseCmd.MarkFlagRequired("repo")
+func ConfigDownloadGitHubReleaseCmd(rootCmd *cobra.Command) {
+	downloadGitHubReleaseCmd.Flags().StringP("repo", "r", "", "A GitHub repo of the form 'user_name/repo_name'.")
+	err := downloadGitHubReleaseCmd.MarkFlagRequired("repo")
 	if err != nil {
 		log.Fatal("ERROR - ", err)
 	}
-	DownloadGitHubReleaseCmd.Flags().StringP("version", "v", "", "The version of the release.")
-	DownloadGitHubReleaseCmd.Flags().StringSliceP("kwd", "k", []string{}, "Keywords that the assert's name contains.")
-	DownloadGitHubReleaseCmd.Flags().StringSliceP("KWD", "K", []string{}, "Keywords that the assert's name contains.")
-	err = DownloadGitHubReleaseCmd.MarkFlagRequired("kwd")
+	downloadGitHubReleaseCmd.Flags().StringP("version", "v", "", "The version of the release.")
+	downloadGitHubReleaseCmd.Flags().StringSliceP("kwd", "k", []string{}, "Keywords that the assert's name contains.")
+	downloadGitHubReleaseCmd.Flags().StringSliceP("KWD", "K", []string{}, "Keywords that the assert's name contains.")
+	err = downloadGitHubReleaseCmd.MarkFlagRequired("kwd")
 	if err != nil {
 		log.Fatal("ERROR - ", err)
 	}
-	DownloadGitHubReleaseCmd.Flags().StringP("output", "o", "", "The output path for the downloaded asset.")
-	err = DownloadGitHubReleaseCmd.MarkFlagRequired("output")
+	downloadGitHubReleaseCmd.Flags().StringP("output", "o", "", "The output path for the downloaded asset.")
+	err = downloadGitHubReleaseCmd.MarkFlagRequired("output")
 	if err != nil {
 		log.Fatal("ERROR - ", err)
 	}
+	rootCmd.AddCommand(downloadGitHubReleaseCmd)
 }

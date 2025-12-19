@@ -44,7 +44,7 @@ func arrowDB(cmd *cobra.Command, _ []string) {
 	}
 }
 
-var ArrowDBCmd = &cobra.Command{
+var arrowDBCmd = &cobra.Command{
 	Use:     "arrowdb",
 	Aliases: []string{},
 	Short:   "Install and configure arrowdb.",
@@ -52,11 +52,12 @@ var ArrowDBCmd = &cobra.Command{
 	Run: arrowDB,
 }
 
-func init() {
-	ArrowDBCmd.Flags().BoolP("install", "i", false, "Install Spark.")
-	ArrowDBCmd.Flags().BoolP("uninstall", "u", false, "Uninstall Spark.")
-	ArrowDBCmd.Flags().BoolP("config", "c", false, "Configure Spark.")
-	ArrowDBCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
-	ArrowDBCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
-	utils.AddPythonFlags(ArrowDBCmd)
+func ConfigArrowDBCmd(rootCmd *cobra.Command) {
+	arrowDBCmd.Flags().BoolP("install", "i", false, "Install Spark.")
+	arrowDBCmd.Flags().BoolP("uninstall", "u", false, "Uninstall Spark.")
+	arrowDBCmd.Flags().BoolP("config", "c", false, "Configure Spark.")
+	arrowDBCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
+	arrowDBCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
+	utils.AddPythonFlags(arrowDBCmd)
+	rootCmd.AddCommand(arrowDBCmd)
 }

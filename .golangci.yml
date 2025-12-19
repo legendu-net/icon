@@ -155,6 +155,9 @@ linters:
       - pkg/goformatters/gci/internal # extracted from gci code
       - pkg/goanalysis/runner_checker.go # extracted from x/tools code
     rules:
+      - path: cmd/dev/perf\.go
+        linters:
+          - dupl
       - path: (.+)_test\.go
         linters:
           - dupl

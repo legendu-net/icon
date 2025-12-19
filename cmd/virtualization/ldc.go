@@ -148,7 +148,7 @@ func ldc(cmd *cobra.Command, args []string) {
 	}
 }
 
-var LdcCmd = &cobra.Command{
+var ldcCmd = &cobra.Command{
 	Use:     "ldc [flags] image_name[:tag] [image_command]",
 	Aliases: []string{},
 	Short:   "Launch a container of a Docker image.",
@@ -156,13 +156,14 @@ var LdcCmd = &cobra.Command{
 	Run:     ldc,
 }
 
-func init() {
-	LdcCmd.Flags().BoolP("detach", "d", false, "Run container in background and print container ID.")
-	LdcCmd.Flags().IntP("port", "p", 0, "The port on the Docker host to forward to the port inside the Docker container.")
-	LdcCmd.Flags().StringP("user", "u", "", "The user to create in the Docker container.")
-	LdcCmd.Flags().StringP("password", "P", "", "The default password for the user (to create in the Docker container).")
-	LdcCmd.Flags().StringSlice("extra-port-mappings", []string{}, "Extra port mappings.")
-	LdcCmd.Flags().BoolP("mount-home", "m", false, "Mount /home on the host as /home_host in the Docker container.")
-	LdcCmd.Flags().Bool("docker-in-docker", false, "Mount docker.sock to allow running Docker in Docker containers.")
-	LdcCmd.Flags().Bool("dry-run", false, "Print out the docker command without running it.")
+func ConfigLdcCmd(rootCmd *cobra.Command) {
+	ldcCmd.Flags().BoolP("detach", "d", false, "Run container in background and print container ID.")
+	ldcCmd.Flags().IntP("port", "p", 0, "The port on the Docker host to forward to the port inside the Docker container.")
+	ldcCmd.Flags().StringP("user", "u", "", "The user to create in the Docker container.")
+	ldcCmd.Flags().StringP("password", "P", "", "The default password for the user (to create in the Docker container).")
+	ldcCmd.Flags().StringSlice("extra-port-mappings", []string{}, "Extra port mappings.")
+	ldcCmd.Flags().BoolP("mount-home", "m", false, "Mount /home on the host as /home_host in the Docker container.")
+	ldcCmd.Flags().Bool("docker-in-docker", false, "Mount docker.sock to allow running Docker in Docker containers.")
+	ldcCmd.Flags().Bool("dry-run", false, "Print out the docker command without running it.")
+	rootCmd.AddCommand(ldcCmd)
 }

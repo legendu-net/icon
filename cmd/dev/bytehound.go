@@ -32,7 +32,7 @@ func bytehound(cmd *cobra.Command, _ []string) {
 	}
 }
 
-var BytehoundCmd = &cobra.Command{
+var bytehoundCmd = &cobra.Command{
 	Use:     "bytehound",
 	Aliases: []string{"bh", "byteh", "bhound"},
 	Short:   "Install and configure Bytehound.",
@@ -40,10 +40,11 @@ var BytehoundCmd = &cobra.Command{
 	Run: bytehound,
 }
 
-func init() {
-	BytehoundCmd.Flags().BoolP("install", "i", false, "Install Bytehound.")
-	BytehoundCmd.Flags().BoolP("config", "c", false, "Configure Bytehound.")
-	BytehoundCmd.Flags().BoolP("uninstall", "u", false, "Uninstall Bytehound.")
-	BytehoundCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
-	BytehoundCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
+func ConfigBytehoundCmd(rootCmd *cobra.Command) {
+	bytehoundCmd.Flags().BoolP("install", "i", false, "Install Bytehound.")
+	bytehoundCmd.Flags().BoolP("config", "c", false, "Configure Bytehound.")
+	bytehoundCmd.Flags().BoolP("uninstall", "u", false, "Uninstall Bytehound.")
+	bytehoundCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
+	bytehoundCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
+	rootCmd.AddCommand(bytehoundCmd)
 }

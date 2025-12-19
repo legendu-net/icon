@@ -53,7 +53,7 @@ func pytype(cmd *cobra.Command, _ []string) {
 	}
 }
 
-var PytypeCmd = &cobra.Command{
+var pytypeCmd = &cobra.Command{
 	Use:     "pytype",
 	Aliases: []string{},
 	Short:   "Install and configure pytype.",
@@ -61,12 +61,13 @@ var PytypeCmd = &cobra.Command{
 	Run: pytype,
 }
 
-func init() {
-	PytypeCmd.Flags().BoolP("install", "i", false, "Install Pytype.")
-	PytypeCmd.Flags().Bool("uninstall", false, "Uninstall Pytype.")
-	PytypeCmd.Flags().BoolP("config", "c", false, "Configure Pytype.")
-	PytypeCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
-	PytypeCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
-	PytypeCmd.Flags().StringP("dest-dir", "d", ".", "The destination directory to copy the Pytype configuration to.")
-	utils.AddPythonFlags(PytypeCmd)
+func ConfigPytypeCmd(rootCmd *cobra.Command) {
+	pytypeCmd.Flags().BoolP("install", "i", false, "Install Pytype.")
+	pytypeCmd.Flags().Bool("uninstall", false, "Uninstall Pytype.")
+	pytypeCmd.Flags().BoolP("config", "c", false, "Configure Pytype.")
+	pytypeCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
+	pytypeCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
+	pytypeCmd.Flags().StringP("dest-dir", "d", ".", "The destination directory to copy the Pytype configuration to.")
+	utils.AddPythonFlags(pytypeCmd)
+	rootCmd.AddCommand(pytypeCmd)
 }

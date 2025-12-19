@@ -54,7 +54,7 @@ func alacritty(cmd *cobra.Command, _ []string) {
 	}
 }
 
-var AlacrittyCmd = &cobra.Command{
+var alacrittyCmd = &cobra.Command{
 	Use:     "alacritty",
 	Aliases: []string{"alac"},
 	Short:   "Install and configure the Alacritty terminal.",
@@ -62,11 +62,12 @@ var AlacrittyCmd = &cobra.Command{
 	Run: alacritty,
 }
 
-func init() {
-	AlacrittyCmd.Flags().BoolP("install", "i", false, "Install the Alacritty terminal.")
-	AlacrittyCmd.Flags().Bool("uninstall", false, "Uninstall Alacritty terminal.")
-	AlacrittyCmd.Flags().BoolP("config", "c", false, "Configure the Alacritty terminal.")
-	AlacrittyCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
-	AlacrittyCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
-	AlacrittyCmd.Flags().BoolP("yes", "y", false, "Automatically yes to prompt questions.")
+func ConfigAlacrittyCmd(rootCmd *cobra.Command) {
+	alacrittyCmd.Flags().BoolP("install", "i", false, "Install the Alacritty terminal.")
+	alacrittyCmd.Flags().Bool("uninstall", false, "Uninstall Alacritty terminal.")
+	alacrittyCmd.Flags().BoolP("config", "c", false, "Configure the Alacritty terminal.")
+	alacrittyCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
+	alacrittyCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
+	alacrittyCmd.Flags().BoolP("yes", "y", false, "Automatically yes to prompt questions.")
+	rootCmd.AddCommand(alacrittyCmd)
 }

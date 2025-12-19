@@ -177,7 +177,7 @@ func configureGitIgnore(cmd *cobra.Command) {
 	}
 }
 
-var GitCmd = &cobra.Command{
+var gitCmd = &cobra.Command{
 	Use:     "git",
 	Aliases: []string{},
 	Short:   "Install and configure Git.",
@@ -185,17 +185,18 @@ var GitCmd = &cobra.Command{
 	Run: git,
 }
 
-func init() {
-	GitCmd.Flags().BoolP("install", "i", false, "Install Git.")
-	GitCmd.Flags().Bool("uninstall", false, "Uninstall Git.")
-	GitCmd.Flags().BoolP("config", "c", false, "Configure Git.")
-	GitCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
-	GitCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
-	GitCmd.Flags().String("git", "git", "Path to the Git command.")
-	GitCmd.Flags().BoolP("yes", "y", false, "Automatically yes to prompt questions.")
-	GitCmd.Flags().Bool("gitui", false, "Install and configure gitui too.")
-	GitCmd.Flags().String("proxy", "", "Configure Git to use the specified proxy.")
-	GitCmd.Flags().StringP("dest-dir", "d", ".", "The destination directory (current directory, by default) to copy gitignore files to.")
-	GitCmd.Flags().BoolP("append", "a", false, "Append to the .gitignore instead of oveerwriting it.")
-	GitCmd.Flags().StringP("lang", "l", "", "The language to configure .gitignore for.")
+func ConfigGitCmd(rootCmd *cobra.Command) {
+	gitCmd.Flags().BoolP("install", "i", false, "Install Git.")
+	gitCmd.Flags().Bool("uninstall", false, "Uninstall Git.")
+	gitCmd.Flags().BoolP("config", "c", false, "Configure Git.")
+	gitCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
+	gitCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
+	gitCmd.Flags().String("git", "git", "Path to the Git command.")
+	gitCmd.Flags().BoolP("yes", "y", false, "Automatically yes to prompt questions.")
+	gitCmd.Flags().Bool("gitui", false, "Install and configure gitui too.")
+	gitCmd.Flags().String("proxy", "", "Configure Git to use the specified proxy.")
+	gitCmd.Flags().StringP("dest-dir", "d", ".", "The destination directory (current directory, by default) to copy gitignore files to.")
+	gitCmd.Flags().BoolP("append", "a", false, "Append to the .gitignore instead of oveerwriting it.")
+	gitCmd.Flags().StringP("lang", "l", "", "The language to configure .gitignore for.")
+	rootCmd.AddCommand(gitCmd)
 }

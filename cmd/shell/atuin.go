@@ -33,7 +33,7 @@ eval "$(atuin init bash --disable-up-arrow)"
 	}
 }
 
-var AtuinCmd = &cobra.Command{
+var atuinCmd = &cobra.Command{
 	Use:     "atuin",
 	Aliases: []string{"atuin"},
 	Short:   "Install and configure atuin.",
@@ -41,11 +41,12 @@ var AtuinCmd = &cobra.Command{
 	Run: atuin,
 }
 
-func init() {
-	AtuinCmd.Flags().BoolP("install", "i", false, "If specified, install atuin.")
-	AtuinCmd.Flags().Bool("uninstall", false, "If specified, uninstall atuin.")
-	AtuinCmd.Flags().BoolP("config", "c", false, "If specified, configure atuin.")
-	AtuinCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
-	AtuinCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
-	AtuinCmd.Flags().BoolP("yes", "y", false, "Automatically yes to prompt questions.")
+func ConfigAtuinCmd(rootCmd *cobra.Command) {
+	atuinCmd.Flags().BoolP("install", "i", false, "If specified, install atuin.")
+	atuinCmd.Flags().Bool("uninstall", false, "If specified, uninstall atuin.")
+	atuinCmd.Flags().BoolP("config", "c", false, "If specified, configure atuin.")
+	atuinCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
+	atuinCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
+	atuinCmd.Flags().BoolP("yes", "y", false, "Automatically yes to prompt questions.")
+	rootCmd.AddCommand(atuinCmd)
 }

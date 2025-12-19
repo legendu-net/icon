@@ -92,7 +92,7 @@ func perf(cmd *cobra.Command, _ []string) {
 	}
 }
 
-var PerfCmd = &cobra.Command{
+var perfCmd = &cobra.Command{
 	Use:     "perf",
 	Aliases: []string{},
 	Short:   "Install and configure perf.",
@@ -100,11 +100,12 @@ var PerfCmd = &cobra.Command{
 	Run: perf,
 }
 
-func init() {
-	PerfCmd.Flags().BoolP("install", "i", false, "Install Git.")
-	PerfCmd.Flags().Bool("uninstall", false, "Uninstall Git.")
-	PerfCmd.Flags().BoolP("config", "c", false, "Configure Git.")
-	PerfCmd.Flags().BoolP("yes", "y", false, "Automatically yes to prompt questions.")
-	PerfCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
-	PerfCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
+func ConfigPerfCmd(rootCmd *cobra.Command) {
+	perfCmd.Flags().BoolP("install", "i", false, "Install Git.")
+	perfCmd.Flags().Bool("uninstall", false, "Uninstall Git.")
+	perfCmd.Flags().BoolP("config", "c", false, "Configure Git.")
+	perfCmd.Flags().BoolP("yes", "y", false, "Automatically yes to prompt questions.")
+	perfCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
+	perfCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
+	rootCmd.AddCommand(perfCmd)
 }

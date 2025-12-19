@@ -43,7 +43,7 @@ func nushell(cmd *cobra.Command, _ []string) {
 	}
 }
 
-var NushellCmd = &cobra.Command{
+var nushellCmd = &cobra.Command{
 	Use:     "nushell",
 	Aliases: []string{"nu"},
 	Short:   "Install and configure nushell.",
@@ -51,10 +51,11 @@ var NushellCmd = &cobra.Command{
 	Run: nushell,
 }
 
-func init() {
-	NushellCmd.Flags().BoolP("install", "i", false, "If specified, install nushell.")
-	NushellCmd.Flags().Bool("uninstall", false, "If specified, uninstall nushell.")
-	NushellCmd.Flags().BoolP("config", "c", false, "If specified, configure nushell.")
-	NushellCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
-	NushellCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
+func ConfigNushellCmd(rootCmd *cobra.Command) {
+	nushellCmd.Flags().BoolP("install", "i", false, "If specified, install nushell.")
+	nushellCmd.Flags().Bool("uninstall", false, "If specified, uninstall nushell.")
+	nushellCmd.Flags().BoolP("config", "c", false, "If specified, configure nushell.")
+	nushellCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
+	nushellCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
+	rootCmd.AddCommand(nushellCmd)
 }

@@ -11,12 +11,13 @@ func version(_ *cobra.Command, _ []string) {
 	fmt.Println("0.34.3")
 }
 
-var VersionCmd = &cobra.Command{
+var versionCmd = &cobra.Command{
 	Use:     "version",
 	Aliases: []string{"v"},
 	Short:   "Show the version of icon.",
 	Run:     version,
 }
 
-func init() {
+func ConfigVersionCmd(rootCmd *cobra.Command) {
+	rootCmd.AddCommand(versionCmd)
 }

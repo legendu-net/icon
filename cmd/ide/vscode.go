@@ -75,7 +75,7 @@ func vscode(cmd *cobra.Command, _ []string) {
 	}
 }
 
-var VscodeCmd = &cobra.Command{
+var vscodeCmd = &cobra.Command{
 	Use:     "visual_studio_code",
 	Aliases: []string{"vscode", "code"},
 	Short:   "Install and configure Visual Studio Code.",
@@ -83,12 +83,13 @@ var VscodeCmd = &cobra.Command{
 	Run: vscode,
 }
 
-func init() {
-	VscodeCmd.Flags().BoolP("install", "i", false, "Install Visual Studio Code.")
-	VscodeCmd.Flags().Bool("uninstall", false, "Uninstall Visual Studio Code.")
-	VscodeCmd.Flags().BoolP("config", "c", false, "Configure Visual Studio Code.")
-	VscodeCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
-	VscodeCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
-	VscodeCmd.Flags().StringP("user-dir", "d", "", "The configuration directory for Visual Studio Code.")
-	VscodeCmd.Flags().BoolP("yes", "y", false, "Automatically yes to prompt questions.")
+func ConfigVscodeCmd(rootCmd *cobra.Command) {
+	vscodeCmd.Flags().BoolP("install", "i", false, "Install Visual Studio Code.")
+	vscodeCmd.Flags().Bool("uninstall", false, "Uninstall Visual Studio Code.")
+	vscodeCmd.Flags().BoolP("config", "c", false, "Configure Visual Studio Code.")
+	vscodeCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
+	vscodeCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
+	vscodeCmd.Flags().StringP("user-dir", "d", "", "The configuration directory for Visual Studio Code.")
+	vscodeCmd.Flags().BoolP("yes", "y", false, "Automatically yes to prompt questions.")
+	rootCmd.AddCommand(vscodeCmd)
 }

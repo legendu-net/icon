@@ -29,7 +29,7 @@ func rip(cmd *cobra.Command, _ []string) {
 	}
 }
 
-var RipCmd = &cobra.Command{
+var ripCmd = &cobra.Command{
 	Use:     "rip",
 	Aliases: []string{},
 	Short:   "Install and configure rip (rm-improved).",
@@ -37,11 +37,12 @@ var RipCmd = &cobra.Command{
 	Run: rip,
 }
 
-func init() {
-	RipCmd.Flags().BoolP("install", "i", false, "Install rip (rm-improved).")
-	RipCmd.Flags().Bool("uninstall", false, "Uninstall rip (rm-improved).")
-	RipCmd.Flags().BoolP("config", "c", false, "Configure rip (rm-improved).")
-	RipCmd.Flags().BoolP("yes", "y", false, "Automatically yes to prompt questions.")
-	RipCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
-	RipCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
+func ConfigRipCmd(rootCmd *cobra.Command) {
+	ripCmd.Flags().BoolP("install", "i", false, "Install rip (rm-improved).")
+	ripCmd.Flags().Bool("uninstall", false, "Uninstall rip (rm-improved).")
+	ripCmd.Flags().BoolP("config", "c", false, "Configure rip (rm-improved).")
+	ripCmd.Flags().BoolP("yes", "y", false, "Automatically yes to prompt questions.")
+	ripCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
+	ripCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
+	rootCmd.AddCommand(ripCmd)
 }

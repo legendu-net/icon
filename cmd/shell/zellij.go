@@ -43,7 +43,7 @@ func zellij(cmd *cobra.Command, _ []string) {
 	}
 }
 
-var ZellijCmd = &cobra.Command{
+var zellijCmd = &cobra.Command{
 	Use:     "zellij",
 	Aliases: []string{"zj", "z"},
 	Short:   "Install and configure Zellij.",
@@ -51,13 +51,14 @@ var ZellijCmd = &cobra.Command{
 	Run: zellij,
 }
 
-func init() {
-	ZellijCmd.Flags().BoolP("install", "i", false, "Install Ganymede.")
-	ZellijCmd.Flags().Bool("uninstall", false, "Uninstall Ganymede.")
-	ZellijCmd.Flags().BoolP("config", "c", false, "Configure Ganymede.")
-	ZellijCmd.Flags().Bool("sudo", false, "Force using sudo.")
-	ZellijCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
-	ZellijCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
-	ZellijCmd.Flags().String("bin-dir", "/usr/local/bin", "The directory for installing Zellij executable.")
-	utils.AddPythonFlags(ZellijCmd)
+func ConfigZellijCmd(rootCmd *cobra.Command) {
+	zellijCmd.Flags().BoolP("install", "i", false, "Install Ganymede.")
+	zellijCmd.Flags().Bool("uninstall", false, "Uninstall Ganymede.")
+	zellijCmd.Flags().BoolP("config", "c", false, "Configure Ganymede.")
+	zellijCmd.Flags().Bool("sudo", false, "Force using sudo.")
+	zellijCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
+	zellijCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
+	zellijCmd.Flags().String("bin-dir", "/usr/local/bin", "The directory for installing Zellij executable.")
+	utils.AddPythonFlags(zellijCmd)
+	rootCmd.AddCommand(zellijCmd)
 }

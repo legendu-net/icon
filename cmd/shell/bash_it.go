@@ -33,7 +33,7 @@ func bashIt(cmd *cobra.Command, _ []string) {
 	}
 }
 
-var BashItCmd = &cobra.Command{
+var bashItCmd = &cobra.Command{
 	Use:     "bash_it",
 	Aliases: []string{"bashit", "bit"},
 	Short:   "Install and configure bash-it.",
@@ -41,10 +41,11 @@ var BashItCmd = &cobra.Command{
 	Run: bashIt,
 }
 
-func init() {
-	BashItCmd.Flags().BoolP("install", "i", false, "If specified, install bash-it.")
-	BashItCmd.Flags().Bool("uninstall", false, "If specified, uninstall bash-it.")
-	BashItCmd.Flags().BoolP("config", "c", false, "If specified, configure bash-it.")
-	BashItCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
-	BashItCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
+func ConfigBashItCmd(rootCmd *cobra.Command) {
+	bashItCmd.Flags().BoolP("install", "i", false, "If specified, install bash-it.")
+	bashItCmd.Flags().Bool("uninstall", false, "If specified, uninstall bash-it.")
+	bashItCmd.Flags().BoolP("config", "c", false, "If specified, configure bash-it.")
+	bashItCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
+	bashItCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
+	rootCmd.AddCommand(bashItCmd)
 }

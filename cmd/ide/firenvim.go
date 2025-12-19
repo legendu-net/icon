@@ -27,7 +27,7 @@ func firenvim(cmd *cobra.Command, _ []string) {
 	}
 }
 
-var FirenvimCmd = &cobra.Command{
+var firenvimCmd = &cobra.Command{
 	Use:     "firenvim",
 	Aliases: []string{"fvim"},
 	Short:   "Install and configure Firenvim.",
@@ -35,10 +35,11 @@ var FirenvimCmd = &cobra.Command{
 	Run: firenvim,
 }
 
-func init() {
-	FirenvimCmd.Flags().BoolP("install", "i", false, "Install Firenvim.")
-	FirenvimCmd.Flags().Bool("uninstall", false, "Uninstall Firenvim.")
-	FirenvimCmd.Flags().BoolP("config", "c", false, "Configure Firenvim.")
-	FirenvimCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
-	FirenvimCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
+func ConfigFirenvimCmd(rootCmd *cobra.Command) {
+	firenvimCmd.Flags().BoolP("install", "i", false, "Install Firenvim.")
+	firenvimCmd.Flags().Bool("uninstall", false, "Uninstall Firenvim.")
+	firenvimCmd.Flags().BoolP("config", "c", false, "Configure Firenvim.")
+	firenvimCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
+	firenvimCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
+	rootCmd.AddCommand(firenvimCmd)
 }
