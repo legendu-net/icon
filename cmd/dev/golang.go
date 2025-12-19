@@ -16,8 +16,7 @@ import (
 
 func getGolangVersion() (string, error) {
 	url := "https://github.com/golang/go/tags"
-	req, err := http.NewRequestWithContext(context.Background(),
-		http.MethodGet, "https://github.com/golang/go/tags", http.NoBody)
+	req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, url, http.NoBody)
 	if err != nil {
 		return "", fmt.Errorf("failed to create a HTTP GET request to the URL '%s' with context: %w", url, err)
 	}
