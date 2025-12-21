@@ -33,7 +33,7 @@ func getSparkVersion() string {
 }
 
 // Get the recommended downloading URL for Spark.
-func getSparkDownloadUrl(sparkVersion, hadoopVersion string) (string, string) {
+func getSparkDownloadURL(sparkVersion, hadoopVersion string) (string, error) {
 	url := "https://www.apache.org/dyn/closer.lua/spark/spark-%s/spark-%s-bin-hadoop%s%s.tgz"
 	suffix := ""
 	if sparkVersion >= "4.0.0" {
@@ -43,24 +43,35 @@ func getSparkDownloadUrl(sparkVersion, hadoopVersion string) (string, string) {
 	req, err := http.NewRequestWithContext(context.Background(),
 		http.MethodGet, url, http.NoBody)
 	if err != nil {
-		log.Fatal(err)
+		return "", fmt.Errorf("failed to create a HTTP GET request to the URL '%s' with context: %w", url, err)
 	}
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		log.Fatal(err)
+		return "", fmt.Errorf("the HTTP GET request to the URL '%s' failed: %w", url, err)
 	}
 	defer resp.Body.Close()
+	if utils.IsErrorHTTPResponse(resp) {
+		return "", fmt.Errorf("the HTTP GET request got an error response with the status code %d: %w", resp.StatusCode, err)
+	}
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatal(err)
-	}
-	if utils.IsErrorHTTPResponse(resp) {
-		log.Fatal("HTTP request got an error response with the status code ", resp.StatusCode)
+		return "", fmt.Errorf("failed to read the body of the response of the HTTP GET request: %w", err)
 	}
 	html := string(body)
-	html = html[strings.Index(html, "<strong>")+8:]
-	url = html[:strings.Index(html, "</strong>")]
-	return url, url[strings.LastIndex(url, "/")+1 : strings.LastIndex(url, ".")]
+	begin := strings.Index(html, "<strong>")
+	if begin < 0 {
+		return "", fmt.Errorf("the HTML does NOT contain the tag <strong>\n%s", html)
+	}
+	html = html[begin+8:]
+	end := strings.Index(html, "</strong>")
+	if end < 0 {
+		return "", fmt.Errorf("the HTML does NOT contain the tag </strong>\n%s", html)
+	}
+	return html[:end], nil
+}
+
+func extractHdp(url string) string {
+	return url[strings.LastIndex(url, "/")+1 : strings.LastIndex(url, ".")]
 }
 
 // Install and configure Spark.
@@ -83,7 +94,11 @@ func spark(cmd *cobra.Command, _ []string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	url, sparkHdp := getSparkDownloadUrl(sparkVersion, hadoopVersion)
+	url, err := getSparkDownloadURL(sparkVersion, hadoopVersion)
+	if err != nil {
+		log.Fatal(err)
+	}
+	sparkHdp := extractHdp(url)
 	sparkHome := filepath.Join(dir, sparkHdp)
 	// install Spark
 	prefix := utils.GetCommandPrefix(false, map[string]uint32{
