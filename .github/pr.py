@@ -52,7 +52,7 @@ def main():
     # skip branches with the pattern _*
     if args.head_branch.startswith("_"):
         return
-    repo = Repository(args.token, "fun-poker-game", "poker-rs")
+    repo = Repository(args.token, "legendu-net", "icon")
     repo.create_pull_request(
         {
             "base": args.base_branch,
