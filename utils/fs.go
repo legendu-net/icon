@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"io"
 	"io/fs"
 	"log"
@@ -263,25 +264,26 @@ func WriteTextFile(path, text string, perm fs.FileMode) {
 // @param path           The path to the file to append to.
 // @param text           The text to append to the file.
 // @param checkExistence If true, checks if the text already exists in the file before appending.
-func AppendToTextFile(path, text string, checkExistence bool) {
+func AppendToTextFile(path, text string, checkExistence bool) error {
 	if checkExistence {
 		fileContent := ""
 		if ExistsFile(path) {
 			fileContent = ReadFileAsString(path)
 		}
-		if !strings.Contains(fileContent, strings.TrimSpace(text)) {
-			AppendToTextFile(path, text, false)
+		if strings.Contains(fileContent, strings.TrimSpace(text)) {
+			return nil
 		}
-		return
+		return AppendToTextFile(path, text, false)
 	}
 	//nolint:mnd // readable
 	f, err := os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o644)
 	if err != nil {
-		log.Fatal("ERROR - ", err)
+		return fmt.Errorf("fail to open the file %s for appending: %w", path, err)
 	}
 	defer f.Close()
 	_, err = f.WriteString(text)
 	if err != nil {
-		log.Fatal("ERROR - ", err)
+		return fmt.Errorf("fail to write text into the file %s: %w", path, err)
 	}
+	return nil
 }
