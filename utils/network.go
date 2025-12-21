@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"log"
@@ -23,13 +24,21 @@ func IsErrorHTTPResponse(resp *http.Response) bool {
 //
 // @return The response body as a byte slice.
 func HTTPGetAsBytes(url string, retry int8, initialWaitingSeconds int32) ([]byte, error) {
-	resp, err := http.Get(url)
+	req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, url, http.NoBody)
 	if err != nil {
 		if retry > 0 {
 			time.Sleep(time.Duration(initialWaitingSeconds) * time.Second)
 			return HTTPGetAsBytes(url, retry-1, initialWaitingSeconds*2)
 		}
-		return []byte{}, fmt.Errorf("failed to GET the URL '%s': %w", url, err)
+		return []byte{}, fmt.Errorf("failed to create a HTTP GET request to the URL '%s' with context: %w", url, err)
+	}
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		if retry > 0 {
+			time.Sleep(time.Duration(initialWaitingSeconds) * time.Second)
+			return HTTPGetAsBytes(url, retry-1, initialWaitingSeconds*2)
+		}
+		return []byte{}, fmt.Errorf("the HTTP GET request to the URL '%s' failed: %w", url, err)
 	}
 	if IsErrorHTTPResponse(resp) {
 		if resp.Header.Get("x-ratelimit-remaining") == "0" {
@@ -101,9 +110,13 @@ func DownloadFile(url, name string, useTempDir bool) (string, error) {
 	}
 	defer out.Close()
 	log.Printf("Downloading %s to %s\n", url, out.Name())
-	resp, err := http.Get(url)
+	req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, url, http.NoBody)
 	if err != nil {
-		return "", fmt.Errorf("failed to GET the url '%s': %w", url, err)
+		return "", fmt.Errorf("failed to create a HTTP GET request to the URL '%s' with context: %w", url, err)
+	}
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return "", fmt.Errorf("the HTTP GET request to the URL '%s' failed: %w", url, err)
 	}
 	defer resp.Body.Close()
 	_, err = io.Copy(out, resp.Body)
