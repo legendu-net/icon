@@ -50,7 +50,7 @@ def main():
     """
     args = parse_args()
     # skip branches with the pattern _*
-    if args.branch.startswith("_"):
+    if args.head_branch.startswith("_"):
         return
     repo = Repository(args.token, "fun-poker-game", "poker-rs")
     repo.create_pull_request(
