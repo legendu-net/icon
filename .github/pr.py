@@ -29,11 +29,16 @@ def parse_args(args=None, namespace=None) -> Namespace:
         help="The personal access token for authentication.",
     )
     parser.add_argument(
-        "-b",
-        "--branch",
-        dest="branch",
+        "--head-branch",
+        dest="head_branch",
         required=True,
-        help="The branch to merge into dev.",
+        help="The head branch containing changes to merge.",
+    )
+    parser.add_argument(
+        "--base-branch",
+        dest="base_branch",
+        required=True,
+        help="The base branch to merge changes into.",
     )
     return parser.parse_args(args=args, namespace=namespace)
 
@@ -50,9 +55,9 @@ def main():
     repo = Repository(args.token, "fun-poker-game", "poker-rs")
     repo.create_pull_request(
         {
-            "base": "dev",
-            "head": args.branch,
-            "title": f"Merge {args.branch} into dev",
+            "base": args.base_branch,
+            "head": args.head_branch,
+            "title": f"Merge {args.head_branch} into {args.base_branch}",
         },
     )
 
