@@ -12,7 +12,8 @@ jobs:
     container:
       image: golangci/golangci-lint:v2.6.2-alpine
     steps:
-      - uses: actions/checkout@v5
-      - name: golangci-lint fmt
-        run: |
-          golangci-lint fmt -d
+      - uses: actions/checkout@v6
+      - name: Check Code Formatting
+        run: golangci-lint fmt -d
+      - name: Lint Code
+        run: GOFLAGS=-buildvcs=false golangci-lint run
