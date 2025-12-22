@@ -1,42 +1,38 @@
 package bigdata
 
 import (
+	"bufio"
 	"context"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
+	"os"
 	"path/filepath"
-	"regexp"
 	"strings"
 
 	"github.com/spf13/cobra"
 	"golang.org/x/sys/unix"
+	"gopkg.in/yaml.v3"
 	"legendu.net/icon/cmd/icon"
 	"legendu.net/icon/utils"
 )
 
-// Get the latest version of Spark.
-func getSparkVersion() string {
-	log.Printf("Parsing the latest version of Spark ...")
-	const numRetry = 3
-	const initialWaitingSeconds = 120
-	html := utils.HTTPGetAsString("https://spark.apache.org/downloads.html", numRetry, initialWaitingSeconds)
-	re := regexp.MustCompile(`Latest Release \(Spark (\d.\d.\d)\)`)
-	for _, line := range strings.Split(html, "\n") {
-		match := re.FindString(line)
-		if match != "" {
-			return match
-		}
+func extractMajorVersion(hadoopVersion string) string {
+	index := strings.Index(hadoopVersion, ".")
+	if index > 0 {
+		return hadoopVersion[:index]
 	}
-	return "4.0.0"
+	return hadoopVersion
 }
 
 // Get the recommended downloading URL for Spark.
 func getSparkDownloadURL(sparkVersion, hadoopVersion string) (string, error) {
+	hadoopVersion = extractMajorVersion(hadoopVersion)
 	url := "https://www.apache.org/dyn/closer.lua/spark/spark-%s/spark-%s-bin-hadoop%s%s.tgz"
 	suffix := ""
-	if sparkVersion >= "4.0.0" {
+	const firstSparkConnectVersion = 4
+	if utils.ParseInt(extractMajorVersion(sparkVersion)) >= firstSparkConnectVersion {
 		suffix = "-connect"
 	}
 	url = fmt.Sprintf(url, sparkVersion, sparkVersion, hadoopVersion, suffix)
@@ -74,25 +70,60 @@ func extractHdp(url string) string {
 	return url[strings.LastIndex(url, "/")+1 : strings.LastIndex(url, ".")]
 }
 
+type SparkHadoopVersion struct {
+	sparkVersion  string
+	hadoopVersion string
+}
+
+func chooseSparkVersion(versions []SparkHadoopVersion) SparkHadoopVersion {
+	for idx, version := range versions {
+		fmt.Printf("%d: Spark version - %s, Hadoop version - %s\n", idx, version.sparkVersion, version.hadoopVersion)
+	}
+	fmt.Print("Please enter the index corresponding to the Spark/Hadoop versions to install: ")
+	reader := bufio.NewReader(os.Stdin)
+	input, err := reader.ReadString('\n')
+	if err != nil {
+		log.Fatalf("Error reading input: %v", err)
+	}
+	return versions[utils.ParseInt(input)]
+}
+
+func readSparkHadoopVersion(interactive bool) SparkHadoopVersion {
+	file := "~/.config/icon/spark/version.yaml"
+	if !utils.ExistsFile(file) {
+		log.Fatalf("Spar/Hadoop versions are not specified or configured (%s).", file)
+	}
+	var versions []SparkHadoopVersion
+	err := yaml.Unmarshal(utils.ReadFile(file), &versions)
+	if err != nil {
+		log.Fatalf("Error unmarshaling data: %v", err)
+	}
+	switch len(versions) {
+	case 0:
+		log.Fatalf("No Spark versions configured in %s", file)
+	case 1:
+		return versions[0]
+	}
+	if interactive {
+		return chooseSparkVersion(versions)
+	}
+	return versions[0]
+}
+
 // Install and configure Spark.
 func spark(cmd *cobra.Command, _ []string) {
-	// get Spark version
-	sparkVersion, err := cmd.Flags().GetString("spark-version")
-	if err != nil {
-		log.Fatal(err)
-	}
-	// if sparkVersion == "" {
-	//	 sparkVersion = getSparkVersion()
-	// }
-	// get Hadoop version
-	hadoopVersion, err := cmd.Flags().GetString("hadoop-version")
-	if err != nil {
-		log.Fatal(err)
-	}
 	// installation location
-	dir, err := cmd.Flags().GetString("directory")
-	if err != nil {
-		log.Fatal(err)
+	dir := utils.GetStringFlag(cmd, "directory")
+	// Spark/Hadoop version
+	sparkVersion := utils.GetStringFlag(cmd, "spark-version")
+	hadoopVersion := utils.GetStringFlag(cmd, "hadoop-version")
+	if (sparkVersion == "") != (hadoopVersion == "") {
+		log.Fatal("Either both of spark/hadoop versions or neither of them should be specified!")
+	}
+	if sparkVersion == "" {
+		version := readSparkHadoopVersion(utils.GetBoolFlag(cmd, "interactive"))
+		sparkVersion = version.sparkVersion
+		hadoopVersion = version.hadoopVersion
 	}
 	url, err := getSparkDownloadURL(sparkVersion, hadoopVersion)
 	if err != nil {
@@ -187,8 +218,8 @@ func ConfigSparkCmd(rootCmd *cobra.Command) {
 	           "which containing SQL code for creating tables."
 	   )
 	*/
-	sparkCmd.Flags().String("spark-version", "4.0.0", "The version of Spark version to install.")
-	sparkCmd.Flags().String("hadoop-version", "3", "The version of Spark version to install.")
+	sparkCmd.Flags().String("spark-version", "", "The version of Spark version to install.")
+	sparkCmd.Flags().String("hadoop-version", "", "The version of Spark version to install.")
 	sparkCmd.Flags().StringP("directory", "d", "/opt", "The directory to install Spark.")
 	sparkCmd.Flags().BoolP("install", "i", false, "Install Spark.")
 	sparkCmd.Flags().BoolP("uninstall", "u", false, "Uninstall Spark.")

@@ -16,4 +16,4 @@ jobs:
       - name: Check Code Formatting
         run: golangci-lint fmt -d
       - name: Lint Code
-        run: golangci-lint run
+        run: GOFLAGS=-buildvcs=false golangci-lint run
