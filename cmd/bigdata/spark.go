@@ -18,12 +18,12 @@ import (
 	"legendu.net/icon/utils"
 )
 
-func extractMajorVersion(hadoopVersion string) string {
-	index := strings.Index(hadoopVersion, ".")
+func extractMajorVersion(version string) string {
+	index := strings.Index(version, ".")
 	if index > 0 {
-		return hadoopVersion[:index]
+		return version[:index]
 	}
-	return hadoopVersion
+	return version
 }
 
 // Get the recommended downloading URL for Spark.
@@ -71,13 +71,13 @@ func extractHdp(url string) string {
 }
 
 type SparkHadoopVersion struct {
-	sparkVersion  string
-	hadoopVersion string
+	Spark  string `yaml:"spark"`
+	Hadoop string `yaml:"hadoop"`
 }
 
 func chooseSparkVersion(versions []SparkHadoopVersion) SparkHadoopVersion {
 	for idx, version := range versions {
-		fmt.Printf("%d: Spark version - %s, Hadoop version - %s\n", idx, version.sparkVersion, version.hadoopVersion)
+		fmt.Printf("%d: Spark version - %s, Hadoop version - %s\n", idx, version.Spark, version.Hadoop)
 	}
 	fmt.Print("Please enter the index corresponding to the Spark/Hadoop versions to install: ")
 	reader := bufio.NewReader(os.Stdin)
@@ -85,11 +85,11 @@ func chooseSparkVersion(versions []SparkHadoopVersion) SparkHadoopVersion {
 	if err != nil {
 		log.Fatalf("Error reading input: %v", err)
 	}
-	return versions[utils.ParseInt(input)]
+	return versions[utils.ParseInt(strings.TrimSpace(input))]
 }
 
 func readSparkHadoopVersion(interactive bool) SparkHadoopVersion {
-	file := "~/.config/icon/spark/version.yaml"
+	file := "~/.config/icon-data/spark/version.yaml"
 	if !utils.ExistsFile(file) {
 		log.Fatalf("Spar/Hadoop versions are not specified or configured (%s).", file)
 	}
@@ -122,8 +122,8 @@ func spark(cmd *cobra.Command, _ []string) {
 	}
 	if sparkVersion == "" {
 		version := readSparkHadoopVersion(utils.GetBoolFlag(cmd, "interactive"))
-		sparkVersion = version.sparkVersion
-		hadoopVersion = version.hadoopVersion
+		sparkVersion = version.Spark
+		hadoopVersion = version.Hadoop
 	}
 	url, err := getSparkDownloadURL(sparkVersion, hadoopVersion)
 	if err != nil {
@@ -220,6 +220,7 @@ func ConfigSparkCmd(rootCmd *cobra.Command) {
 	*/
 	sparkCmd.Flags().String("spark-version", "", "The version of Spark version to install.")
 	sparkCmd.Flags().String("hadoop-version", "", "The version of Spark version to install.")
+	sparkCmd.Flags().Bool("interactive", false, "Choose Spark/Hadoop versions interactively.")
 	sparkCmd.Flags().StringP("directory", "d", "/opt", "The directory to install Spark.")
 	sparkCmd.Flags().BoolP("install", "i", false, "Install Spark.")
 	sparkCmd.Flags().BoolP("uninstall", "u", false, "Uninstall Spark.")
