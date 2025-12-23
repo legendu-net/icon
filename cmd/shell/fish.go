@@ -77,6 +77,12 @@ func generateCrazyCompletions() {
 	}
 }
 
+func trustFishShell() {
+	shells := "/etc/shells"
+	utils.AppendToTextFile(shells, pathFish, true)
+	log.Printf("Marked the fish shell as trusted (by adding it to %s).", shells)
+}
+
 // Install and config the fish shell.
 func fish(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "install") {
@@ -104,7 +110,7 @@ func fish(cmd *cobra.Command, _ []string) {
 		generateCrazyCompletions()
 	}
 	if utils.GetBoolFlag(cmd, "trust") {
-		utils.AppendToTextFile("/etc/shells", pathFish, true)
+		trustFishShell()
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
 		if utils.IsLinux() {
