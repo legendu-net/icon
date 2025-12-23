@@ -157,6 +157,7 @@ func ExistsDir(path string) bool {
 //
 // @return true if a file exists at the path, false otherwise.
 func ExistsFile(path string) bool {
+	path = NormalizePath(path)
 	stat, err := os.Stat(path)
 	if os.IsNotExist(err) {
 		return false
