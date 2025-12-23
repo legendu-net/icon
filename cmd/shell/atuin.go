@@ -1,7 +1,6 @@
 package shell
 
 import (
-	"log"
 	"path/filepath"
 
 	"github.com/spf13/cobra"
@@ -23,14 +22,11 @@ func atuin(cmd *cobra.Command, _ []string) {
 [[ -f ~/.bash-preexec.sh ]] && source ~/.bash-preexec.sh
 eval "$(atuin init bash --disable-up-arrow)"
 `
-			err := utils.AppendToTextFile(
+			utils.AppendToTextFile(
 				filepath.Join(utils.UserHomeDir(), ".bash_profile"),
 				atuinBash,
 				true,
 			)
-			if err != nil {
-				log.Fatal(err)
-			}
 		}
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {

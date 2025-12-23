@@ -14,7 +14,7 @@ import (
 func ConfigBash() {
 	bashConfigFile := GetBashConfigFile()
 	ConfigShellPath(bashConfigFile)
-	err := AppendToTextFile(
+	AppendToTextFile(
 		bashConfigFile,
 		`
 if which nvim > /dev/null; then
@@ -27,9 +27,6 @@ fi
 `,
 		true,
 	)
-	if err != nil {
-		log.Fatal(err)
-	}
 	if IsLinux() {
 		sourceIn := `
 # source in ~/.bashrc
@@ -37,14 +34,11 @@ if [[ -f $HOME/.bashrc ]]; then
 	. $HOME/.bashrc
 fi
 `
-		err := AppendToTextFile(
+		AppendToTextFile(
 			filepath.Join(UserHomeDir(), ".bash_profile"),
 			sourceIn,
 			true,
 		)
-		if err != nil {
-			log.Fatal(err)
-		}
 	}
 }
 
@@ -73,10 +67,7 @@ for ((_i=${#_PATHS[@]}-1; _i>=0; _i--)); do
 	fi
 done
 `
-		err := AppendToTextFile(configFile, text, true)
-		if err != nil {
-			log.Fatal(err)
-		}
+		AppendToTextFile(configFile, text, true)
 	}
 	log.Printf("%s is configured to insert common bin paths into $PATH.", configFile)
 }
