@@ -79,11 +79,12 @@ func fish(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "install") {
 		if utils.IsLinux() {
 			file := downloadFishFromGitHub(utils.GetStringFlag(cmd, "version"))
-			command := utils.Format(`{prefix} tar --xz -xvf {file} -C /usr/bin/`, map[string]string{
+			command := utils.Format(`{prefix} tar --xz -xf {file} -C /usr/bin/`, map[string]string{
 				"prefix": utils.GetCommandPrefix(true, map[string]uint32{}),
 				"file":   file,
 			})
 			utils.RunCmd(command)
+			log.Println("The fish shell has been installed to /usr/bin/fish.")
 		} else {
 			utils.RunCmd("brew install fish")
 		}
