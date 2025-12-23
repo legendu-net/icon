@@ -156,3 +156,30 @@ func Backup(original, backup string) {
 		Rename(original, backup)
 	}
 }
+
+// AppendToTextFile appends text to a file.
+//
+// @param path           The path to the file to append to.
+// @param text           The text to append to the file.
+// @param checkExistence If true, checks if the text already exists in the file before appending.
+func AppendToTextFile(path, text string, checkExistence bool) {
+	if checkExistence {
+		fileContent := ""
+		if ExistsFile(path) {
+			fileContent = ReadFileAsString(path)
+		}
+		if !strings.Contains(fileContent, strings.TrimSpace(text)) {
+			AppendToTextFile(path, text, false)
+		}
+		return
+	}
+	prefix := GetCommandPrefix(false, map[string]uint32{
+		path: unix.R_OK | unix.W_OK,
+	})
+	cmd := Format(`echo -e {text} | {prefix} tee -a {path} > /dev/null`, map[string]string{
+		"text":   text,
+		"prefix": prefix,
+		"path":   path,
+	})
+	RunCmd(cmd)
+}

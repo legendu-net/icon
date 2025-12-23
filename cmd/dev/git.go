@@ -170,10 +170,7 @@ func configureGitIgnore(cmd *cobra.Command) {
 	dstDir := utils.GetStringFlag(cmd, "dest-dir")
 	dstFile := filepath.Join(dstDir, ".gitignore")
 	if utils.GetBoolFlag(cmd, "append") {
-		err := utils.AppendToTextFile(dstFile, utils.ReadFileAsString(srcFile), true)
-		if err != nil {
-			log.Fatal(err)
-		}
+		utils.AppendToTextFile(dstFile, utils.ReadFileAsString(srcFile), true)
 		log.Printf("%s is appended into %s.", srcFile, dstFile)
 	} else {
 		utils.CopyFile(srcFile, dstFile)

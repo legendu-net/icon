@@ -12,6 +12,9 @@ import (
 	"legendu.net/icon/utils"
 )
 
+const dirBin = "/usr/bin"
+const pathFish = dirBin + "/fish"
+
 func downloadFishFromGitHub(version string) string {
 	output := "/tmp/_fish_shell.tar.xz"
 	network.DownloadGitHubRelease("fish-shell/fish-shell", version, map[string][]string{
@@ -74,17 +77,24 @@ func generateCrazyCompletions() {
 	}
 }
 
+func trustFishShell() {
+	shells := "/etc/shells"
+	utils.AppendToTextFile(shells, pathFish, true)
+	log.Printf("Marked the fish shell as trusted (by adding it to %s).", shells)
+}
+
 // Install and config the fish shell.
 func fish(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "install") {
 		if utils.IsLinux() {
 			file := downloadFishFromGitHub(utils.GetStringFlag(cmd, "version"))
-			command := utils.Format(`{prefix} tar --xz -xf {file} -C /usr/bin/`, map[string]string{
+			command := utils.Format(`{prefix} tar --xz -xf {file} -C {dirBin}`, map[string]string{
+				"dirBin": dirBin,
 				"prefix": utils.GetCommandPrefix(true, map[string]uint32{}),
 				"file":   file,
 			})
 			utils.RunCmd(command)
-			log.Println("The fish shell has been installed to /usr/bin/fish.")
+			log.Printf("The fish shell has been installed to %s.\n", pathFish)
 		} else {
 			utils.RunCmd("brew install fish")
 		}
@@ -99,10 +109,14 @@ func fish(cmd *cobra.Command, _ []string) {
 		generateCompletions()
 		generateCrazyCompletions()
 	}
+	if utils.GetBoolFlag(cmd, "trust") {
+		trustFishShell()
+	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
 		if utils.IsLinux() {
-			command := utils.Format(`{prefix} rm /usr/bin/fish`, map[string]string{
-				"prefix": utils.GetCommandPrefix(true, map[string]uint32{}),
+			command := utils.Format(`{prefix} rm {pathFish}`, map[string]string{
+				"pathFish": pathFish,
+				"prefix":   utils.GetCommandPrefix(true, map[string]uint32{}),
 			})
 			utils.RunCmd(command)
 		} else {
@@ -122,6 +136,7 @@ func ConfigFishCmd(rootCmd *cobra.Command) {
 	fishCmd.Flags().BoolP("install", "i", false, "If specified, install the fish shell.")
 	fishCmd.Flags().Bool("uninstall", false, "If specified, uninstall the fish shell.")
 	fishCmd.Flags().BoolP("config", "c", false, "If specified, configure the fish shell.")
+	fishCmd.Flags().BoolP("trust", "t", false, "Add the fish shell into /etc/shells.")
 	fishCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
 	fishCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
 	fishCmd.Flags().StringP("version", "v", "", "The version of the release.")
