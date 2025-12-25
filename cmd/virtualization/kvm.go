@@ -37,11 +37,11 @@ var kvmCmd = &cobra.Command{
 }
 
 func ConfigKVMCmd(rootCmd *cobra.Command) {
-	kvmCmd.Flags().BoolP("install", "i", false, "Install Rust.")
-	kvmCmd.Flags().BoolP("config", "c", false, "Configure Rust.")
+	kvmCmd.Flags().BoolP("install", "i", false, "Install KVM related tools.")
+	kvmCmd.Flags().BoolP("config", "c", false, "Configure KVM related tools.")
 	kvmCmd.Flags().BoolP("yes", "y", false, "Automatically yes to prompt questions.")
 	kvmCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
 	kvmCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
-	kvmCmd.Flags().BoolP("uninstall", "i", false, "Uninstall Rust.")
+	kvmCmd.Flags().BoolP("uninstall", "u", false, "Uninstall KVM related tools.")
 	rootCmd.AddCommand(kvmCmd)
 }
