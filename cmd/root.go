@@ -68,6 +68,7 @@ func Execute() {
 	shell.ConfigHyperCmd(rootCmd)
 	shell.ConfigNushellCmd(rootCmd)
 	shell.ConfigZellijCmd(rootCmd)
+	virtualization.ConfigKVMCmd(rootCmd)
 	virtualization.ConfigDockerCmd(rootCmd)
 	virtualization.ConfigLdcCmd(rootCmd)
 
