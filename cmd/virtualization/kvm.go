@@ -33,7 +33,7 @@ var kvmCmd = &cobra.Command{
 	Use:     "kvm",
 	Aliases: []string{},
 	Short:   "Install and configure KVM related tools.",
-	Run: kvm,
+	Run:     kvm,
 }
 
 func ConfigKVMCmd(rootCmd *cobra.Command) {
@@ -45,4 +45,3 @@ func ConfigKVMCmd(rootCmd *cobra.Command) {
 	kvmCmd.Flags().BoolP("uninstall", "i", false, "Uninstall Rust.")
 	rootCmd.AddCommand(kvmCmd)
 }
-
