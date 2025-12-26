@@ -100,8 +100,7 @@ var keyboardCmd = &cobra.Command{
 	Use:     "keyboard",
 	Aliases: []string{"kb"},
 	Short:   "Configure keyboard related.",
-	//Args:  cobra.ExactArgs(1),
-	Run: keyboard,
+	Run:     keyboard,
 }
 
 func ConfigKeyboardCmd(rootCmd *cobra.Command) {
