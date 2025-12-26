@@ -49,8 +49,7 @@ var keepassXCCmd = &cobra.Command{
 	Use:     "keepassxc",
 	Aliases: []string{},
 	Short:   "Install and configure the KeepassXC terminal.",
-	//Args:  cobra.ExactArgs(1),
-	Run: keepassxc,
+	Run:     keepassxc,
 }
 
 func ConfigKeepassXCCmd(rootCmd *cobra.Command) {
