@@ -9,7 +9,7 @@ import (
 func homebrew(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "install") {
 		url := "https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh"
-		command := utils.Format(`/bin/bash -c "$(curl -fsSL {url})"`, map[string]string{
+		command := utils.Format(`NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL {url})"`, map[string]string{
 			"url": url,
 		})
 		utils.RunCmd(command)
