@@ -13,14 +13,14 @@ func kvm(cmd *cobra.Command, _ []string) {
 		if utils.IsLinux() {
 			if utils.IsDebianUbuntuSeries() {
 				cmd := utils.Format(`{prefix} dmesg | grep -q 'DMI: QEMU' \
-							&& {prefix} apt-get update \
-							&& {prefix} apt-get install {yesStr} spice-vdagent`, map[string]string{
+							&& {prefix} apt-get {yesStr} update \
+							&& {prefix} apt-get {yesStr} install spice-vdagent`, map[string]string{
 					"prefix": utils.GetCommandPrefix(true, map[string]uint32{}),
 				})
 				utils.RunCmd(cmd)
 			} else if utils.IsFedoraSeries() {
 				cmd := utils.Format(`{prefix} dmesg | grep -q 'DMI: QEMU' \
-							&& {prefix} dnf install {yesStr} spice-vdagent`, map[string]string{
+							&& {prefix} dnf {yesStr} install spice-vdagent`, map[string]string{
 					"prefix": utils.GetCommandPrefix(true, map[string]uint32{}),
 				})
 				utils.RunCmd(cmd)

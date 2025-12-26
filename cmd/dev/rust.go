@@ -26,7 +26,8 @@ func linkRust(cmd *cobra.Command, cargoHome string) {
 
 func installRustNix(rustupHome, cargoHome, toolchain string) {
 	command := utils.Format(`
-		curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | {prefix} bash -s -- --default-toolchain {toolchain} -y \
+		curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | \
+			{prefix} bash -s -- --default-toolchain {toolchain} -y \
 		&& {cargoHome}/bin/rustup component add rust-src rustfmt clippy \
 		&& {cargoHome}/bin/cargo install cargo-cache cargo-edit cargo-criterion`, map[string]string{
 		"rustupHome": rustupHome,
@@ -60,7 +61,8 @@ func installSccache() {
 		Linux:    {"unknown", Linux, "musl"},
 		Darwin:   {"apple", Darwin},
 	}, []string{"pre", "dist", "sha256"}, file)
-	command := utils.Format("{prefix} tar --wildcards --strip-components=1 -C /usr/local/bin/ -zxvf {file} */sccache", map[string]string{
+	command := utils.Format(`{prefix} tar --wildcards --strip-components=1 \
+			-C /usr/local/bin/ -zxvf {file} */sccache`, map[string]string{
 		"prefix": utils.GetCommandPrefix(false, map[string]uint32{
 			"/usr/local/bin": unix.W_OK | unix.R_OK,
 		}),

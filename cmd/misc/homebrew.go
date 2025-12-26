@@ -15,8 +15,8 @@ func homebrew(cmd *cobra.Command, _ []string) {
 		utils.RunCmd(command)
 		if utils.IsLinux() {
 			if utils.IsDebianUbuntuSeries() {
-				command := utils.Format(`{prefix} apt-get update \
-						&& {prefix} apt-get install {yesStr} build-essential procps curl file git`, map[string]string{
+				command := utils.Format(`{prefix} apt-get {yesStr} update \
+						&& {prefix} apt-get {yesStr} install build-essential procps curl file git`, map[string]string{
 					"prefix": utils.GetCommandPrefix(true, map[string]uint32{}),
 					"yesStr": utils.BuildYesFlag(cmd),
 				})

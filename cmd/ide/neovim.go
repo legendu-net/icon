@@ -26,7 +26,8 @@ func Neovim(install, config, uninstall bool, yesStr string, backup, copyPath boo
 		case "linux":
 			if utils.IsDebianUbuntuSeries() {
 				if utils.IsUbuntuSeries() {
-					command := utils.Format(`{prefix} apt-get update && {prefix} apt-get install {yesStr} gnupg \
+					command := utils.Format(`{prefix} apt-get {yesStr} update \
+						&& {prefix} apt-get {yesStr} install gnupg \
 						&& {prefix} add-apt-repository {yesStr} ppa:neovim-ppa/unstable`, map[string]string{
 						"prefix": utils.GetCommandPrefix(
 							true,
@@ -36,7 +37,8 @@ func Neovim(install, config, uninstall bool, yesStr string, backup, copyPath boo
 					})
 					utils.RunCmd(command)
 				}
-				command := utils.Format("{prefix} apt-get update && {prefix} apt-get install {yesStr} neovim", map[string]string{
+				command := utils.Format(`{prefix} apt-get {yesStr} update \
+						&& {prefix} apt-get {yesStr} install neovim`, map[string]string{
 					"prefix": utils.GetCommandPrefix(
 						true,
 						map[string]uint32{},
@@ -67,7 +69,7 @@ func Neovim(install, config, uninstall bool, yesStr string, backup, copyPath boo
 			utils.RunCmd("brew uninstall neovim")
 		case "linux":
 			if utils.IsDebianUbuntuSeries() {
-				command := utils.Format("{prefix} apt-get purge {yesStr} neovim", map[string]string{
+				command := utils.Format("{prefix} apt-get {yesStr} purge neovim", map[string]string{
 					"prefix": utils.GetCommandPrefix(
 						true,
 						map[string]uint32{},

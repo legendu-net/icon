@@ -16,7 +16,6 @@ func vscode(cmd *cobra.Command, _ []string) {
 						true,
 						map[string]uint32{},
 					),
-					"yesStr": utils.BuildYesFlag(cmd),
 				})
 				utils.RunCmd(command)
 			} else if utils.IsFedoraSeries() {
@@ -51,7 +50,7 @@ func vscode(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "uninstall") {
 		if utils.IsLinux() {
 			if utils.IsDebianUbuntuSeries() {
-				command := utils.Format("{prefix} apt-get purge {yesStr} vscode", map[string]string{
+				command := utils.Format("{prefix} apt-get {yesStr} purge vscode", map[string]string{
 					"prefix": utils.GetCommandPrefix(
 						true,
 						map[string]uint32{},
@@ -65,6 +64,7 @@ func vscode(cmd *cobra.Command, _ []string) {
 						true,
 						map[string]uint32{},
 					),
+					"yesStr": utils.BuildYesFlag(cmd),
 				})
 				utils.RunCmd(command)
 			}

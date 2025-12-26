@@ -9,7 +9,8 @@ import (
 func SSHServer(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "install") {
 		if utils.IsDebianUbuntuSeries() {
-			command := utils.Format("{prefix} apt-get update && {prefix} apt-get install {yesStr} openssh-server fail2ban", map[string]string{
+			command := utils.Format(`{prefix} apt-get {yesStr} update \
+					&& {prefix} apt-get {yesStr} install openssh-server fail2ban`, map[string]string{
 				"prefix": utils.GetCommandPrefix(
 					true,
 					map[string]uint32{},
@@ -23,7 +24,7 @@ func SSHServer(cmd *cobra.Command, _ []string) {
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
 		if utils.IsDebianUbuntuSeries() {
-			command := utils.Format("{prefix} apt-get purge {yesStr} openssh-server fail2ban", map[string]string{
+			command := utils.Format("{prefix} apt-get {yesStr} purge openssh-server fail2ban", map[string]string{
 				"prefix": utils.GetCommandPrefix(
 					true,
 					map[string]uint32{},
