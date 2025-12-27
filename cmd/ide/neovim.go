@@ -83,6 +83,7 @@ func Neovim(install, config, uninstall bool, yesStr string, backup, copyPath boo
 						true,
 						map[string]uint32{},
 					),
+					"yesStr": yesStr,
 				})
 				utils.RunCmd(command)
 			}
