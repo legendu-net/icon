@@ -12,18 +12,20 @@ func kvm(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "config") {
 		if utils.IsLinux() {
 			if utils.IsDebianUbuntuSeries() {
-				cmd := utils.Format(`{prefix} dmesg | grep -q 'DMI: QEMU' \
+				command := utils.Format(`{prefix} dmesg | grep -q 'DMI: QEMU' \
 							&& {prefix} apt-get {yesStr} update \
 							&& {prefix} apt-get {yesStr} install spice-vdagent`, map[string]string{
 					"prefix": utils.GetCommandPrefix(true, map[string]uint32{}),
+					"yesStr": utils.BuildYesFlag(cmd),
 				})
-				utils.RunCmd(cmd)
+				utils.RunCmd(command)
 			} else if utils.IsFedoraSeries() {
-				cmd := utils.Format(`{prefix} dmesg | grep -q 'DMI: QEMU' \
+				command := utils.Format(`{prefix} dmesg | grep -q 'DMI: QEMU' \
 							&& {prefix} dnf {yesStr} install spice-vdagent`, map[string]string{
 					"prefix": utils.GetCommandPrefix(true, map[string]uint32{}),
+					"yesStr": utils.BuildYesFlag(cmd),
 				})
-				utils.RunCmd(cmd)
+				utils.RunCmd(command)
 			}
 		}
 	}
