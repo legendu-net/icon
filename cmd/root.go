@@ -43,6 +43,7 @@ func Execute() {
 	dev.ConfigPerfCmd(rootCmd)
 	dev.ConfigPytypeCmd(rootCmd)
 	dev.ConfigRustCmd(rootCmd)
+	dev.ConfigDenoCmd(rootCmd)
 	filesystem.ConfigRipCmd(rootCmd)
 	icon.ConfigCompletionCmd(rootCmd)
 	icon.ConfigDataCmd(rootCmd)
