@@ -10,7 +10,8 @@ func keepassxc(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "install") {
 		if utils.IsLinux() {
 			if utils.IsDebianUbuntuSeries() {
-				command := utils.Format("{prefix} apt-get update && {prefix} apt-get install {yesStr} keepassxc", map[string]string{
+				command := utils.Format(`{prefix} apt-get {yesStr} update \
+						&& {prefix} apt-get {yesStr} install keepassxc`, map[string]string{
 					"prefix": utils.GetCommandPrefix(true, map[string]uint32{}),
 					"yesStr": utils.BuildYesFlag(cmd),
 				})
@@ -34,7 +35,7 @@ func keepassxc(cmd *cobra.Command, _ []string) {
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
 		if utils.IsLinux() {
-			command := utils.Format("{prefix} apt-get purge {yesStr} keepassxc", map[string]string{
+			command := utils.Format("{prefix} apt-get {yesStr} purge keepassxc", map[string]string{
 				"prefix": utils.GetCommandPrefix(true, map[string]uint32{}),
 				"yesStr": utils.BuildYesFlag(cmd),
 			})

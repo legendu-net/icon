@@ -53,7 +53,7 @@ func configGitUI(cmd *cobra.Command) {
 	}
 }
 
-func installGitDelta(cmd *cobra.Command) {
+func installGitDelta() {
 	tmpdir := utils.CreateTempDir("")
 	defer os.RemoveAll(tmpdir)
 	file := filepath.Join(tmpdir, "git-delta.tar.gz")
@@ -64,14 +64,14 @@ func installGitDelta(cmd *cobra.Command) {
 		"linux":  {"linux", "gnu"},
 		"darwin": {"apple", "darwin"},
 	}, []string{}, file)
-	command := utils.Format(`{prefix} tar -zxvf {file} -C /usr/local/bin/ --wildcards --no-anchored delta --strip=1 \
+	command := utils.Format(`{prefix} tar -zxvf {file} \
+			-C /usr/local/bin/ --wildcards --no-anchored delta --strip=1 \
 		&& rm {file}`, map[string]string{
 		"prefix": utils.GetCommandPrefix(
 			true,
 			map[string]uint32{},
 		),
-		"yesStr": utils.BuildYesFlag(cmd),
-		"file":   file,
+		"file": file,
 	})
 	utils.RunCmd(command)
 }
@@ -80,7 +80,8 @@ func configGitProxy(cmd *cobra.Command) {
 	git := utils.GetStringFlag(cmd, "git")
 	proxy := utils.GetStringFlag(cmd, "proxy")
 	if proxy != "" {
-		command := utils.Format("{git} config --global http.proxy {proxy} && {git} config --global https.proxy {proxy}", map[string]string{
+		command := utils.Format(`{git} config --global http.proxy {proxy} \
+				&& {git} config --global https.proxy {proxy}`, map[string]string{
 			"proxy": proxy,
 			"git":   git,
 		})
@@ -94,7 +95,8 @@ func git(cmd *cobra.Command, args []string) {
 	if utils.GetBoolFlag(cmd, "install") {
 		if utils.IsLinux() {
 			if utils.IsDebianUbuntuSeries() {
-				command := utils.Format(`{prefix} apt-get update && {prefix} apt-get install {yesStr} git git-lfs`, map[string]string{
+				command := utils.Format(`{prefix} apt-get {yesStr} update \
+						&& {prefix} apt-get {yesStr} install git git-lfs`, map[string]string{
 					"prefix": utils.GetCommandPrefix(
 						true,
 						map[string]uint32{},
@@ -112,7 +114,7 @@ func git(cmd *cobra.Command, args []string) {
 				})
 				utils.RunCmd(command)
 			}
-			installGitDelta(cmd)
+			installGitDelta()
 			installGitUI(cmd)
 		} else {
 			utils.BrewInstallSafe([]string{"git", "git-lfs"})
@@ -138,11 +140,12 @@ func git(cmd *cobra.Command, args []string) {
 		utils.RunCmd(command)
 		if utils.IsLinux() {
 			if utils.IsDebianUbuntuSeries() {
-				command := utils.Format("{prefix} apt-get purge {yesStr} git git-lfs", map[string]string{
+				command := utils.Format("{prefix} apt-get {yesStr} purge git git-lfs", map[string]string{
 					"prefix": utils.GetCommandPrefix(
 						true,
 						map[string]uint32{},
 					),
+					"yesStr": utils.BuildYesFlag(cmd),
 				})
 				utils.RunCmd(command)
 			} else if utils.IsFedoraSeries() {
@@ -151,6 +154,7 @@ func git(cmd *cobra.Command, args []string) {
 						true,
 						map[string]uint32{},
 					),
+					"yesStr": utils.BuildYesFlag(cmd),
 				})
 				utils.RunCmd(command)
 			}

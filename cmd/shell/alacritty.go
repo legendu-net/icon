@@ -10,19 +10,20 @@ func alacritty(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "install") {
 		if utils.IsLinux() {
 			if utils.IsDebianUbuntuSeries() {
-				command := utils.Format(`{prefix} apt-get update && {prefix} apt-get install {yesStr} \
+				command := utils.Format(`{prefix} apt-get {yesStr} update \
+				&& {prefix} apt-get {yesStr} install \
 					cmake pkg-config python3 \
 					libfreetype6-dev libfontconfig1-dev libxcb-xfixes0-dev libxkbcommon-dev
-					`, map[string]string{
+				`, map[string]string{
 					"prefix": utils.GetCommandPrefix(true, map[string]uint32{}),
 					"yesStr": utils.BuildYesFlag(cmd),
 				})
 				utils.RunCmd(command)
 			} else if utils.IsFedoraSeries() {
 				command := utils.Format(`{prefix} dnf {yesStr} install \ 
-					cmake g++ \
-					freetype-devel fontconfig-devel libxcb-devel libxkbcommon-devel 
-					`, map[string]string{
+				cmake g++ \
+				freetype-devel fontconfig-devel libxcb-devel libxkbcommon-devel 
+				`, map[string]string{
 					"prefix": utils.GetCommandPrefix(true, map[string]uint32{}),
 					"yesStr": utils.BuildYesFlag(cmd),
 				})

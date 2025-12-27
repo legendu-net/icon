@@ -28,7 +28,8 @@ func Helix(install, config, uninstall bool, yesStr string) {
 					})
 					utils.RunCmd(command)
 				}
-				command := utils.Format("{prefix} apt-get update && {prefix} apt-get install {yesStr} helix", map[string]string{
+				command := utils.Format(`{prefix} apt-get {yesStr} update \
+						&& {prefix} apt-get {yesStr} install helix`, map[string]string{
 					"prefix": utils.GetCommandPrefix(
 						true,
 						map[string]uint32{},
@@ -37,7 +38,8 @@ func Helix(install, config, uninstall bool, yesStr string) {
 				})
 				utils.RunCmd(command)
 			} else if utils.IsFedoraSeries() {
-				command := utils.Format("{prefix} dnf copr enable varlad/helix && {prefix} dnf {yesStr} install helix", map[string]string{
+				command := utils.Format(`{prefix} dnf {yesStr} copr enable varlad/helix \
+						&& {prefix} dnf {yesStr} install helix`, map[string]string{
 					"prefix": utils.GetCommandPrefix(
 						true,
 						map[string]uint32{},
@@ -55,7 +57,7 @@ func Helix(install, config, uninstall bool, yesStr string) {
 	if uninstall {
 		if utils.IsLinux() {
 			if utils.IsDebianUbuntuSeries() {
-				command := utils.Format("{prefix} apt-get purge {yesStr} helix", map[string]string{
+				command := utils.Format("{prefix} apt-get {yesStr} purge helix", map[string]string{
 					"prefix": utils.GetCommandPrefix(
 						true,
 						map[string]uint32{},

@@ -12,7 +12,8 @@ func docker(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "install") {
 		if utils.IsLinux() {
 			if utils.IsDebianUbuntuSeries() {
-				command := utils.Format("{prefix} apt-get update && {prefix} apt-get install {yesStr} docker.io docker-compose", map[string]string{
+				command := utils.Format(`{prefix} apt-get {yesStr} update \
+						&& {prefix} apt-get {yesStr} install docker.io docker-compose`, map[string]string{
 					"prefix": utils.GetCommandPrefix(true, map[string]uint32{}),
 					"yesStr": utils.BuildYesFlag(cmd),
 				})
@@ -56,7 +57,7 @@ func docker(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "uninstall") {
 		if utils.IsLinux() {
 			if utils.IsDebianUbuntuSeries() {
-				command := utils.Format("{prefix} apt-get purge {yesStr} docker docker-compose", map[string]string{
+				command := utils.Format("{prefix} apt-get {yesStr} purge docker docker-compose", map[string]string{
 					"prefix": utils.GetCommandPrefix(true, map[string]uint32{}),
 					"yesStr": utils.BuildYesFlag(cmd),
 				})
