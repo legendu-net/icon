@@ -8,26 +8,8 @@ import (
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
 	"legendu.net/icon/cmd/icon"
-	"legendu.net/icon/cmd/network"
 	"legendu.net/icon/utils"
 )
-
-const dirBin = "/usr/bin"
-const pathFish = dirBin + "/fish"
-
-func downloadFishFromGitHub(version string) string {
-	output := "/tmp/_fish_shell.tar.xz"
-	network.DownloadGitHubRelease("fish-shell/fish-shell", version, map[string][]string{
-		"common":             {"fish", "tar.xz"},
-		"amd64":              {"x86_64"},
-		"arm64":              {"aarch64"},
-		"linux":              {"linux"},
-		"DebianUbuntuSeries": {},
-		"FedoraSeries":       {},
-		"OtherLinux":         {},
-	}, []string{"app", "zip", "pkg", "asc"}, output)
-	return output
-}
 
 func generateCompletions() {
 	dir := "~/.config/fish/completions/"
@@ -77,24 +59,31 @@ func generateCrazyCompletions() {
 	}
 }
 
-func trustFishShell() {
-	shells := "/etc/shells"
-	utils.AppendToTextFile(shells, pathFish, true)
-	log.Printf("Marked the fish shell as trusted (by adding it to %s).", shells)
-}
-
 // Install and config the fish shell.
 func fish(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "install") {
 		if utils.IsLinux() {
-			file := downloadFishFromGitHub(utils.GetStringFlag(cmd, "version"))
-			command := utils.Format(`{prefix} tar --xz -xf {file} -C {dirBin}`, map[string]string{
-				"dirBin": dirBin,
-				"prefix": utils.GetCommandPrefix(true, map[string]uint32{}),
-				"file":   file,
-			})
-			utils.RunCmd(command)
-			log.Printf("The fish shell has been installed to %s.\n", pathFish)
+			if utils.IsDebianUbuntuSeries() {
+				if utils.IsUbuntuSeries() {
+					cmd := utils.Format("{prefix} add-apt-repository ppa:fish-shell/release-4", map[string]string{
+						"prefix": utils.GetCommandPrefix(true, map[string]uint32{}),
+					})
+					utils.RunCmd(cmd)
+				}
+				cmd := utils.Format(`{prefix} apt-get {yesStr} update \
+				&& {prefix} apt-get {yesStr} install fish`, map[string]string{
+					"prefix": utils.GetCommandPrefix(true, map[string]uint32{}),
+					"yesStr": utils.BuildYesFlag(cmd),
+				})
+				utils.RunCmd(cmd)
+			} else if utils.IsFedoraSeries() {
+				cmd := utils.Format(`{prefix} dnf {yesStr} install fish`, map[string]string{
+					"prefix": utils.GetCommandPrefix(true, map[string]uint32{}),
+					"yesStr": utils.BuildYesFlag(cmd),
+				})
+				utils.RunCmd(cmd)
+			}
+			log.Printf("Successfully installed the fish shell.\n")
 		} else {
 			utils.RunCmd("brew install fish")
 		}
@@ -110,18 +99,8 @@ func fish(cmd *cobra.Command, _ []string) {
 		generateCrazyCompletions()
 	}
 	if utils.GetBoolFlag(cmd, "trust") {
-		trustFishShell()
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
-		if utils.IsLinux() {
-			command := utils.Format(`{prefix} rm {pathFish}`, map[string]string{
-				"pathFish": pathFish,
-				"prefix":   utils.GetCommandPrefix(true, map[string]uint32{}),
-			})
-			utils.RunCmd(command)
-		} else {
-			utils.RunCmd("brew uninstall fish")
-		}
 	}
 }
 
@@ -136,6 +115,7 @@ func ConfigFishCmd(rootCmd *cobra.Command) {
 	fishCmd.Flags().BoolP("install", "i", false, "If specified, install the fish shell.")
 	fishCmd.Flags().Bool("uninstall", false, "If specified, uninstall the fish shell.")
 	fishCmd.Flags().BoolP("config", "c", false, "If specified, configure the fish shell.")
+	fishCmd.Flags().BoolP("yes", "y", false, "Automatically yes to prompt questions.")
 	fishCmd.Flags().BoolP("trust", "t", false, "Add the fish shell into /etc/shells.")
 	fishCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
 	fishCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
