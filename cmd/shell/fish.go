@@ -8,26 +8,11 @@ import (
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
 	"legendu.net/icon/cmd/icon"
-	"legendu.net/icon/cmd/network"
 	"legendu.net/icon/utils"
 )
 
 const dirBin = "/usr/bin"
 const pathFish = dirBin + "/fish"
-
-func downloadFishFromGitHub(version string) string {
-	output := "/tmp/_fish_shell.tar.xz"
-	network.DownloadGitHubRelease("fish-shell/fish-shell", version, map[string][]string{
-		"common":             {"fish", "tar.xz"},
-		"amd64":              {"x86_64"},
-		"arm64":              {"aarch64"},
-		"linux":              {"linux"},
-		"DebianUbuntuSeries": {},
-		"FedoraSeries":       {},
-		"OtherLinux":         {},
-	}, []string{"app", "zip", "pkg", "asc"}, output)
-	return output
-}
 
 func generateCompletions() {
 	dir := "~/.config/fish/completions/"
@@ -87,13 +72,26 @@ func trustFishShell() {
 func fish(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "install") {
 		if utils.IsLinux() {
-			file := downloadFishFromGitHub(utils.GetStringFlag(cmd, "version"))
-			command := utils.Format(`{prefix} tar --xz -xf {file} -C {dirBin}`, map[string]string{
-				"dirBin": dirBin,
-				"prefix": utils.GetCommandPrefix(true, map[string]uint32{}),
-				"file":   file,
-			})
-			utils.RunCmd(command)
+			if utils.IsDebianUbuntuSeries() {
+				if utils.IsUbuntuSeries() {
+					cmd := utils.Format("{prefix} add-apt-repository ppa:fish-shell/release-4", map[string]string{
+						"prefix": utils.GetCommandPrefix(true, map[string]uint32{}),
+					})
+					utils.RunCmd(cmd)
+				}
+				cmd := utils.Format(`{prefix} apt-get {yesStr} update \
+				&& {prefix} apt-get {yesStr} install fish`, map[string]string{
+					"prefix": utils.GetCommandPrefix(true, map[string]uint32{}),
+					"yesStr": utils.BuildYesFlag(cmd),
+				})
+				utils.RunCmd(cmd)
+			} else if utils.IsFedoraSeries() {
+				cmd := utils.Format(`{prefix} dnf {yesStr} install fish`, map[string]string{
+					"prefix": utils.GetCommandPrefix(true, map[string]uint32{}),
+					"yesStr": utils.BuildYesFlag(cmd),
+				})
+				utils.RunCmd(cmd)
+			}
 			log.Printf("The fish shell has been installed to %s.\n", pathFish)
 		} else {
 			utils.RunCmd("brew install fish")
