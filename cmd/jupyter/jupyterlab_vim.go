@@ -20,13 +20,13 @@ func jupyterlabVim(cmd *cobra.Command, _ []string) {
 	}
 	if utils.GetBoolFlag(cmd, "config") || utils.GetBoolFlag(cmd, "enable") || utils.GetBoolFlag(cmd, "disable") {
 		if utils.GetBoolFlag(cmd, "enable") {
-			command := utils.Format("{prefix} jupyter labextension enable @axlair/jupyterlab_vim", map[string]string{
+			command := utils.Format("{prefix} $(which jupyter) labextension enable @axlair/jupyterlab_vim", map[string]string{
 				"prefix": prefix,
 			})
 			utils.RunCmd(command)
 		}
 		if utils.GetBoolFlag(cmd, "disable") {
-			command := utils.Format("{prefix} jupyter labextension disable @axlair/jupyterlab_vim", map[string]string{
+			command := utils.Format("{prefix} $(which jupyter) labextension disable @axlair/jupyterlab_vim", map[string]string{
 				"prefix": prefix,
 			})
 			utils.RunCmd(command)
