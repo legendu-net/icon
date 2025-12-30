@@ -46,7 +46,7 @@ func generateCrazyCompletions() {
 			srcFile := filepath.Join(dirCrazy, fileName)
 			fileName = strings.TrimSuffix(fileName, filepath.Ext(fileName)) + ".fish"
 			destFile := dir + fileName
-			cmd := utils.Format(`{uvx} --python '>=3.10' --with pyyaml \
+			command := utils.Format(`{uvx} --python '>=3.10' --with pyyaml \
 				--from git+https://github.com/dclong/crazy-complete \
 				crazy-complete --input-type=yaml fish {srcFile} > {destFile}`,
 				map[string]string{
@@ -54,7 +54,7 @@ func generateCrazyCompletions() {
 					"srcFile":  srcFile,
 					"destFile": destFile,
 				})
-			utils.RunCmd(cmd)
+			utils.RunCmd(command)
 		}
 	}
 }
@@ -65,23 +65,24 @@ func fish(cmd *cobra.Command, _ []string) {
 		if utils.IsLinux() {
 			if utils.IsDebianUbuntuSeries() {
 				if utils.IsUbuntuSeries() {
-					cmd := utils.Format("{prefix} add-apt-repository ppa:fish-shell/release-4", map[string]string{
+					command := utils.Format("{prefix} add-apt-repository {yesStr} ppa:fish-shell/release-4", map[string]string{
 						"prefix": utils.GetCommandPrefix(true, map[string]uint32{}),
+						"yesStr": utils.BuildYesFlag(cmd),
 					})
-					utils.RunCmd(cmd)
+					utils.RunCmd(command)
 				}
-				cmd := utils.Format(`{prefix} apt-get {yesStr} update \
+				command := utils.Format(`{prefix} apt-get {yesStr} update \
 				&& {prefix} apt-get {yesStr} install fish`, map[string]string{
 					"prefix": utils.GetCommandPrefix(true, map[string]uint32{}),
 					"yesStr": utils.BuildYesFlag(cmd),
 				})
-				utils.RunCmd(cmd)
+				utils.RunCmd(command)
 			} else if utils.IsFedoraSeries() {
-				cmd := utils.Format(`{prefix} dnf {yesStr} install fish`, map[string]string{
+				command := utils.Format(`{prefix} dnf {yesStr} install fish`, map[string]string{
 					"prefix": utils.GetCommandPrefix(true, map[string]uint32{}),
 					"yesStr": utils.BuildYesFlag(cmd),
 				})
-				utils.RunCmd(cmd)
+				utils.RunCmd(command)
 			}
 			log.Printf("Successfully installed the fish shell.\n")
 		} else {
@@ -97,8 +98,6 @@ func fish(cmd *cobra.Command, _ []string) {
 
 		generateCompletions()
 		generateCrazyCompletions()
-	}
-	if utils.GetBoolFlag(cmd, "trust") {
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
 	}
@@ -116,9 +115,7 @@ func ConfigFishCmd(rootCmd *cobra.Command) {
 	fishCmd.Flags().Bool("uninstall", false, "If specified, uninstall the fish shell.")
 	fishCmd.Flags().BoolP("config", "c", false, "If specified, configure the fish shell.")
 	fishCmd.Flags().BoolP("yes", "y", false, "Automatically yes to prompt questions.")
-	fishCmd.Flags().BoolP("trust", "t", false, "Add the fish shell into /etc/shells.")
 	fishCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
 	fishCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
-	fishCmd.Flags().StringP("version", "v", "", "The version of the release.")
 	rootCmd.AddCommand(fishCmd)
 }
