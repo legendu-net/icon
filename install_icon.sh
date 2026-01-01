@@ -31,10 +31,10 @@ function install_icon() {
     fi
     local arch="$(uname -m)"
     case "$arch" in
-        x86_64 )
+        x86_64 | amd64 )
             arch=amd64
             ;;
-        aarch64 )
+        aarch64 | arm64 )
             arch=arm64
             ;;
         *)
