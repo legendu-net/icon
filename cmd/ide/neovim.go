@@ -20,11 +20,10 @@ func neovim(cmd *cobra.Command, _ []string) {
 
 func Neovim(install, config, uninstall bool, yesStr string, backup, copyPath bool) {
 	if install {
-		switch runtime.GOOS {
-		case "darwin":
-			utils.BrewInstallSafe([]string{"neovim"})
-		case "linux":
-			if utils.IsDebianUbuntuSeries() {
+		if utils.IsLinux() {
+			if utils.IsUniversalBlue() {
+				utils.BrewInstallSafe([]string{"neovim"})
+			} else if utils.IsDebianUbuntuSeries() {
 				if utils.IsUbuntuSeries() {
 					command := utils.Format(`{prefix} apt-get {yesStr} update \
 						&& {prefix} apt-get {yesStr} install gnupg \
@@ -56,6 +55,8 @@ func Neovim(install, config, uninstall bool, yesStr string, backup, copyPath boo
 				})
 				utils.RunCmd(command)
 			}
+		} else {
+			utils.BrewInstallSafe([]string{"neovim"})
 		}
 	}
 	if config {

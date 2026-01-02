@@ -11,7 +11,9 @@ import (
 func docker(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "install") {
 		if utils.IsLinux() {
-			if utils.IsDebianUbuntuSeries() {
+			if utils.IsUniversalBlue() {
+				utils.RunCmd("ujust devmode")
+			} else if utils.IsDebianUbuntuSeries() {
 				command := utils.Format(`{prefix} apt-get {yesStr} update \
 						&& {prefix} apt-get {yesStr} install docker.io docker-compose`, map[string]string{
 					"prefix": utils.GetCommandPrefix(true, map[string]uint32{}),

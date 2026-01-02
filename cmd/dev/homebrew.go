@@ -1,4 +1,4 @@
-package misc
+package dev
 
 import (
 	"github.com/spf13/cobra"
@@ -46,9 +46,9 @@ func homebrew(cmd *cobra.Command, _ []string) {
 }
 
 var homebrewCmd = &cobra.Command{
-	Use:     "keepassxc",
+	Use:     "homebrew",
 	Aliases: []string{"brew"},
-	Short:   "Install and configure the KeepassXC terminal.",
+	Short:   "Install and configure Homebrew.",
 	Run:     homebrew,
 }
 

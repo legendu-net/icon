@@ -79,8 +79,7 @@ func GetCurrentUser() *user.User {
 
 // Returns "sudo" or "" depending on whether sudo is accessible by the current user.
 func sudo() string {
-	_, err := exec.LookPath("sudo")
-	if err != nil {
+	if LookPath("sudo") == "" {
 		return ""
 	}
 	RunCmd("sudo true")
@@ -122,8 +121,7 @@ func GetCommandPrefix(forceSudo bool, pathPerms map[string]uint32) string {
 // @return true if the command exists in the PATH, false otherwise.
 func ExistsCommand(cmd string) bool {
 	cmd = NormalizePath(cmd)
-	_, err := exec.LookPath(cmd)
-	return err == nil
+	return LookPath(cmd) != ""
 }
 
 // IfElseString returns one of two strings based on a boolean condition.

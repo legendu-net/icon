@@ -3,6 +3,7 @@ package utils
 import (
 	"log"
 	"runtime"
+	"slices"
 
 	"github.com/shirou/gopsutil/cpu"
 	"github.com/shirou/gopsutil/host"
@@ -46,72 +47,70 @@ func IsDebian() bool {
 	return GetLinuxDistID() == "debian"
 }
 
+func IsLinuxSeries(ids []string) bool {
+	distID := GetLinuxDistID()
+	return slices.Contains(ids, distID)
+}
+
 // IsDebianSeries checks if the current Linux distribution belongs to the Debian series.
 //
 // @return true if the current OS is part of the Debian series, false otherwise.
 func IsDebianSeries() bool {
-	ids := []string{
+	return IsLinuxSeries([]string{
 		"debian",
 		"antix",
 		"lmde",
-	}
-	distID := GetLinuxDistID()
-	for _, id := range ids {
-		if distID == id {
-			return true
-		}
-	}
-	return false
+	})
 }
 
 // IsDebianUbuntuSeries checks if the current Linux distribution belongs to the Debian or Ubuntu series.
 //
 // @return true if the current OS is part of the Debian or Ubuntu series, false otherwise.
 func IsDebianUbuntuSeries() bool {
-	ids := []string{
+	return IsLinuxSeries([]string{
 		"debian",
 		"antix",
 		"lmde",
 		"ubuntu", "linuxmint", "pop",
-	}
-	distID := GetLinuxDistID()
-	for _, id := range ids {
-		if distID == id {
-			return true
-		}
-	}
-	return false
+	})
 }
 
 // IsUbuntuSeries checks if the current Linux distribution belongs to the Ubuntu series.
 //
 // @return true if the current OS is part of the Ubuntu series, false otherwise.
 func IsUbuntuSeries() bool {
-	ids := []string{
+	return IsLinuxSeries([]string{
 		"ubuntu", "linuxmint", "pop",
-	}
-	distID := GetLinuxDistID()
-	for _, id := range ids {
-		if distID == id {
-			return true
-		}
-	}
-	return false
+	})
 }
 
 // IsFedoraSeries checks if the current Linux distribution belongs to the Fedora series.
 //
 // @return true if the current OS is part of the Fedora series, false otherwise.
 func IsFedoraSeries() bool {
-	ids := []string{
+	return IsLinuxSeries([]string{
 		"fedora", "centos", "rhel",
+	})
+}
+
+// IsAurora checks if the current Linux distribution is Aurora (a Universal Blue distribution).
+//
+// @return true if the current OS is Aurora, false otherwise.
+func IsAurora() bool {
+	return GetLinuxDistID() == "aurora"
+}
+
+func IsUniversalBlue() bool {
+	return IsLinuxSeries([]string{
+		"aurora", "bazzite", "bluefin",
+	})
+}
+
+func IsAtomicLinux() bool {
+	if LookPath("rpm-ostree") != "" {
+		return true
 	}
-	distID := GetLinuxDistID()
-	for _, id := range ids {
-		if distID == id {
-			return true
-		}
-	}
+	// TODO: add more
 	return false
 }
 

@@ -1,8 +1,6 @@
 package utils
 
 import (
-	"os/exec"
-
 	"github.com/spf13/cobra"
 )
 
@@ -25,8 +23,7 @@ func BuildPipUninstall(cmd *cobra.Command) string {
 // @return A string representing the pip install command.
 func BuildPipInstall(cmd *cobra.Command) string {
 	python := GetStringFlag(cmd, "python")
-	_, err := exec.LookPath(python)
-	if err != nil {
+	if LookPath(python) == "" {
 		return ""
 	}
 	user := ""
