@@ -9,7 +9,7 @@ import (
 func dropbox(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "install") {
 		command := utils.Format("flatpak install {yesStr} flathub com.dropbox.Client", map[string]string{
-				"yesStr": utils.BuildYesFlag(cmd),
+			"yesStr": utils.BuildYesFlag(cmd),
 		})
 		utils.RunCmd(command)
 	}
