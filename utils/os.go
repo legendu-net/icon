@@ -106,6 +106,14 @@ func IsUniversalBlue() bool {
 	})
 }
 
+func IsAtomicLinux() bool {
+	if LookPath("rpm-ostree") != "" {
+		return true
+	}
+	// TODO: add more
+	return false
+}
+
 // BuildKernelOSKeywords constructs a list of keywords based on kernel architecture and operating system.
 //
 // @param keywords A map where keys are keyword categories and values are lists of keywords.
