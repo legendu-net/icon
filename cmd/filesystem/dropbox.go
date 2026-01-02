@@ -8,7 +8,10 @@ import (
 // Install and configure Dropbox.
 func dropbox(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "install") {
-		utils.RunCmd("flatpak install flathub com.dropbox.Client")
+		command := utils.Format("flatpak install {yesStr} flathub com.dropbox.Client", map[string]string{
+				"yesStr": utils.BuildYesFlag(cmd),
+		})
+		utils.RunCmd(command)
 	}
 	if utils.GetBoolFlag(cmd, "config") {
 		if utils.IsAtomicLinux() {
@@ -23,7 +26,10 @@ HOME=/var/home/dclong
 		}
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
-		utils.RunCmd("flatpak uninstall com.dropbox.Client")
+		command := utils.Format("flatpak uninstall {yesStr} com.dropbox.Client", map[string]string{
+			"yesStr": utils.BuildYesFlag(cmd),
+		})
+		utils.RunCmd(command)
 	}
 }
 
