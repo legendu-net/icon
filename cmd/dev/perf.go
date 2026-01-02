@@ -19,7 +19,6 @@ func perf(cmd *cobra.Command, _ []string) {
 					"yesStr": utils.BuildYesFlag(cmd),
 				})
 				utils.RunCmd(command)
-				// TODO: leverage from_github to download git-delta and install it to /usr/local/bin!!!
 			} else if utils.IsUbuntuSeries() {
 				command := utils.Format(`{prefix} apt-get {yesStr} update \
 						&& {prefix} apt-get {yesStr} install \

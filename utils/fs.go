@@ -5,6 +5,7 @@ import (
 	"io/fs"
 	"log"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 )
@@ -257,4 +258,12 @@ func WriteFile(fileName string, data []byte, perm fs.FileMode) {
 // @param perm The file mode (permissions) to set for the file.
 func WriteTextFile(path, text string, perm fs.FileMode) {
 	WriteFile(path, []byte(text), perm)
+}
+
+func LookPath(cmd string) string {
+	path, err := exec.LookPath(cmd)
+	if err != nil {
+		return ""
+	}
+	return path
 }

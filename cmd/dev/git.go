@@ -94,7 +94,9 @@ func git(cmd *cobra.Command, args []string) {
 	git := utils.GetStringFlag(cmd, "git")
 	if utils.GetBoolFlag(cmd, "install") {
 		if utils.IsLinux() {
-			if utils.IsDebianUbuntuSeries() {
+			if utils.IsUniversalBlue() {
+				utils.BrewInstallSafe([]string{"git-delta", "gitui"})
+			} else if utils.IsDebianUbuntuSeries() {
 				command := utils.Format(`{prefix} apt-get {yesStr} update \
 						&& {prefix} apt-get {yesStr} install git git-lfs`, map[string]string{
 					"prefix": utils.GetCommandPrefix(
@@ -104,6 +106,8 @@ func git(cmd *cobra.Command, args []string) {
 					"yesStr": utils.BuildYesFlag(cmd),
 				})
 				utils.RunCmd(command)
+				installGitDelta()
+				installGitUI(cmd)
 			} else if utils.IsFedoraSeries() {
 				command := utils.Format("{prefix} dnf {yesStr} install git", map[string]string{
 					"prefix": utils.GetCommandPrefix(
@@ -113,11 +117,11 @@ func git(cmd *cobra.Command, args []string) {
 					"yesStr": utils.BuildYesFlag(cmd),
 				})
 				utils.RunCmd(command)
+				installGitDelta()
+				installGitUI(cmd)
 			}
-			installGitDelta()
-			installGitUI(cmd)
 		} else {
-			utils.BrewInstallSafe([]string{"git", "git-lfs"})
+			utils.BrewInstallSafe([]string{"git", "git-lfs", "git-delta", "gitui"})
 		}
 		command := utils.Format("{git} lfs install", map[string]string{
 			"git": git,
