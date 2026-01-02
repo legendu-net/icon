@@ -96,6 +96,9 @@ func git(cmd *cobra.Command, args []string) {
 		if utils.IsLinux() {
 			if utils.IsUniversalBlue() {
 				utils.BrewInstallSafe([]string{"git-delta", "gitui"})
+				if utils.LookPath("git") == "" || utils.LookPath("git-lfs") == "" {
+					log.Print("Please switch to developer mode using `ujust devmode` for git/git-lfs.")
+				}
 			} else if utils.IsDebianUbuntuSeries() {
 				command := utils.Format(`{prefix} apt-get {yesStr} update \
 						&& {prefix} apt-get {yesStr} install git git-lfs`, map[string]string{
