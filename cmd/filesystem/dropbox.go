@@ -19,8 +19,7 @@ filesystems=/var/home/dclong
 
 [Environment]
 HOME=/var/home/dclong
-`, 0o644)
-
+`, 0o644) //nolint:mnd // readable
 		}
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
