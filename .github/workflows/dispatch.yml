@@ -1,0 +1,20 @@
+name: Dispatch to legendu-net/docker-base
+on:
+  release:
+    types: [published]
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Repository Dispatch
+        uses: peter-evans/repository-dispatch@v4
+        with:
+          token: ${{ secrets.DOCKER_BASE_DISPATCH }}
+          repository: legendu-net/docker-base
+          event-type: new-release-published
+          client-payload: |
+            {
+              "tag_name": "${{ github.event.release.tag_name }}",
+              "body": "${{ github.event.release.body }}"
+            }
