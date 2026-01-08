@@ -50,7 +50,7 @@ function install_icon() {
         echo "Failed to download $url_download to $output!"
         return 3
     fi
-    echo "Installing icon ..."
+    echo "Installing icon into $install_dir ..."
     tar -zxf $output -C "$install_dir"
     if [ $? -ne 0 ]; then
         echo "Failed to extract $output into $install_dir!"
