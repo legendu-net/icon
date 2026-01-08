@@ -1,6 +1,8 @@
 package icon
 
 import (
+	"path/filepath"
+
 	"github.com/spf13/cobra"
 	"golang.org/x/sys/unix"
 	"legendu.net/icon/utils"
@@ -10,7 +12,7 @@ import (
 func update(cmd *cobra.Command, _ []string) {
 	dir := utils.GetStringFlag(cmd, "install-dir")
 	if dir == "" {
-		dir = utils.LookPath("icon")
+		dir = filepath.Dir(utils.LookPath("icon"))
 	}
 	command := utils.Format(`curl -sSL https://raw.githubusercontent.com/legendu-net/icon/main/install_icon.sh \
 			| {prefix} bash -s -- -d {dir}`, map[string]string{
