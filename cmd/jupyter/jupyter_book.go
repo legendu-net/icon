@@ -14,7 +14,6 @@ func jupyterBook(cmd *cobra.Command, _ []string) {
 		utils.RunCmd(command)
 	}
 	if utils.GetBoolFlag(cmd, "config") {
-		// icon.FetchConfigData(false, "")
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
 		command := utils.Format("{pip_uninstall} jupyter_book", map[string]string{
