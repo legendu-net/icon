@@ -1,7 +1,6 @@
 package virtualization
 
 import (
-	"fmt"
 	"log"
 	"path/filepath"
 	"strconv"
@@ -11,38 +10,44 @@ import (
 	"legendu.net/icon/utils"
 )
 
-func getDockerImagePort(imageName string) int {
+func getDockerImagePorts(imageName string) []string {
 	if strings.HasPrefix(imageName, "dclong/") {
 		imageName = imageName[7:]
-		ports := map[string]int{
-			"jupyterlab":  8888,
-			"jupyterhub":  8000,
-			"gitpod":      8000,
-			"vscode":      8080,
-			"tensorboard": 6006,
+		kvs := map[string][]string{
+			"jupyterlab": {
+				"8888:8888",
+			},
+			"jupyterhub": {
+				"8000:8000",
+			},
+			"gitpod": {
+				"8000:8000",
+			},
+			"vscode": {
+				"8080:8080",
+				"3000:3000",
+			},
+			"tensorboard": {
+				"6006:6006",
+			},
 		}
-		for prefix, port := range ports {
+		for prefix, ports := range kvs {
 			if strings.HasPrefix(imageName, prefix) {
-				return port
+				return ports
 			}
 		}
 	}
-	return 0
+	return []string{}
 }
 
 func appendDockerImagePort(command *[]string, cmd *cobra.Command, imageName string) {
-	port := getDockerImagePort(imageName)
-	if port > 0 {
-		portHost := utils.GetIntFlag(cmd, "port")
-		if portHost == 0 {
-			portHost = port
-		}
-		*command = append(*command, fmt.Sprintf("--publish=%d:%d", portHost, port))
+	ports := utils.GetStringSliceFlag(cmd, "ports")
+	if len(ports) == 0 {
+		ports = getDockerImagePorts(imageName)
 	}
-	extraPortMappings := utils.GetStringSliceFlag(cmd, "extra-port-mappings")
-	if len(extraPortMappings) > 0 {
-		for _, m := range extraPortMappings {
-			*command = append(*command, "--publish="+m)
+	if len(ports) > 0 {
+		for _, port := range ports {
+			*command = append(*command, "--publish="+port)
 		}
 	}
 }
@@ -158,10 +163,9 @@ var ldcCmd = &cobra.Command{
 
 func ConfigLdcCmd(rootCmd *cobra.Command) {
 	ldcCmd.Flags().BoolP("detach", "d", false, "Run container in background and print container ID.")
-	ldcCmd.Flags().IntP("port", "p", 0, "The port on the Docker host to forward to the port inside the Docker container.")
 	ldcCmd.Flags().StringP("user", "u", "", "The user to create in the Docker container.")
 	ldcCmd.Flags().StringP("password", "P", "", "The default password for the user (to create in the Docker container).")
-	ldcCmd.Flags().StringSlice("extra-port-mappings", []string{}, "Extra port mappings.")
+	ldcCmd.Flags().StringSlice("ports", []string{}, "Port mappings.")
 	ldcCmd.Flags().BoolP("mount-home", "m", false, "Mount /home on the host as /home_host in the Docker container.")
 	ldcCmd.Flags().Bool("docker-in-docker", false, "Mount docker.sock to allow running Docker in Docker containers.")
 	ldcCmd.Flags().Bool("dry-run", false, "Print out the docker command without running it.")
