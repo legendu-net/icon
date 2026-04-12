@@ -1,10 +1,7 @@
 package jupyter
 
 import (
-	"log"
-
 	"github.com/spf13/cobra"
-	"legendu.net/icon/cmd/icon"
 	"legendu.net/icon/utils"
 )
 
@@ -17,10 +14,6 @@ func jupyterBook(cmd *cobra.Command, _ []string) {
 		utils.RunCmd(command)
 	}
 	if utils.GetBoolFlag(cmd, "config") {
-		icon.FetchConfigData(false, "")
-		srcFile := "~/.config/icon-data/jupyter-book/_config.yml"
-		utils.CopyFileToDir(srcFile, ".")
-		log.Printf("%s is copied to the current directory.", srcFile)
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
 		command := utils.Format("{pip_uninstall} jupyter_book", map[string]string{
