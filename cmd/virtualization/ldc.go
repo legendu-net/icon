@@ -25,7 +25,6 @@ func getDockerImagePorts(imageName string) []string {
 			},
 			"vscode": {
 				"8080:8080",
-				"3000:3000",
 			},
 			"tensorboard": {
 				"6006:6006",
@@ -109,6 +108,8 @@ func ldc(cmd *cobra.Command, args []string) {
 		"linux/amd64",
 		"--log-opt",
 		"max-size=50m",
+		"--dns",
+		"8.8.8.8",
 		"-e",
 		"DOCKER_USER='" + userName + "'",
 		"-e",
