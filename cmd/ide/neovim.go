@@ -24,18 +24,6 @@ func Neovim(install, config, uninstall bool, yesStr string, backup, copyPath boo
 			if utils.IsUniversalBlue() {
 				utils.BrewInstallSafe([]string{"neovim"})
 			} else if utils.IsDebianUbuntuSeries() {
-				if utils.IsUbuntuSeries() {
-					command := utils.Format(`{prefix} apt-get {yesStr} update \
-						&& {prefix} apt-get {yesStr} install gnupg \
-						&& {prefix} add-apt-repository {yesStr} ppa:neovim-ppa/unstable`, map[string]string{
-						"prefix": utils.GetCommandPrefix(
-							true,
-							map[string]uint32{},
-						),
-						"yesStr": yesStr,
-					})
-					utils.RunCmd(command)
-				}
 				command := utils.Format(`{prefix} apt-get {yesStr} update \
 						&& {prefix} apt-get {yesStr} install neovim`, map[string]string{
 					"prefix": utils.GetCommandPrefix(
