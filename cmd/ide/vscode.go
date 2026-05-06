@@ -89,7 +89,14 @@ func ConfigVscodeCmd(rootCmd *cobra.Command) {
 	vscodeCmd.Flags().BoolP("config", "c", false, "Configure Visual Studio Code.")
 	vscodeCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
 	vscodeCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
-	vscodeCmd.Flags().StringP("user-dir", "d", "", "The configuration directory for Visual Studio Code. Standard user-level directories are used by default. Use `-d .vscode` to configure for the current project only.")
+	vscodeCmd.Flags().StringP(
+		"user-dir",
+		"d",
+		"",
+		"The configuration directory for Visual Studio Code. "+
+			"Standard user-level directories are used by default. "+
+			"Use `-d .vscode` to configure for the current project only.",
+	)
 	vscodeCmd.Flags().BoolP("yes", "y", false, "Automatically yes to prompt questions.")
 	rootCmd.AddCommand(vscodeCmd)
 }

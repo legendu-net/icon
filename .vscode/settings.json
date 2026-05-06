@@ -1,8 +1,0 @@
-{
-    "terminal.integrated.defaultProfile.linux": "fish",
-    "terminal.integrated.commandsToSkipShell": [
-        "-workbench.action.quickOpen"
-    ],
-    "IDX.aI.enableInlineCompletion": true,
-    "IDX.aI.enableCodebaseIndexing": true
-}
