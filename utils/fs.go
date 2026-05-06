@@ -77,7 +77,7 @@ func CopyDir(sourceDir, destinationDir string) {
 			CopyDir(srcDir, dstDir)
 		} else {
 			sourceFile := filepath.Join(sourceDir, entry.Name())
-			if !IsSocket(sourceFile) {
+			if entry.Type()&fs.ModeSocket == 0 {
 				CopyFile(sourceFile, filepath.Join(destinationDir, entry.Name()))
 			}
 		}
