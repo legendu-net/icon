@@ -52,9 +52,9 @@ func CopyFileToDir(sourceFile, destinationDir string) {
 //
 //	if IsSocket("/var/run/docker.sock") { ... }
 func IsSocket(path string) bool {
-	fileInfo, err := os.Stat(path)
+	fileInfo, err := os.Lstat(path)
 	if err != nil {
-		log.Fatal("ERROR - ", err)
+		return false
 	}
 	return fileInfo.Mode().Type() == fs.ModeSocket
 }
