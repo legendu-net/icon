@@ -42,23 +42,6 @@ func CopyFileToDir(sourceFile, destinationDir string) {
 	CopyFile(sourceFile, filepath.Join(destinationDir, filepath.Base(sourceFile)))
 }
 
-// Check if a file is a socket.
-//
-// @param path The path to the file to check.
-//
-// @return true if the file is a socket, false otherwise.
-//
-// @example
-//
-//	if IsSocket("/var/run/docker.sock") { ... }
-func IsSocket(path string) bool {
-	fileInfo, err := os.Lstat(path)
-	if err != nil {
-		return false
-	}
-	return fileInfo.Mode().Type() == fs.ModeSocket
-}
-
 // CopyDir recursively copies a source directory to a destination directory.
 //
 // The destination directory is created with the same permission as the source directory
