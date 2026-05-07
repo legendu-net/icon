@@ -60,7 +60,7 @@ func CopyDir(sourceDir, destinationDir string) {
 			CopyDir(srcDir, dstDir)
 		} else {
 			sourceFile := filepath.Join(sourceDir, entry.Name())
-			if entry.Type()&fs.ModeSocket == 0 {
+			if entry.Type().IsRegular() {
 				CopyFile(sourceFile, filepath.Join(destinationDir, entry.Name()))
 			}
 		}
