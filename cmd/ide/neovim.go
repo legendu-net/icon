@@ -8,22 +8,23 @@ import (
 	"legendu.net/icon/utils"
 )
 
-// Install and configure neovim.
+// Install and configure Neovim.
 func neovim(cmd *cobra.Command, _ []string) {
 	Neovim(
 		utils.GetBoolFlag(cmd, "install"),
 		utils.GetBoolFlag(cmd, "config"),
 		utils.GetBoolFlag(cmd, "uninstall"),
+		utils.GetBoolFlag(cmd, "brew"),
 		utils.BuildYesFlag(cmd),
 		!utils.GetBoolFlag(cmd, "no-backup"), utils.GetBoolFlag(cmd, "copy"))
 }
 
-func Neovim(install, config, uninstall bool, yesStr string, backup, copyPath bool) {
+func Neovim(install, config, uninstall, brew bool, yesStr string, backup, copyPath bool) {
 	if install {
-		if utils.IsLinux() {
-			if utils.IsUniversalBlue() {
-				utils.BrewInstallSafe([]string{"neovim"})
-			} else if utils.IsDebianUbuntuSeries() {
+		if runtime.GOOS == "darwin" || brew || utils.IsUniversalBlue() {
+			utils.BrewInstallSafe([]string{"neovim"})
+		} else {
+			if utils.IsDebianUbuntuSeries() {
 				command := utils.Format(`{prefix} apt-get {yesStr} update \
 						&& {prefix} apt-get {yesStr} install neovim`, map[string]string{
 					"prefix": utils.GetCommandPrefix(
@@ -43,8 +44,6 @@ func Neovim(install, config, uninstall bool, yesStr string, backup, copyPath boo
 				})
 				utils.RunCmd(command)
 			}
-		} else {
-			utils.BrewInstallSafe([]string{"neovim"})
 		}
 	}
 	if config {
@@ -53,10 +52,9 @@ func Neovim(install, config, uninstall bool, yesStr string, backup, copyPath boo
 		utils.Symlink("~/.config/icon-data/nvim", dir, backup, copyPath)
 	}
 	if uninstall {
-		switch runtime.GOOS {
-		case "darwin":
+		if brew || runtime.GOOS == "darwin" || utils.IsUniversalBlue() {
 			utils.RunCmd("brew uninstall neovim")
-		case "linux":
+		} else if utils.IsLinux() {
 			if utils.IsDebianUbuntuSeries() {
 				command := utils.Format("{prefix} apt-get {yesStr} purge neovim", map[string]string{
 					"prefix": utils.GetCommandPrefix(
@@ -83,15 +81,16 @@ func Neovim(install, config, uninstall bool, yesStr string, backup, copyPath boo
 var neovimCmd = &cobra.Command{
 	Use:     "neovim",
 	Aliases: []string{"nvim"},
-	Short:   "Install and configure neovim.",
+	Short:   "Install and configure Neovim.",
 	//Args:  cobra.ExactArgs(1),
 	Run: neovim,
 }
 
 func ConfigNeovimCmd(rootCmd *cobra.Command) {
-	neovimCmd.Flags().BoolP("install", "i", false, "Install neovim.")
-	neovimCmd.Flags().Bool("uninstall", false, "Uninstall neovim.")
-	neovimCmd.Flags().BoolP("config", "c", false, "Configure neovim.")
+	neovimCmd.Flags().BoolP("install", "i", false, "Install Neovim.")
+	neovimCmd.Flags().Bool("uninstall", false, "Uninstall Neovim.")
+	neovimCmd.Flags().BoolP("config", "c", false, "Configure Neovim.")
+	neovimCmd.Flags().Bool("brew", false, "Install Neovim using Homebrew.")
 	neovimCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
 	neovimCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
 	neovimCmd.Flags().BoolP("yes", "y", false, "Automatically yes to prompt questions.")
