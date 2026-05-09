@@ -23,27 +23,25 @@ func Neovim(install, config, uninstall, brew bool, yesStr string, backup, copyPa
 	if install {
 		if runtime.GOOS == "darwin" || brew || utils.IsUniversalBlue() {
 			utils.BrewInstallSafe([]string{"neovim"})
-		} else {
-			if utils.IsDebianUbuntuSeries() {
-				command := utils.Format(`{prefix} apt-get {yesStr} update \
-						&& {prefix} apt-get {yesStr} install neovim`, map[string]string{
-					"prefix": utils.GetCommandPrefix(
-						true,
-						map[string]uint32{},
-					),
-					"yesStr": yesStr,
-				})
-				utils.RunCmd(command)
-			} else if utils.IsFedoraSeries() {
-				command := utils.Format("{prefix} dnf {yesStr} install neovim", map[string]string{
-					"prefix": utils.GetCommandPrefix(
-						true,
-						map[string]uint32{},
-					),
-					"yesStr": yesStr,
-				})
-				utils.RunCmd(command)
-			}
+		} else if utils.IsDebianUbuntuSeries() {
+			command := utils.Format(`{prefix} apt-get {yesStr} update \
+					&& {prefix} apt-get {yesStr} install neovim`, map[string]string{
+				"prefix": utils.GetCommandPrefix(
+					true,
+					map[string]uint32{},
+				),
+				"yesStr": yesStr,
+			})
+			utils.RunCmd(command)
+		} else if utils.IsFedoraSeries() {
+			command := utils.Format("{prefix} dnf {yesStr} install neovim", map[string]string{
+				"prefix": utils.GetCommandPrefix(
+					true,
+					map[string]uint32{},
+				),
+				"yesStr": yesStr,
+			})
+			utils.RunCmd(command)
 		}
 	}
 	if config {
@@ -52,28 +50,26 @@ func Neovim(install, config, uninstall, brew bool, yesStr string, backup, copyPa
 		utils.Symlink("~/.config/icon-data/nvim", dir, backup, copyPath)
 	}
 	if uninstall {
-		if brew || runtime.GOOS == "darwin" || utils.IsUniversalBlue() {
+		if runtime.GOOS == "darwin" || brew || utils.IsUniversalBlue() {
 			utils.RunCmd("brew uninstall neovim")
-		} else if utils.IsLinux() {
-			if utils.IsDebianUbuntuSeries() {
-				command := utils.Format("{prefix} apt-get {yesStr} purge neovim", map[string]string{
-					"prefix": utils.GetCommandPrefix(
-						true,
-						map[string]uint32{},
-					),
-					"yesStr": yesStr,
-				})
-				utils.RunCmd(command)
-			} else if utils.IsFedoraSeries() {
-				command := utils.Format("{prefix} dnf {yesStr} remove neovim", map[string]string{
-					"prefix": utils.GetCommandPrefix(
-						true,
-						map[string]uint32{},
-					),
-					"yesStr": yesStr,
-				})
-				utils.RunCmd(command)
-			}
+		} else if utils.IsDebianUbuntuSeries() {
+			command := utils.Format("{prefix} apt-get {yesStr} purge neovim", map[string]string{
+				"prefix": utils.GetCommandPrefix(
+					true,
+					map[string]uint32{},
+				),
+				"yesStr": yesStr,
+			})
+			utils.RunCmd(command)
+		} else if utils.IsFedoraSeries() {
+			command := utils.Format("{prefix} dnf {yesStr} remove neovim", map[string]string{
+				"prefix": utils.GetCommandPrefix(
+					true,
+					map[string]uint32{},
+				),
+				"yesStr": yesStr,
+			})
+			utils.RunCmd(command)
 		}
 	}
 }

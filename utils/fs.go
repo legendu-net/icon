@@ -42,22 +42,23 @@ func CopyFileToDir(sourceFile, destinationDir string) {
 	CopyFile(sourceFile, filepath.Join(destinationDir, filepath.Base(sourceFile)))
 }
 
-// CopyDir recursively copies a source directory to a destination directory.
+// CopyDirRegular recursively copies a source directory to a destination directory.
+// Only regular files are copied.
 //
 // The destination directory is created with the same permission as the source directory
-// if it does not already exist. This function behaves similar to the Linux command `cp -r`.
+// if it does not already exist.
 //
 // @param sourceDir      The path to the source directory.
 // @param destinationDir The path to the destination directory where the source directory
 //
 //	and its contents will be copied.
-func CopyDir(sourceDir, destinationDir string) {
+func CopyDirRegular(sourceDir, destinationDir string) {
 	MkdirAll(destinationDir, "")
 	for _, entry := range ReadDir(sourceDir) {
 		if entry.IsDir() {
 			srcDir := filepath.Join(sourceDir, entry.Name())
 			dstDir := filepath.Join(destinationDir, entry.Name())
-			CopyDir(srcDir, dstDir)
+			CopyDirRegular(srcDir, dstDir)
 		} else {
 			sourceFile := filepath.Join(sourceDir, entry.Name())
 			if entry.Type().IsRegular() {
