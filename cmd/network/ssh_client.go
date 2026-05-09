@@ -20,7 +20,7 @@ func copySshcSettingsFromHost() {
 	if utils.ExistsDir(sshSrc) {
 		// inside a Docker container, use .ssh from host
 		utils.RemoveAll(sshHome)
-		utils.CopyDir(sshSrc, sshHome)
+		utils.CopyDirRegular(sshSrc, sshHome)
 		adjustPathInConfig()
 	}
 }
@@ -41,10 +41,10 @@ func SSHClient(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "install") {
 	}
 	if utils.GetBoolFlag(cmd, "config") {
+		copySshcSettingsFromHost()
 		icon.FetchConfigData(false, "")
 		utils.SymlinkIntoDir("~/.config/icon-data/ssh/client/config", sshHome,
 			!utils.GetBoolFlag(cmd, "no-backup"), utils.GetBoolFlag(cmd, "copy"))
-		copySshcSettingsFromHost()
 		utils.MkdirAll("~/.local/share/ssh", "700")
 		utils.Chmod600(sshHome)
 		log.Print("The permissions of ~/.ssh and its contents are correctly set.\n")

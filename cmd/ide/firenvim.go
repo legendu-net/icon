@@ -11,7 +11,7 @@ import (
 // Install and configure Firenvim.
 func firenvim(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "install") {
-		Neovim(true, true, false, "-y",
+		Neovim(true, true, false, utils.GetBoolFlag(cmd, "brew"), "-y",
 			!utils.GetBoolFlag(cmd, "no-backup"), utils.GetBoolFlag(cmd, "copy"))
 		network.InstallChromeExtension("egpjdkipkomnmjhjmdamaniclmdlobbo", "Firenvim")
 		utils.RunCmd(`nvim --headless +"call firenvim#install(0)" +qall`)
@@ -39,6 +39,7 @@ func ConfigFirenvimCmd(rootCmd *cobra.Command) {
 	firenvimCmd.Flags().BoolP("install", "i", false, "Install Firenvim.")
 	firenvimCmd.Flags().Bool("uninstall", false, "Uninstall Firenvim.")
 	firenvimCmd.Flags().BoolP("config", "c", false, "Configure Firenvim.")
+	firenvimCmd.Flags().Bool("brew", false, "Install neovim using Homebrew.")
 	firenvimCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
 	firenvimCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
 	rootCmd.AddCommand(firenvimCmd)
