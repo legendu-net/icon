@@ -3,7 +3,6 @@ package network
 import (
 	"log"
 	"path/filepath"
-	"strings"
 
 	"github.com/spf13/cobra"
 	"legendu.net/icon/cmd/icon"
@@ -18,21 +17,8 @@ func copySshcSettingsFromHost() {
 	//nolint:gocritic // filepathJoin: "/" is intentional to start an absolute path
 	sshSrc := filepath.Join("/", "home_host", utils.GetCurrentUser().Name, ".ssh")
 	if utils.ExistsDir(sshSrc) {
-		// inside a Docker container, use .ssh from host
-		utils.RemoveAll(sshHome)
+		// inside a Docker container, copy .ssh from host
 		utils.CopyDirRegular(sshSrc, sshHome)
-		adjustPathInConfig()
-	}
-}
-
-func adjustPathInConfig() {
-	path := filepath.Join(sshHome, "config")
-	text := utils.ReadFileAsString(path)
-	pattern := "IdentityFile=/Users/"
-	if strings.Contains(text, pattern) {
-		text = strings.ReplaceAll(text, pattern, "IdentityFile=/home/")
-		//nolint:mnd // readable
-		utils.WriteTextFile(path, text, 0o600)
 	}
 }
 
@@ -41,10 +27,10 @@ func SSHClient(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "install") {
 	}
 	if utils.GetBoolFlag(cmd, "config") {
-		copySshcSettingsFromHost()
 		icon.FetchConfigData(false, "")
 		utils.SymlinkIntoDir("~/.config/icon-data/ssh/client/config", sshHome,
-			!utils.GetBoolFlag(cmd, "no-backup"), utils.GetBoolFlag(cmd, "copy"))
+			!utils.GetBoolFlag(cmd, "no-backup"), true)
+		copySshcSettingsFromHost()
 		utils.MkdirAll("~/.local/share/ssh", "700")
 		utils.Chmod600(sshHome)
 		log.Print("The permissions of ~/.ssh and its contents are correctly set.\n")
@@ -66,6 +52,5 @@ func ConfigSSHClientCmd(rootCmd *cobra.Command) {
 	sshClientCmd.Flags().Bool("uninstall", false, "Uninstall Git.")
 	sshClientCmd.Flags().BoolP("config", "c", false, "Configure Git.")
 	sshClientCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
-	sshClientCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
 	rootCmd.AddCommand(sshClientCmd)
 }
