@@ -96,6 +96,7 @@ func MkdirAll(path, perm string) {
 // BackupOrRemove backs up the path if backup is true, otherwise removes it.
 // Call this before copying or symlinking to prepare the destination.
 func BackupOrRemove(path string, backup bool) {
+	path = NormalizePath(path)
 	if backup {
 		Backup(path, "")
 	} else {
@@ -130,6 +131,8 @@ func SymlinkIntoDir(path, dstDir string) {
 // CopyOrSymlink copies src to dst (using CopyFile or CopyDirRegular) when doCopy
 // is true, otherwise creates a symlink at dst pointing to src.
 func CopyOrSymlink(src, dst string, doCopy bool) {
+	src = NormalizePath(src)
+	dst = NormalizePath(dst)
 	if doCopy {
 		if ExistsDir(src) {
 			CopyDirRegular(src, dst)
