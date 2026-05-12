@@ -18,6 +18,7 @@ import (
 // @param file The path to the file.
 // @return The file mode (fs.FileMode).
 func getFileMode(file string) fs.FileMode {
+	file = NormalizePath(file)
 	fileInfo, err := os.Stat(file)
 	if err != nil {
 		log.Fatal("ERROR - ", err)
@@ -137,6 +138,7 @@ func ReplacePattern(path, pattern, repl string) {
 //
 // @return true if the file or directory exists, false otherwise.
 func ExistsPath(path string) bool {
+	path = NormalizePath(path)
 	_, err := os.Stat(path)
 	return !os.IsNotExist(err)
 }
