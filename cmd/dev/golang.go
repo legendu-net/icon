@@ -92,7 +92,8 @@ func golang(cmd *cobra.Command, _ []string) {
 			entries := utils.ReadDir(goBin)
 			for _, entry := range entries {
 				file := filepath.Join(goBin, entry.Name())
-				utils.SymlinkIntoDir(file, usrLocalBin, false, false)
+				utils.RemoveAll(filepath.Join(usrLocalBin, filepath.Base(file)))
+				utils.SymlinkIntoDir(file, usrLocalBin)
 			}
 		} else {
 		}

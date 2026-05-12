@@ -29,14 +29,14 @@ func dir(path string) string {
 	return filepath.Dir(NormalizePath(path))
 }
 
-// CopyFileToDir copies a file from a source path to a destination directory.
+// CopyFileIntoDir copies a file from a source path to a destination directory.
 //
 // It constructs the destination file path by joining the destination directory
 // with the base name of the source file. Then it calls the copyFile function to perform the actual copy.
 //
 // @param sourceFile      The path to the source file.
 // @param destinationDir The path to the destination directory where the source file will be copied.
-func CopyFileToDir(sourceFile, destinationDir string) {
+func CopyFileIntoDir(sourceFile, destinationDir string) {
 	sourceFile = NormalizePath(sourceFile)
 	destinationDir = NormalizePath(destinationDir)
 	CopyFile(sourceFile, filepath.Join(destinationDir, filepath.Base(sourceFile)))

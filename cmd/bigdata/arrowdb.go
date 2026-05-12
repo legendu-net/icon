@@ -13,7 +13,12 @@ func linkArrowDBProfileFromHost(backup, copyPath bool) {
 	dstProfile := filepath.Join(utils.UserHomeDir(), ".arrowdb_profile")
 	if utils.ExistsFile(srcProfile) {
 		// inside a Docker container, link profile from host
-		utils.Symlink(srcProfile, dstProfile, backup, copyPath)
+		utils.BackupOrRemove(dstProfile, backup)
+		if copyPath {
+			utils.CopyFile(srcProfile, dstProfile)
+		} else {
+			utils.Symlink(srcProfile, dstProfile)
+		}
 	}
 }
 

@@ -28,8 +28,9 @@ func SSHClient(cmd *cobra.Command, _ []string) {
 	}
 	if utils.GetBoolFlag(cmd, "config") {
 		icon.FetchConfigData(false, "")
-		utils.SymlinkIntoDir("~/.config/icon-data/ssh/client/config", sshHome,
-			!utils.GetBoolFlag(cmd, "no-backup"), true)
+		dst := filepath.Join(utils.NormalizePath(sshHome), "config")
+		utils.BackupOrRemove(dst, !utils.GetBoolFlag(cmd, "no-backup"))
+		utils.CopyFile("~/.config/icon-data/ssh/client/config", dst)
 		copySshcSettingsFromHost()
 		utils.MkdirAll("~/.local/share/ssh", "700")
 		utils.Chmod600(sshHome)

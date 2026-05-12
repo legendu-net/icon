@@ -46,8 +46,14 @@ func Neovim(install, config, uninstall, brew bool, yesStr string, backup, copyPa
 	}
 	if config {
 		icon.FetchConfigData(false, "")
-		dir := "~/.config/nvim"
-		utils.Symlink("~/.config/icon-data/nvim", dir, backup, copyPath)
+		src := "~/.config/icon-data/nvim"
+		dst := "~/.config/nvim"
+		utils.BackupOrRemove(dst, backup)
+		if copyPath {
+			utils.CopyDirRegular(src, dst)
+		} else {
+			utils.Symlink(src, dst)
+		}
 	}
 	if uninstall {
 		if runtime.GOOS == "darwin" || brew || utils.IsUniversalBlue() {

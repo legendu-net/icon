@@ -20,7 +20,9 @@ func linkRust(cmd *cobra.Command, cargoHome string) {
 	}
 	cargoBin := filepath.Join(cargoHome, "bin")
 	for _, entry := range utils.ReadDir(cargoBin) {
-		utils.SymlinkIntoDir(filepath.Join(cargoBin, entry.Name()), linkToDir, false, false)
+		src := filepath.Join(cargoBin, entry.Name())
+		utils.RemoveAll(filepath.Join(linkToDir, filepath.Base(src)))
+		utils.SymlinkIntoDir(src, linkToDir)
 	}
 }
 

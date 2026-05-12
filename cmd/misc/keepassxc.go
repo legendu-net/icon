@@ -1,6 +1,8 @@
 package misc
 
 import (
+	"path/filepath"
+
 	"github.com/spf13/cobra"
 	"legendu.net/icon/utils"
 )
@@ -30,7 +32,9 @@ func keepassxc(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "config") {
 		if utils.IsLinux() {
 		} else {
-			utils.SymlinkIntoDir("/Applications/KeePassXC.app/Contents/MacOS/keepassxc-cli", "~/.local/bin", false, false)
+			src := "/Applications/KeePassXC.app/Contents/MacOS/keepassxc-cli"
+			utils.RemoveAll("~/.local/bin/" + filepath.Base(src))
+			utils.SymlinkIntoDir(src, "~/.local/bin")
 		}
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {

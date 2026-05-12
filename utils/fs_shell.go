@@ -93,43 +93,38 @@ func MkdirAll(path, perm string) {
 	RunCmd(cmd)
 }
 
+// BackupOrRemove backs up the path if backup is true, otherwise removes it.
+// Call this before copying or symlinking to prepare the destination.
+func BackupOrRemove(path string, backup bool) {
+	if backup {
+		Backup(path, "")
+	} else {
+		RemoveAll(path)
+	}
+}
+
 // Symlink is a wrapper of os.Symlink with error handling.
 //
 // @param path The path to the source file/directory.
 // @param dstLink The path where the symbolic link will be created.
-func Symlink(path, dstLink string, backup, copyPath bool) {
+func Symlink(path, dstLink string) {
 	path = NormalizePath(path)
 	dstLink = NormalizePath(dstLink)
-	if backup {
-		Backup(dstLink, "")
-	} else {
-		RemoveAll(dstLink)
-	}
-
 	MkdirAll(filepath.Dir(dstLink), "")
 	prefix := GetCommandPrefix(false, map[string]uint32{
 		path:    unix.R_OK,
 		dstLink: unix.W_OK | unix.R_OK,
 	})
-	if copyPath {
-		cmd := Format("{prefix} cp -ir {path} {dstLink}", map[string]string{
-			"prefix":  prefix,
-			"path":    path,
-			"dstLink": dstLink,
-		})
-		RunCmd(cmd)
-	} else {
-		cmd := Format("{prefix} ln -sv {path} {dstLink}", map[string]string{
-			"prefix":  prefix,
-			"path":    path,
-			"dstLink": dstLink,
-		})
-		RunCmd(cmd)
-	}
+	cmd := Format("{prefix} ln -sv {path} {dstLink}", map[string]string{
+		"prefix":  prefix,
+		"path":    path,
+		"dstLink": dstLink,
+	})
+	RunCmd(cmd)
 }
 
-func SymlinkIntoDir(path, dstDir string, backup, copyPath bool) {
-	Symlink(path, filepath.Join(dstDir, filepath.Base(path)), backup, copyPath)
+func SymlinkIntoDir(path, dstDir string) {
+	Symlink(path, filepath.Join(dstDir, filepath.Base(path)))
 }
 
 func Rename(originalPath, newPath string) {
