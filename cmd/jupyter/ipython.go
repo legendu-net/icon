@@ -29,19 +29,11 @@ func ipython(cmd *cobra.Command, _ []string) {
 		src1 := "~/.config/icon-data/ipython/startup.ipy"
 		dst1 := filepath.Join(profileDefault, "startup", "startup.ipy")
 		utils.BackupOrRemove(dst1, backup)
-		if doCopy {
-			utils.CopyFile(src1, dst1)
-		} else {
-			utils.Symlink(src1, dst1)
-		}
+		utils.CopyOrSymlink(src1, dst1, doCopy)
 		src2 := "~/.config/icon-data/ipython/ipython_config.py"
 		dst2 := filepath.Join(profileDefault, filepath.Base(src2))
 		utils.BackupOrRemove(dst2, backup)
-		if doCopy {
-			utils.CopyFile(src2, dst2)
-		} else {
-			utils.SymlinkIntoDir(src2, profileDefault)
-		}
+		utils.CopyOrSymlink(src2, dst2, doCopy)
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
 		command := utils.Format("{prefix} {pip_uninstall} ipython", map[string]string{

@@ -7,18 +7,14 @@ import (
 	"legendu.net/icon/utils"
 )
 
-func linkArrowDBProfileFromHost(backup, copyPath bool) {
+func linkArrowDBProfileFromHost(backup, doCopy bool) {
 	//nolint:gocritic // filepathJoin: "/" is intentional to start an absolute path
 	srcProfile := filepath.Join("/", "home_host", utils.GetCurrentUser().Name, ".arrowdb_profile")
 	dstProfile := filepath.Join(utils.UserHomeDir(), ".arrowdb_profile")
 	if utils.ExistsFile(srcProfile) {
 		// inside a Docker container, link profile from host
 		utils.BackupOrRemove(dstProfile, backup)
-		if copyPath {
-			utils.CopyFile(srcProfile, dstProfile)
-		} else {
-			utils.Symlink(srcProfile, dstProfile)
-		}
+		utils.CopyOrSymlink(srcProfile, dstProfile, doCopy)
 	}
 }
 

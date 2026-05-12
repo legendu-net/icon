@@ -127,6 +127,20 @@ func SymlinkIntoDir(path, dstDir string) {
 	Symlink(path, filepath.Join(dstDir, filepath.Base(path)))
 }
 
+// CopyOrSymlink copies src to dst (using CopyFile or CopyDirRegular) when doCopy
+// is true, otherwise creates a symlink at dst pointing to src.
+func CopyOrSymlink(src, dst string, doCopy bool) {
+	if doCopy {
+		if ExistsDir(src) {
+			CopyDirRegular(src, dst)
+		} else {
+			CopyFile(src, dst)
+		}
+	} else {
+		Symlink(src, dst)
+	}
+}
+
 func Rename(originalPath, newPath string) {
 	prefix := GetCommandPrefix(false, map[string]uint32{
 		originalPath: unix.W_OK | unix.R_OK,

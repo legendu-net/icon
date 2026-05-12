@@ -49,11 +49,7 @@ func vscode(cmd *cobra.Command, _ []string) {
 		src := "~/.config/icon-data/vscode/settings.json"
 		dst := filepath.Join(userDir, filepath.Base(src))
 		utils.BackupOrRemove(dst, !utils.GetBoolFlag(cmd, "no-backup"))
-		if utils.GetBoolFlag(cmd, "copy") {
-			utils.CopyFile(src, dst)
-		} else {
-			utils.SymlinkIntoDir(src, userDir)
-		}
+		utils.CopyOrSymlink(src, dst, utils.GetBoolFlag(cmd, "copy"))
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
 		if utils.IsLinux() {

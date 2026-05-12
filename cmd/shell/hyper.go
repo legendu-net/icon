@@ -61,11 +61,7 @@ func hyper(cmd *cobra.Command, _ []string) {
 		dst := "~/.hyper.js"
 		backup := !utils.GetBoolFlag(cmd, "no-backup")
 		utils.BackupOrRemove(dst, backup)
-		if utils.GetBoolFlag(cmd, "copy") {
-			utils.CopyFile(src, dst)
-		} else {
-			utils.Symlink(src, dst)
-		}
+		utils.CopyOrSymlink(src, dst, utils.GetBoolFlag(cmd, "copy"))
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
 		switch runtime.GOOS {

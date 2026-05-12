@@ -95,11 +95,7 @@ func fish(cmd *cobra.Command, _ []string) {
 		dir := "~/.config/fish"
 		backup := !utils.GetBoolFlag(cmd, "no-backup")
 		utils.BackupOrRemove(dir, backup)
-		if utils.GetBoolFlag(cmd, "copy") {
-			utils.CopyDirRegular("~/.config/icon-data/fish", dir)
-		} else {
-			utils.Symlink("~/.config/icon-data/fish", dir)
-		}
+		utils.CopyOrSymlink("~/.config/icon-data/fish", dir, utils.GetBoolFlag(cmd, "copy"))
 
 		generateCompletions()
 		generateCrazyCompletions()

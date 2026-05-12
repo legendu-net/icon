@@ -40,11 +40,7 @@ func zellij(cmd *cobra.Command, _ []string) {
 		dst := "~/.config/zellij/config.kdl"
 		backup := !utils.GetBoolFlag(cmd, "no-backup")
 		utils.BackupOrRemove(dst, backup)
-		if utils.GetBoolFlag(cmd, "copy") {
-			utils.CopyFile(src, dst)
-		} else {
-			utils.Symlink(src, dst)
-		}
+		utils.CopyOrSymlink(src, dst, utils.GetBoolFlag(cmd, "copy"))
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
 	}

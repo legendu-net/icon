@@ -29,11 +29,7 @@ func bashIt(cmd *cobra.Command, _ []string) {
 		dst := "~/.bash_it"
 		backup := !utils.GetBoolFlag(cmd, "no-backup")
 		utils.BackupOrRemove(dst, backup)
-		if utils.GetBoolFlag(cmd, "copy") {
-			utils.CopyDirRegular(src, dst)
-		} else {
-			utils.Symlink(src, dst)
-		}
+		utils.CopyOrSymlink(src, dst, utils.GetBoolFlag(cmd, "copy"))
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
 		utils.RunCmd("~/.bash_it/uninstall.sh && rm -rf ~/.bash_it/")

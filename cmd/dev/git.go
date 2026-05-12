@@ -35,16 +35,12 @@ func installGitUI(cmd *cobra.Command) {
 	}
 }
 
-func linkGitUIFiles(baseDir string, backup, copyPath bool) {
+func linkGitUIFiles(baseDir string, backup, doCopy bool) {
 	src := "~/.config/icon-data/git/gitui/key_bindings.ron"
 	dstDir := filepath.Join(baseDir, "gitui")
 	dst := filepath.Join(dstDir, filepath.Base(src))
 	utils.BackupOrRemove(dst, backup)
-	if copyPath {
-		utils.CopyFile(src, dst)
-	} else {
-		utils.SymlinkIntoDir(src, dstDir)
-	}
+	utils.CopyOrSymlink(src, dst, doCopy)
 }
 
 func configGitUI(cmd *cobra.Command) {
@@ -144,11 +140,7 @@ func git(cmd *cobra.Command, args []string) {
 		src := "~/.config/icon-data/git/gitconfig"
 		dst := "~/.gitconfig"
 		utils.BackupOrRemove(dst, !utils.GetBoolFlag(cmd, "no-backup"))
-		if utils.GetBoolFlag(cmd, "copy") {
-			utils.CopyFile(src, dst)
-		} else {
-			utils.Symlink(src, dst)
-		}
+		utils.CopyOrSymlink(src, dst, utils.GetBoolFlag(cmd, "copy"))
 		configGitProxy(cmd)
 		configGitUI(cmd)
 	}
