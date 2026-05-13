@@ -30,14 +30,14 @@ func adjustPathInConfig() {
 		return
 	}
 	text := utils.ReadFileAsString(path)
-	replacements := map[string]string{
-		"IdentityFile=":              "IdentityFile ",
-		"IdentityFile /Users/[^/]+/": "IdentityFile ~/",
-		"IdentityFile /home/[^/]+/":  "IdentityFile ~/",
+	replacements := [][2]string{
+		{"IdentityFile=", "IdentityFile "},
+		{"IdentityFile /Users/[^/]+/", "IdentityFile ~/"},
+		{"IdentityFile /home/[^/]+/", "IdentityFile ~/"},
 	}
 	original := text
-	for pattern, replacement := range replacements {
-		text = regexp.MustCompile(pattern).ReplaceAllString(text, replacement)
+	for _, r := range replacements {
+		text = regexp.MustCompile(r[0]).ReplaceAllString(text, r[1])
 	}
 	if text != original {
 		//nolint:mnd // readable
