@@ -26,6 +26,9 @@ func copySshcSettingsFromHost() {
 
 func adjustPathInConfig() {
 	path := filepath.Join(sshHome, "config")
+	if !utils.ExistsFile(path) {
+		return
+	}
 	text := utils.ReadFileAsString(path)
 	replacements := map[string]string{
 		"IdentityFile=":              "IdentityFile ",
