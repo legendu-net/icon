@@ -18,6 +18,7 @@ import (
 // @param file The path to the file.
 // @return The file mode (fs.FileMode).
 func getFileMode(file string) fs.FileMode {
+	file = NormalizePath(file)
 	fileInfo, err := os.Stat(file)
 	if err != nil {
 		log.Fatal("ERROR - ", err)
@@ -29,14 +30,14 @@ func dir(path string) string {
 	return filepath.Dir(NormalizePath(path))
 }
 
-// CopyFileToDir copies a file from a source path to a destination directory.
+// CopyFileIntoDir copies a file from a source path to a destination directory.
 //
 // It constructs the destination file path by joining the destination directory
 // with the base name of the source file. Then it calls the copyFile function to perform the actual copy.
 //
 // @param sourceFile      The path to the source file.
 // @param destinationDir The path to the destination directory where the source file will be copied.
-func CopyFileToDir(sourceFile, destinationDir string) {
+func CopyFileIntoDir(sourceFile, destinationDir string) {
 	sourceFile = NormalizePath(sourceFile)
 	destinationDir = NormalizePath(destinationDir)
 	CopyFile(sourceFile, filepath.Join(destinationDir, filepath.Base(sourceFile)))
@@ -137,6 +138,7 @@ func ReplacePattern(path, pattern, repl string) {
 //
 // @return true if the file or directory exists, false otherwise.
 func ExistsPath(path string) bool {
+	path = NormalizePath(path)
 	_, err := os.Stat(path)
 	return !os.IsNotExist(err)
 }

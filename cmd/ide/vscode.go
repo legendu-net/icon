@@ -1,6 +1,8 @@
 package ide
 
 import (
+	"path/filepath"
+
 	"github.com/spf13/cobra"
 	"legendu.net/icon/cmd/icon"
 	"legendu.net/icon/utils"
@@ -44,8 +46,10 @@ func vscode(cmd *cobra.Command, _ []string) {
 				userDir = "~/Library/Application Support/Code/User"
 			}
 		}
-		utils.SymlinkIntoDir("~/.config/icon-data/vscode/settings.json", userDir,
-			!utils.GetBoolFlag(cmd, "no-backup"), utils.GetBoolFlag(cmd, "copy"))
+		src := "~/.config/icon-data/vscode/settings.json"
+		dst := filepath.Join(userDir, filepath.Base(src))
+		utils.BackupOrRemove(dst, utils.ShouldBackup(cmd))
+		utils.CopyOrSymlink(src, dst, utils.GetBoolFlag(cmd, "copy"))
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
 		if utils.IsLinux() {

@@ -24,14 +24,16 @@ func ipython(cmd *cobra.Command, _ []string) {
 		icon.FetchConfigData(false, "")
 		profileDir := utils.GetStringFlag(cmd, "profile-dir")
 		profileDefault := filepath.Join(profileDir, "profile_default")
-		utils.Symlink(
-			"~/.config/icon-data/ipython/startup.ipy",
-			filepath.Join(profileDefault, "startup", "startup.ipy"),
-			!utils.GetBoolFlag(cmd, "no-backup"), utils.GetBoolFlag(cmd, "copy"))
-		utils.SymlinkIntoDir(
-			"~/.config/icon-data/ipython/ipython_config.py",
-			profileDefault,
-			!utils.GetBoolFlag(cmd, "no-backup"), utils.GetBoolFlag(cmd, "copy"))
+		backup := utils.ShouldBackup(cmd)
+		doCopy := utils.GetBoolFlag(cmd, "copy")
+		src1 := "~/.config/icon-data/ipython/startup.ipy"
+		dst1 := filepath.Join(profileDefault, "startup", "startup.ipy")
+		utils.BackupOrRemove(dst1, backup)
+		utils.CopyOrSymlink(src1, dst1, doCopy)
+		src2 := "~/.config/icon-data/ipython/ipython_config.py"
+		dst2 := filepath.Join(profileDefault, filepath.Base(src2))
+		utils.BackupOrRemove(dst2, backup)
+		utils.CopyOrSymlink(src2, dst2, doCopy)
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
 		command := utils.Format("{prefix} {pip_uninstall} ipython", map[string]string{

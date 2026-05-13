@@ -62,6 +62,11 @@ func GetStringSliceFlag(cmd *cobra.Command, flag string) []string {
 	return ss
 }
 
+// ShouldBackup returns true if the "no-backup" flag is not set.
+func ShouldBackup(cmd *cobra.Command) bool {
+	return !GetBoolFlag(cmd, "no-backup")
+}
+
 // BuildYesFlag constructs a string flag for commands that require confirmation.
 //
 // @param cmd A pointer to a Cobra command object.

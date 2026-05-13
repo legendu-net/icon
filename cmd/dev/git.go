@@ -35,21 +35,13 @@ func installGitUI(cmd *cobra.Command) {
 	}
 }
 
-func linkGitUIFiles(baseDir string, backup, copyPath bool) {
-	utils.SymlinkIntoDir("~/.config/icon-data/git/gitui/key_bindings.ron", filepath.Join(baseDir, "gitui"),
-		backup, copyPath)
-}
-
 func configGitUI(cmd *cobra.Command) {
 	if utils.GetBoolFlag(cmd, "gitui") {
-		linkGitUIFiles("~/.config", !utils.GetBoolFlag(cmd, "no-backup"), utils.GetBoolFlag(cmd, "copy"))
-		if utils.IsLinux() {
-			baseDir := os.Getenv("XDG_CONFIG_HOME")
-			if baseDir != "" {
-				linkGitUIFiles(baseDir,
-					!utils.GetBoolFlag(cmd, "no-backup"), utils.GetBoolFlag(cmd, "copy"))
-			}
-		}
+		src := "~/.config/icon-data/git/gitui/key_bindings.ron"
+		//nolint:gocritic // linux and macOS only
+		dst := filepath.Join("~/.config/gitui", filepath.Base(src))
+		utils.BackupOrRemove(dst, utils.ShouldBackup(cmd))
+		utils.CopyOrSymlink(src, dst, utils.GetBoolFlag(cmd, "copy"))
 	}
 }
 
@@ -134,8 +126,10 @@ func git(cmd *cobra.Command, args []string) {
 	if utils.GetBoolFlag(cmd, "config") {
 		icon.FetchConfigData(false, "")
 		network.SSHClient(cmd, args)
-		utils.Symlink("~/.config/icon-data/git/gitconfig", "~/.gitconfig",
-			!utils.GetBoolFlag(cmd, "no-backup"), utils.GetBoolFlag(cmd, "copy"))
+		src := "~/.config/icon-data/git/gitconfig"
+		dst := "~/.gitconfig"
+		utils.BackupOrRemove(dst, utils.ShouldBackup(cmd))
+		utils.CopyOrSymlink(src, dst, utils.GetBoolFlag(cmd, "copy"))
 		configGitProxy(cmd)
 		configGitUI(cmd)
 	}

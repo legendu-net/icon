@@ -93,8 +93,8 @@ func fish(cmd *cobra.Command, _ []string) {
 		icon.FetchConfigData(false, "")
 
 		dir := "~/.config/fish"
-		utils.Symlink("~/.config/icon-data/fish", dir,
-			!utils.GetBoolFlag(cmd, "no-backup"), utils.GetBoolFlag(cmd, "copy"))
+		utils.BackupOrRemove(dir, utils.ShouldBackup(cmd))
+		utils.CopyOrSymlink("~/.config/icon-data/fish", dir, utils.GetBoolFlag(cmd, "copy"))
 
 		generateCompletions()
 		generateCrazyCompletions()

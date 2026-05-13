@@ -36,8 +36,10 @@ func zellij(cmd *cobra.Command, _ []string) {
 	}
 	if utils.GetBoolFlag(cmd, "config") {
 		icon.FetchConfigData(false, "")
-		utils.Symlink("~/.config/icon-data/zellij/config.kdl", "~/.config/zellij/config.kdl",
-			!utils.GetBoolFlag(cmd, "no-backup"), utils.GetBoolFlag(cmd, "copy"))
+		src := "~/.config/icon-data/zellij/config.kdl"
+		dst := "~/.config/zellij/config.kdl"
+		utils.BackupOrRemove(dst, utils.ShouldBackup(cmd))
+		utils.CopyOrSymlink(src, dst, utils.GetBoolFlag(cmd, "copy"))
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
 	}

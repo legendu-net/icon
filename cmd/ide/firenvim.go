@@ -12,7 +12,7 @@ import (
 func firenvim(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "install") {
 		Neovim(true, true, false, utils.GetBoolFlag(cmd, "brew"), "-y",
-			!utils.GetBoolFlag(cmd, "no-backup"), utils.GetBoolFlag(cmd, "copy"))
+			utils.ShouldBackup(cmd), utils.GetBoolFlag(cmd, "copy"))
 		network.InstallChromeExtension("egpjdkipkomnmjhjmdamaniclmdlobbo", "Firenvim")
 		utils.RunCmd(`nvim --headless +"call firenvim#install(0)" +qall`)
 		if utils.IsLinux() {

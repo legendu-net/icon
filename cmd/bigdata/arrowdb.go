@@ -7,13 +7,14 @@ import (
 	"legendu.net/icon/utils"
 )
 
-func linkArrowDBProfileFromHost(backup, copyPath bool) {
+func linkArrowDBProfileFromHost(backup, doCopy bool) {
 	//nolint:gocritic // filepathJoin: "/" is intentional to start an absolute path
 	srcProfile := filepath.Join("/", "home_host", utils.GetCurrentUser().Name, ".arrowdb_profile")
 	dstProfile := filepath.Join(utils.UserHomeDir(), ".arrowdb_profile")
 	if utils.ExistsFile(srcProfile) {
 		// inside a Docker container, link profile from host
-		utils.Symlink(srcProfile, dstProfile, backup, copyPath)
+		utils.BackupOrRemove(dstProfile, backup)
+		utils.CopyOrSymlink(srcProfile, dstProfile, doCopy)
 	}
 }
 
@@ -30,7 +31,7 @@ func arrowDB(cmd *cobra.Command, _ []string) {
 		utils.RunCmd(command)
 	}
 	if utils.GetBoolFlag(cmd, "config") {
-		linkArrowDBProfileFromHost(!utils.GetBoolFlag(cmd, "no-backup"), utils.GetBoolFlag(cmd, "copy"))
+		linkArrowDBProfileFromHost(utils.ShouldBackup(cmd), utils.GetBoolFlag(cmd, "copy"))
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
 		command := utils.Format("{prefix} {pip_uninstall} arrowdb", map[string]string{

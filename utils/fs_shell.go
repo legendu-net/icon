@@ -42,6 +42,8 @@ func Chmod600(path string) {
 // @param sourceFile      The path to the source file.
 // @param destinationFile The path to the destination file where the source file will be copied.
 func CopyFile(sourceFile, destinationFile string) {
+	sourceFile = NormalizePath(sourceFile)
+	destinationFile = NormalizePath(destinationFile)
 	MkdirAll(dir(destinationFile), "")
 
 	prefix := GetCommandPrefix(false, map[string]uint32{
@@ -61,6 +63,7 @@ func CopyFile(sourceFile, destinationFile string) {
 //
 // @param path The path to the file or directory to remove.
 func RemoveAll(path string) {
+	path = NormalizePath(path)
 	prefix := GetCommandPrefix(false, map[string]uint32{
 		path: unix.W_OK | unix.R_OK,
 	})
@@ -93,43 +96,55 @@ func MkdirAll(path, perm string) {
 	RunCmd(cmd)
 }
 
+// BackupOrRemove backs up the path if backup is true, otherwise removes it.
+// Call this before copying or symlinking to prepare the destination.
+func BackupOrRemove(path string, backup bool) {
+	path = NormalizePath(path)
+	if backup {
+		Backup(path, "")
+	} else {
+		RemoveAll(path)
+	}
+}
+
 // Symlink is a wrapper of os.Symlink with error handling.
 //
 // @param path The path to the source file/directory.
 // @param dstLink The path where the symbolic link will be created.
-func Symlink(path, dstLink string, backup, copyPath bool) {
+func Symlink(path, dstLink string) {
 	path = NormalizePath(path)
 	dstLink = NormalizePath(dstLink)
-	if backup {
-		Backup(dstLink, "")
-	} else {
-		RemoveAll(dstLink)
-	}
-
 	MkdirAll(filepath.Dir(dstLink), "")
 	prefix := GetCommandPrefix(false, map[string]uint32{
 		path:    unix.R_OK,
 		dstLink: unix.W_OK | unix.R_OK,
 	})
-	if copyPath {
-		cmd := Format("{prefix} cp -ir {path} {dstLink}", map[string]string{
-			"prefix":  prefix,
-			"path":    path,
-			"dstLink": dstLink,
-		})
-		RunCmd(cmd)
-	} else {
-		cmd := Format("{prefix} ln -sv {path} {dstLink}", map[string]string{
-			"prefix":  prefix,
-			"path":    path,
-			"dstLink": dstLink,
-		})
-		RunCmd(cmd)
-	}
+	cmd := Format("{prefix} ln -sv {path} {dstLink}", map[string]string{
+		"prefix":  prefix,
+		"path":    path,
+		"dstLink": dstLink,
+	})
+	RunCmd(cmd)
 }
 
-func SymlinkIntoDir(path, dstDir string, backup, copyPath bool) {
-	Symlink(path, filepath.Join(dstDir, filepath.Base(path)), backup, copyPath)
+func SymlinkIntoDir(path, dstDir string) {
+	Symlink(path, filepath.Join(dstDir, filepath.Base(path)))
+}
+
+// CopyOrSymlink copies src to dst (using CopyFile or CopyDirRegular) when doCopy
+// is true, otherwise creates a symlink at dst pointing to src.
+func CopyOrSymlink(src, dst string, doCopy bool) {
+	src = NormalizePath(src)
+	dst = NormalizePath(dst)
+	if doCopy {
+		if ExistsDir(src) {
+			CopyDirRegular(src, dst)
+		} else {
+			CopyFile(src, dst)
+		}
+	} else {
+		Symlink(src, dst)
+	}
 }
 
 func Rename(originalPath, newPath string) {

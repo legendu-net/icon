@@ -16,10 +16,10 @@ func neovim(cmd *cobra.Command, _ []string) {
 		utils.GetBoolFlag(cmd, "uninstall"),
 		utils.GetBoolFlag(cmd, "brew"),
 		utils.BuildYesFlag(cmd),
-		!utils.GetBoolFlag(cmd, "no-backup"), utils.GetBoolFlag(cmd, "copy"))
+		utils.ShouldBackup(cmd), utils.GetBoolFlag(cmd, "copy"))
 }
 
-func Neovim(install, config, uninstall, brew bool, yesStr string, backup, copyPath bool) {
+func Neovim(install, config, uninstall, brew bool, yesStr string, backup, doCopy bool) {
 	if install {
 		if runtime.GOOS == "darwin" || brew || utils.IsUniversalBlue() {
 			utils.BrewInstallSafe([]string{"neovim"})
@@ -46,8 +46,10 @@ func Neovim(install, config, uninstall, brew bool, yesStr string, backup, copyPa
 	}
 	if config {
 		icon.FetchConfigData(false, "")
-		dir := "~/.config/nvim"
-		utils.Symlink("~/.config/icon-data/nvim", dir, backup, copyPath)
+		src := "~/.config/icon-data/nvim"
+		dst := "~/.config/nvim"
+		utils.BackupOrRemove(dst, backup)
+		utils.CopyOrSymlink(src, dst, doCopy)
 	}
 	if uninstall {
 		if runtime.GOOS == "darwin" || brew || utils.IsUniversalBlue() {

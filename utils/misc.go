@@ -7,7 +7,6 @@ import (
 	"os/exec"
 	"os/user"
 	"path/filepath"
-	"runtime"
 	"strconv"
 	"strings"
 
@@ -93,21 +92,18 @@ func sudo() string {
 //
 // @return The appropriate command prefix ("sudo" or an empty string).
 func GetCommandPrefix(forceSudo bool, pathPerms map[string]uint32) string {
-	switch runtime.GOOS {
-	case "darwin", "linux":
-		if GetCurrentUser().Uid != "0" {
-			if forceSudo {
-				return sudo()
+	if GetCurrentUser().Uid != "0" {
+		if forceSudo {
+			return sudo()
+		}
+		for path, perm := range pathPerms {
+			path = NormalizePath(path)
+			for !ExistsPath(path) {
+				path = filepath.Dir(path)
+				perm |= unix.X_OK
 			}
-			for path, perm := range pathPerms {
-				path = NormalizePath(path)
-				for !ExistsPath(path) {
-					path = filepath.Dir(path)
-					perm |= unix.X_OK
-				}
-				if unix.Access(path, perm) != nil {
-					return sudo()
-				}
+			if unix.Access(path, perm) != nil {
+				return sudo()
 			}
 		}
 	}
