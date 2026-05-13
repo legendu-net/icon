@@ -42,6 +42,8 @@ func Chmod600(path string) {
 // @param sourceFile      The path to the source file.
 // @param destinationFile The path to the destination file where the source file will be copied.
 func CopyFile(sourceFile, destinationFile string) {
+	sourceFile = NormalizePath(sourceFile)
+	destinationFile = NormalizePath(destinationFile)
 	MkdirAll(dir(destinationFile), "")
 
 	prefix := GetCommandPrefix(false, map[string]uint32{
@@ -61,6 +63,7 @@ func CopyFile(sourceFile, destinationFile string) {
 //
 // @param path The path to the file or directory to remove.
 func RemoveAll(path string) {
+	path = NormalizePath(path)
 	prefix := GetCommandPrefix(false, map[string]uint32{
 		path: unix.W_OK | unix.R_OK,
 	})
