@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(go build:*)",
+      "Bash(golangci-lint run:*)",
+      "Bash(gofmt -w utils/const.go cmd/bigdata/spark.go cmd/dev/git.go utils/fs_shell.go)",
+      "Bash(gofmt -w cmd/dev/golang.go cmd/dev/rust.go cmd/shell/hyper.go)",
+      "Bash(gofmt -w cmd/shell/zellij.go cmd/virtualization/const.go)"
+    ]
+  }
+}
