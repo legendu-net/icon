@@ -20,8 +20,8 @@ func copySshcSettingsFromHost() {
 	if utils.ExistsDir(sshSrc) {
 		// inside a Docker container, copy .ssh from host
 		utils.CopyDirRegular(sshSrc, sshHome)
+		adjustPathInConfig()
 	}
-	adjustPathInConfig()
 }
 
 func adjustPathInConfig() {
