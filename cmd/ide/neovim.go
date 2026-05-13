@@ -16,7 +16,7 @@ func neovim(cmd *cobra.Command, _ []string) {
 		utils.GetBoolFlag(cmd, "uninstall"),
 		utils.GetBoolFlag(cmd, "brew"),
 		utils.BuildYesFlag(cmd),
-		!utils.GetBoolFlag(cmd, "no-backup"), utils.GetBoolFlag(cmd, "copy"))
+		utils.ShouldBackup(cmd), utils.GetBoolFlag(cmd, "copy"))
 }
 
 func Neovim(install, config, uninstall, brew bool, yesStr string, backup, doCopy bool) {

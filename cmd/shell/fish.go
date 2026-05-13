@@ -93,7 +93,7 @@ func fish(cmd *cobra.Command, _ []string) {
 		icon.FetchConfigData(false, "")
 
 		dir := "~/.config/fish"
-		backup := !utils.GetBoolFlag(cmd, "no-backup")
+		backup := utils.ShouldBackup(cmd)
 		utils.BackupOrRemove(dir, backup)
 		utils.CopyOrSymlink("~/.config/icon-data/fish", dir, utils.GetBoolFlag(cmd, "copy"))
 

@@ -24,7 +24,7 @@ func ipython(cmd *cobra.Command, _ []string) {
 		icon.FetchConfigData(false, "")
 		profileDir := utils.GetStringFlag(cmd, "profile-dir")
 		profileDefault := filepath.Join(profileDir, "profile_default")
-		backup := !utils.GetBoolFlag(cmd, "no-backup")
+		backup := utils.ShouldBackup(cmd)
 		doCopy := utils.GetBoolFlag(cmd, "copy")
 		src1 := "~/.config/icon-data/ipython/startup.ipy"
 		dst1 := filepath.Join(profileDefault, "startup", "startup.ipy")

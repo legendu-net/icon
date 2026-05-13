@@ -31,7 +31,7 @@ func arrowDB(cmd *cobra.Command, _ []string) {
 		utils.RunCmd(command)
 	}
 	if utils.GetBoolFlag(cmd, "config") {
-		linkArrowDBProfileFromHost(!utils.GetBoolFlag(cmd, "no-backup"), utils.GetBoolFlag(cmd, "copy"))
+		linkArrowDBProfileFromHost(utils.ShouldBackup(cmd), utils.GetBoolFlag(cmd, "copy"))
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
 		command := utils.Format("{prefix} {pip_uninstall} arrowdb", map[string]string{

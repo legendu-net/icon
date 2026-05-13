@@ -59,7 +59,7 @@ func hyper(cmd *cobra.Command, _ []string) {
 		log.Printf("Hyper plugins hypercwd, hyper-search, hyper-pane and hyperpower are installed.\n")
 		src := "~/.config/icon-data/hyper/hyper.js"
 		dst := "~/.hyper.js"
-		backup := !utils.GetBoolFlag(cmd, "no-backup")
+		backup := utils.ShouldBackup(cmd)
 		utils.BackupOrRemove(dst, backup)
 		utils.CopyOrSymlink(src, dst, utils.GetBoolFlag(cmd, "copy"))
 	}
