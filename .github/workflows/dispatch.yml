@@ -16,5 +16,5 @@ jobs:
           client-payload: |
             {
               "tag_name": "${{ github.event.release.tag_name }}",
-              "body": "${{ github.event.release.body }}"
+              "body": "${{ toJson(github.event.release.body) }}"
             }
