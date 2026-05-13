@@ -27,8 +27,7 @@ func bashIt(cmd *cobra.Command, _ []string) {
 		utils.ConfigBash()
 		src := "~/.config/icon-data/bash-it"
 		dst := "~/.bash_it"
-		backup := utils.ShouldBackup(cmd)
-		utils.BackupOrRemove(dst, backup)
+		utils.BackupOrRemove(dst, utils.ShouldBackup(cmd))
 		utils.CopyOrSymlink(src, dst, utils.GetBoolFlag(cmd, "copy"))
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
