@@ -16,7 +16,7 @@ func firenvim(cmd *cobra.Command, _ []string) {
 		network.InstallChromeExtension("egpjdkipkomnmjhjmdamaniclmdlobbo", "Firenvim")
 		utils.RunCmd(`nvim --headless +"call firenvim#install(0)" +qall`)
 		if utils.IsLinux() {
-			url := "https://www.legendu.net/misc/blog/firenvim-brings-neovim-into-your-browser/#installation"
+			url := "https://www.legendu.net/drafts/2021/12/firenvim-brings-neovim-into-your-browser/#installation"
 			log.Printf("\nPlease follow step 5 in %s to configure a shortcut!\n", url)
 		} else {
 		}
