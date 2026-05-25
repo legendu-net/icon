@@ -12,6 +12,7 @@ import (
 
 // Chmod changes the mode of the named file to mode.
 func Chmod(path, mode string) {
+	path = NormalizePath(path)
 	prefix := GetCommandPrefix(false, map[string]uint32{
 		path: unix.W_OK | unix.R_OK,
 	})
