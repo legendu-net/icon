@@ -2,3 +2,4 @@
 icon_linux_amd64
 .jukit/
 .vscode/
+.claude/settings.local.json
