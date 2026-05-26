@@ -2,6 +2,7 @@ package icon
 
 import (
 	"fmt"
+	"path/filepath"
 
 	"github.com/spf13/cobra"
 	"legendu.net/icon/utils"
@@ -30,6 +31,11 @@ func FetchConfigData(force bool, gitURL string) {
 	})
 	utils.RunCmd(command)
 	fmt.Printf("Data for icon has been pulled into %s.\n", dir)
+
+	sshConfig := filepath.Join(dir, "ssh", "client", "config")
+	if utils.ExistsFile(sshConfig) {
+		utils.Chmod600(sshConfig)
+	}
 }
 
 // Pull data for icon from GitHub into ~/.config/icon-data.
