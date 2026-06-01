@@ -1,7 +1,0 @@
-image: dclong/gitpod
-tasks:
-  - command: . /scripts/gitpod.sh
-
-vscode:
-  extensions:
-    - asvetliakov.vscode-neovim
