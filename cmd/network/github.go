@@ -13,7 +13,7 @@ import (
 // Get the release URL of a project on GitHub.
 // @param repo: The repo name of the project on GitHub.
 // return: The release URL of the project on GitHub.
-func GetReleaseURL(repo string) string {
+func getReleaseURL(repo string) string {
 	repo = strings.TrimSuffix(repo, ".git")
 	if strings.HasPrefix(repo, "https://api.") {
 		return repo
@@ -29,14 +29,14 @@ func GetReleaseURL(repo string) string {
 	return "https://api.github.com/repos/" + repo + "/releases"
 }
 
-type AssetInfo struct {
+type assetInfo struct {
 	Name               string `json:"name"`
 	BrowserDownloadURL string `json:"browser_download_url"`
 }
 
-type ReleaseInfo struct {
+type releaseInfo struct {
 	TagName string      `json:"tag_name"`
-	Assets  []AssetInfo `json:"assets"`
+	Assets  []assetInfo `json:"assets"`
 }
 
 func assetNameContainKeywords(name string, keywords, keyworkdsExclude []string) bool {
@@ -53,7 +53,7 @@ func assetNameContainKeywords(name string, keywords, keyworkdsExclude []string) 
 	return true
 }
 
-func filterReleases(url, constraint string) ReleaseInfo {
+func filterReleases(url, constraint string) releaseInfo {
 	log.Printf("Extracting release from %s with the constraint %s", url, constraint)
 	const numRetry = 3
 	const initialWaitingSeconds = 120
@@ -61,10 +61,10 @@ func filterReleases(url, constraint string) ReleaseInfo {
 	if err != nil {
 		log.Fatal(err)
 	}
-	var releases []ReleaseInfo
+	var releases []releaseInfo
 	err = json.Unmarshal(bytes, &releases)
 	if err != nil {
-		log.Fatalf("Failed to parse TOML: %v", err)
+		log.Fatalf("Failed to parse JSON: %v", err)
 	}
 	c := version.NewConstrainGroupFromString(constraint)
 	for _, release := range releases {
@@ -73,10 +73,10 @@ func filterReleases(url, constraint string) ReleaseInfo {
 		}
 	}
 	log.Fatal("No release matching the version constraint is found!")
-	return ReleaseInfo{}
+	return releaseInfo{}
 }
 
-func GetLatestRelease(releaseURL string) ReleaseInfo {
+func getLatestRelease(releaseURL string) releaseInfo {
 	url := releaseURL + "/latest"
 	const numRetry = 3
 	const initialWaitingSeconds = 120
@@ -84,18 +84,18 @@ func GetLatestRelease(releaseURL string) ReleaseInfo {
 	if err != nil {
 		log.Fatal(err)
 	}
-	var releaseInfo ReleaseInfo
-	err = json.Unmarshal(bytes, &releaseInfo)
+	var release releaseInfo
+	err = json.Unmarshal(bytes, &release)
 	if err != nil {
 		log.Fatal("ERROR - ", err)
 	}
-	return releaseInfo
+	return release
 }
 
 // Download a release from GitHub.
 // @param args: The arguments to parse.
 // If None, the arguments from command-line are parsed.
-func DownloadGitHubReleaseArgs(cmd *cobra.Command, _ []string) {
+func downloadGitHubReleaseArgs(cmd *cobra.Command, _ []string) {
 	DownloadGitHubRelease(
 		utils.GetStringFlag(cmd, "repo"),
 		utils.GetStringFlag(cmd, "version"),
@@ -117,23 +117,23 @@ func DownloadGitHubRelease(repo, ver string, keywords map[string][]string, keywo
 	Write to: %s
 	`, repo, ver, strings.Join(keywords_, ", "), strings.Join(keywordsExclude, ", "), output)
 	// form the release URL
-	releaseURL := GetReleaseURL(repo)
+	releaseURL := getReleaseURL(repo)
 	log.Printf("Release URL: %s\n", releaseURL)
-	var releaseInfo ReleaseInfo
+	var release releaseInfo
 	if ver == "" {
-		releaseInfo = GetLatestRelease(releaseURL)
+		release = getLatestRelease(releaseURL)
 	} else {
-		releaseInfo = filterReleases(releaseURL, ver)
+		release = filterReleases(releaseURL, ver)
 	}
 	// parse browser download url
 	var browserDownloadURL string
-	for _, assert := range releaseInfo.Assets {
-		if assetNameContainKeywords(assert.Name, keywords_, keywordsExclude) {
-			log.Printf("Assert %s is matched.", assert.Name)
-			browserDownloadURL = assert.BrowserDownloadURL
+	for _, asset := range release.Assets {
+		if assetNameContainKeywords(asset.Name, keywords_, keywordsExclude) {
+			log.Printf("Asset %s is matched.", asset.Name)
+			browserDownloadURL = asset.BrowserDownloadURL
 			break
 		} else {
-			log.Printf("Assert %s is not matched.", assert.Name)
+			log.Printf("Asset %s is not matched.", asset.Name)
 		}
 	}
 	// download the asset
@@ -148,7 +148,7 @@ var downloadGitHubReleaseCmd = &cobra.Command{
 	Aliases: []string{"download_github", "from_github", "github_release"},
 	Short:   "Download file from GitHub.",
 	//Args:  cobra.ExactArgs(1),
-	Run: DownloadGitHubReleaseArgs,
+	Run: downloadGitHubReleaseArgs,
 }
 
 func ConfigDownloadGitHubReleaseCmd(rootCmd *cobra.Command) {
@@ -158,8 +158,8 @@ func ConfigDownloadGitHubReleaseCmd(rootCmd *cobra.Command) {
 		log.Fatal("ERROR - ", err)
 	}
 	downloadGitHubReleaseCmd.Flags().StringP("version", "v", "", "The version of the release.")
-	downloadGitHubReleaseCmd.Flags().StringSliceP("kwd", "k", []string{}, "Keywords that the assert's name contains.")
-	downloadGitHubReleaseCmd.Flags().StringSliceP("KWD", "K", []string{}, "Keywords that the assert's name contains.")
+	downloadGitHubReleaseCmd.Flags().StringSliceP("kwd", "k", []string{}, "Keywords that the asset's name contains.")
+	downloadGitHubReleaseCmd.Flags().StringSliceP("KWD", "K", []string{}, "Keywords that the asset's name must not contain.")
 	err = downloadGitHubReleaseCmd.MarkFlagRequired("kwd")
 	if err != nil {
 		log.Fatal("ERROR - ", err)

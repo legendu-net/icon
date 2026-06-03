@@ -67,7 +67,7 @@ func addDefaultKeyBindings(defaultKeyBindings []string, keyBindings map[string]s
 	return append(defaultKeyBindings, lines...)
 }
 
-func ConfigDefaultKeybindings() {
+func configDefaultKeybindings() {
 	dir := "~/Library/KeyBindings"
 	utils.MkdirAll(dir, "700")
 	file := filepath.Join(dir, "DefaultKeyBinding.dict")
@@ -89,7 +89,7 @@ func keyboard(cmd *cobra.Command, _ []string) {
 		icon.FetchConfigData(false, "")
 		if utils.IsLinux() {
 		} else {
-			ConfigDefaultKeybindings()
+			configDefaultKeybindings()
 		}
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {

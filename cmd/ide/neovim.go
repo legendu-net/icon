@@ -10,7 +10,7 @@ import (
 
 // Install and configure Neovim.
 func neovim(cmd *cobra.Command, _ []string) {
-	Neovim(
+	setupNeovim(
 		utils.GetBoolFlag(cmd, "install"),
 		utils.GetBoolFlag(cmd, "config"),
 		utils.GetBoolFlag(cmd, "uninstall"),
@@ -19,7 +19,7 @@ func neovim(cmd *cobra.Command, _ []string) {
 		utils.ShouldBackup(cmd), utils.GetBoolFlag(cmd, "copy"))
 }
 
-func Neovim(install, config, uninstall, brew bool, yesStr string, backup, doCopy bool) {
+func setupNeovim(install, config, uninstall, brew bool, yesStr string, backup, doCopy bool) {
 	if install {
 		if runtime.GOOS == "darwin" || brew || utils.IsUniversalBlue() {
 			utils.BrewInstallSafe([]string{"neovim"})

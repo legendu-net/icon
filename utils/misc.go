@@ -172,6 +172,19 @@ func UpdateMap(map1, map2 orderedmap.OrderedMap[string, any]) {
 	}
 }
 
+// Atoi converts a string to an int.
+//
+// @param str The string to convert to an int.
+//
+// @return The int representation of the string.
+func Atoi(str string) int {
+	i, err := strconv.Atoi(str)
+	if err != nil {
+		log.Fatalf("Error converting string to int: %v\n", err)
+	}
+	return i
+}
+
 // ParseInt converts a string to an int64.
 //
 // @param str The string to convert to an int64.
