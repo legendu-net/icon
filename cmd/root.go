@@ -73,7 +73,6 @@ func Execute() {
 	shell.ConfigZellijCmd(rootCmd)
 	virtualization.ConfigKVMCmd(rootCmd)
 	virtualization.ConfigDockerCmd(rootCmd)
-	virtualization.ConfigLdcCmd(rootCmd)
 
 	err := rootCmd.Execute()
 	if err != nil {
