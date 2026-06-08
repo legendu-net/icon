@@ -59,6 +59,7 @@ func Execute() {
 	jupyter.ConfigJupyterBookCmd(rootCmd)
 	jupyter.ConfigJLabVimCmd(rootCmd)
 	dev.ConfigHomebrewCmd(rootCmd)
+	misc.ConfigGopassCmd(rootCmd)
 	misc.ConfigKeepassXCCmd(rootCmd)
 	misc.ConfigKeyboardCmd(rootCmd)
 	network.ConfigDownloadGitHubReleaseCmd(rootCmd)

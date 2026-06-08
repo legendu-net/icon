@@ -6,7 +6,7 @@ import (
 )
 
 // Install and configure SSH server.
-func SSHServer(cmd *cobra.Command, _ []string) {
+func sshServer(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "install") {
 		if utils.IsDebianUbuntuSeries() {
 			command := utils.Format(`{prefix} apt-get {yesStr} update \
@@ -41,7 +41,7 @@ var sshServerCmd = &cobra.Command{
 	Aliases: []string{"sshs"},
 	Short:   "Install and configure SSH server.",
 	//Args:  cobra.ExactArgs(1),
-	Run: SSHServer,
+	Run: sshServer,
 }
 
 func ConfigSSHServerCmd(rootCmd *cobra.Command) {

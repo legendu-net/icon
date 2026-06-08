@@ -7,16 +7,8 @@ import (
 
 // Install and configure helix.
 func helix(cmd *cobra.Command, _ []string) {
-	Helix(
-		utils.GetBoolFlag(cmd, "install"),
-		utils.GetBoolFlag(cmd, "config"),
-		utils.GetBoolFlag(cmd, "uninstall"),
-		utils.BuildYesFlag(cmd),
-	)
-}
-
-func Helix(install, config, uninstall bool, yesStr string) {
-	if install {
+	yesStr := utils.BuildYesFlag(cmd)
+	if utils.GetBoolFlag(cmd, "install") {
 		if utils.IsLinux() {
 			if utils.IsDebianUbuntuSeries() {
 				if utils.IsUbuntuSeries() {
@@ -52,9 +44,9 @@ func Helix(install, config, uninstall bool, yesStr string) {
 			utils.BrewInstallSafe([]string{"helix"})
 		}
 	}
-	if config {
+	if utils.GetBoolFlag(cmd, "config") {
 	}
-	if uninstall {
+	if utils.GetBoolFlag(cmd, "uninstall") {
 		if utils.IsLinux() {
 			if utils.IsDebianUbuntuSeries() {
 				command := utils.Format("{prefix} apt-get {yesStr} purge helix", map[string]string{
@@ -82,7 +74,7 @@ func Helix(install, config, uninstall bool, yesStr string) {
 
 var helixCmd = &cobra.Command{
 	Use:     "helix",
-	Aliases: []string{"nvim"},
+	Aliases: []string{"hx"},
 	Short:   "Install and configure helix.",
 	//Args:  cobra.ExactArgs(1),
 	Run: helix,

@@ -32,7 +32,7 @@ func getSparkDownloadURL(sparkVersion, hadoopVersion string) (string, error) {
 	url := "https://www.apache.org/dyn/closer.lua/spark/spark-%s/spark-%s-bin-hadoop%s%s.tgz"
 	suffix := ""
 	const firstSparkConnectVersion = 4
-	if utils.ParseInt(extractMajorVersion(sparkVersion)) >= firstSparkConnectVersion {
+	if utils.Atoi(extractMajorVersion(sparkVersion)) >= firstSparkConnectVersion {
 		suffix = "-connect"
 	}
 	url = fmt.Sprintf(url, sparkVersion, sparkVersion, hadoopVersion, suffix)
@@ -70,12 +70,12 @@ func extractHdp(url string) string {
 	return url[strings.LastIndex(url, "/")+1 : strings.LastIndex(url, ".")]
 }
 
-type SparkHadoopVersion struct {
+type sparkHadoopVersion struct {
 	Spark  string `yaml:"spark"`
 	Hadoop string `yaml:"hadoop"`
 }
 
-func chooseSparkVersion(versions []SparkHadoopVersion) SparkHadoopVersion {
+func chooseSparkVersion(versions []sparkHadoopVersion) sparkHadoopVersion {
 	for idx, version := range versions {
 		fmt.Printf("%d: Spark version - %s, Hadoop version - %s\n", idx, version.Spark, version.Hadoop)
 	}
@@ -85,15 +85,19 @@ func chooseSparkVersion(versions []SparkHadoopVersion) SparkHadoopVersion {
 	if err != nil {
 		log.Fatalf("Error reading input: %v", err)
 	}
-	return versions[utils.ParseInt(strings.TrimSpace(input))]
+	idx := utils.Atoi(strings.TrimSpace(input))
+	if idx < 0 || idx >= len(versions) {
+		log.Fatalf("Invalid index %d: please enter a value between 0 and %d.", idx, len(versions)-1)
+	}
+	return versions[idx]
 }
 
-func readSparkHadoopVersion(interactive bool) SparkHadoopVersion {
+func readSparkHadoopVersion(interactive bool) sparkHadoopVersion {
 	file := "~/.config/icon-data/spark/version.yaml"
 	if !utils.ExistsFile(file) {
 		log.Fatalf("Spar/Hadoop versions are not specified or configured (%s).", file)
 	}
-	var versions []SparkHadoopVersion
+	var versions []sparkHadoopVersion
 	err := yaml.Unmarshal(utils.ReadFile(file), &versions)
 	if err != nil {
 		log.Fatalf("Error unmarshaling data: %v", err)
