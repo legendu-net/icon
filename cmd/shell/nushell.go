@@ -27,11 +27,11 @@ func nushell(cmd *cobra.Command, _ []string) {
 		if utils.IsLinux() {
 			file := downloadNushellFromGitHub(utils.GetStringFlag(cmd, "version"))
 			dir := utils.GetStringFlag(cmd, "dir")
-			utils.Format(`mkdir -p {dir} \
-					&& tar -zxvf {file} -C {dir} --strip=1 --exclude=LICENSE --exclude='README.*'`, map[string]string{
+			utils.RunCmd(utils.Format(`mkdir -p {dir} \
+					&& tar -zxvf {file} -C {dir} --strip-components=1 --exclude=LICENSE --exclude='README.*'`, map[string]string{
 				"file": file,
 				"dir":  dir,
-			})
+			}))
 			log.Printf("Nushell has been installed into %s.\n", dir)
 		} else {
 			utils.BrewInstallSafe([]string{"nushell"})
