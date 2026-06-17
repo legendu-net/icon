@@ -57,7 +57,7 @@ func installGitDelta() {
 		"darwin": {"apple", "darwin"},
 	}, []string{}, file)
 	command := utils.Format(`{prefix} tar -zxvf {file} \
-			-C /usr/local/bin/ --wildcards --no-anchored delta --strip=1 \
+			-C /usr/local/bin/ --wildcards --no-anchored delta --strip-components=1 \
 		&& rm {file}`, map[string]string{
 		"prefix": utils.GetCommandPrefix(
 			true,
@@ -66,6 +66,24 @@ func installGitDelta() {
 		"file": file,
 	})
 	utils.RunCmd(command)
+}
+
+// configGitUser writes the shared user identity into ~/.config/git/user, which
+// the gitconfig template includes via an [include] directive. This keeps the
+// user name/email single-sourced from ~/.config/icon-data/user.yaml instead of
+// being hard-coded in the (symlinked) gitconfig.
+func configGitUser() {
+	cfg := utils.ReadUserConfig()
+	utils.MkdirAll("~/.config/git", "700")
+	content := utils.Format(`[user]
+    name = {userName}
+    email = {userEmail}
+`, map[string]string{
+		"userName":  cfg.UserName,
+		"userEmail": cfg.UserEmail,
+	})
+	//nolint:mnd // readable
+	utils.WriteTextFile("~/.config/git/user", content, 0o600)
 }
 
 func configGitProxy(cmd *cobra.Command) {
@@ -130,6 +148,7 @@ func git(cmd *cobra.Command, args []string) {
 		dst := "~/.gitconfig"
 		utils.BackupOrRemove(dst, utils.ShouldBackup(cmd))
 		utils.CopyOrSymlink(src, dst, utils.GetBoolFlag(cmd, "copy"))
+		configGitUser()
 		configGitProxy(cmd)
 		configGitUI(cmd)
 	}

@@ -40,6 +40,7 @@ func Execute() {
 	dev.ConfigBytehoundCmd(rootCmd)
 	dev.ConfigGitCmd(rootCmd)
 	dev.ConfigGolangCmd(rootCmd)
+	dev.ConfigJjCmd(rootCmd)
 	dev.ConfigPerfCmd(rootCmd)
 	dev.ConfigPytypeCmd(rootCmd)
 	dev.ConfigRustCmd(rootCmd)

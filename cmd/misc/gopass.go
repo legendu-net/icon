@@ -9,11 +9,11 @@ import (
 	"legendu.net/icon/utils"
 )
 
-// gitConfig holds the git information used to set up the gopass store.
+// gitConfig holds the gopass-specific git information used to set up the
+// gopass store. The user identity (name and email) is single-sourced from
+// ~/.config/icon-data/user.yaml via utils.ReadUserConfig.
 type gitConfig struct {
-	UserName  string `yaml:"userName"`
-	UserEmail string `yaml:"userEmail"`
-	GitURL    string `yaml:"gitUrl"`
+	GitURL string `yaml:"gitUrl"`
 }
 
 // runPackageCmd dispatches a package-manager command (install/uninstall) for
@@ -60,12 +60,7 @@ func gopass(cmd *cobra.Command, _ []string) {
 		if cfg.GitURL == "" {
 			log.Fatalf("gitUrl is not configured in %s.", gitConfigFile)
 		}
-		if cfg.UserName == "" {
-			log.Fatalf("userName is not configured in %s.", gitConfigFile)
-		}
-		if cfg.UserEmail == "" {
-			log.Fatalf("userEmail is not configured in %s.", gitConfigFile)
-		}
+		user := utils.ReadUserConfig()
 		store := "~/.local/share/gopass/stores/root"
 		utils.BackupOrRemove(store, utils.ShouldBackup(cmd))
 		utils.RunCmd(utils.Format(
@@ -75,8 +70,8 @@ func gopass(cmd *cobra.Command, _ []string) {
 				--email "{userEmail}"`,
 			map[string]string{
 				"gitUrl":    cfg.GitURL,
-				"userName":  cfg.UserName,
-				"userEmail": cfg.UserEmail,
+				"userName":  user.UserName,
+				"userEmail": user.UserEmail,
 			},
 		))
 		utils.RunCmd("gopass config age.agent-enabled true")
