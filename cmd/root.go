@@ -72,6 +72,7 @@ func Execute() {
 	shell.ConfigFishCmd(rootCmd)
 	shell.ConfigHyperCmd(rootCmd)
 	shell.ConfigNushellCmd(rootCmd)
+	shell.ConfigWavetermCmd(rootCmd)
 	shell.ConfigZellijCmd(rootCmd)
 	virtualization.ConfigKVMCmd(rootCmd)
 	virtualization.ConfigDockerCmd(rootCmd)
