@@ -75,7 +75,7 @@ func gopass(cmd *cobra.Command, _ []string) {
 			},
 		))
 		utils.RunCmd("gopass config age.agent-enabled true")
-		utils.RunCmd("gopass config age.agent-timeout 900")
+		utils.RunCmd("gopass config age.agent-timeout 3600")
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
 		runPackageCmd(cmd,
