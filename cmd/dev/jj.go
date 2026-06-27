@@ -127,6 +127,10 @@ func jj(cmd *cobra.Command, _ []string) {
 			`{jjBin} config set --user user.email "{userEmail}"`,
 			map[string]string{"jjBin": jjBin, "userEmail": cfg.UserEmail},
 		))
+		utils.RunCmd(utils.Format(
+			`{jjBin} config set --user ui.diff-editor :builtin`,
+			map[string]string{"jjBin": jjBin},
+		))
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
 		uninstallJj()
