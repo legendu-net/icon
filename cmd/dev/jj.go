@@ -120,12 +120,10 @@ func jj(cmd *cobra.Command, _ []string) {
 		cfg := utils.ReadUserConfig()
 		jjBin := resolveJj()
 		utils.RunCmd(utils.Format(
-			`{jjBin} config set --user user.name "{userName}"`,
-			map[string]string{"jjBin": jjBin, "userName": cfg.UserName},
-		))
-		utils.RunCmd(utils.Format(
-			`{jjBin} config set --user user.email "{userEmail}"`,
-			map[string]string{"jjBin": jjBin, "userEmail": cfg.UserEmail},
+			`{jjBin} config set --user user.name "{userName}" \
+				&& {jjBin} config set --user user.email "{userEmail}" \
+				&& {jjBin} config set --user ui.diff-editor :builtin`,
+			map[string]string{"jjBin": jjBin, "userName": cfg.UserName, "userEmail": cfg.UserEmail},
 		))
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
