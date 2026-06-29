@@ -22,7 +22,7 @@ func rip(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "uninstall") {
 		switch runtime.GOOS {
 		case "linux":
-			utils.RunCmd("rm ~/.cargo/bin/rip")
+			utils.RemoveAll("~/.cargo/bin/rip")
 		case "darwin":
 			utils.RunCmd("brew uninstall rip2")
 		}

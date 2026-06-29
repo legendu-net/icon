@@ -157,21 +157,11 @@ func spark(cmd *cobra.Command, _ []string) {
 
 		metastoreDB := filepath.Join(sparkHome, "metastoreDb")
 		warehouse := filepath.Join(sparkHome, "warehouse")
-		cmd := utils.Format(
-			`{prefix} mkdir -p {metastoreDb} && 
-				{prefix} chmod -R 777 {metastoreDb} &&
-				{prefix} mkdir -p {warehouse} &&
-				{prefix} chmod -R 777 {warehouse}
-				`,
-			map[string]string{
-				"prefix":      prefix,
-				"metastoreDb": metastoreDB,
-				"warehouse":   warehouse,
-			})
-		utils.RunCmd(cmd)
+		utils.MkdirAll(metastoreDB, "777")
+		utils.MkdirAll(warehouse, "777")
 		// spark-defaults.conf
 		text := utils.ReadFileAsString("~/.config/icon-data/spark/spark-defaults.conf")
-		cmd = utils.Format("echo '{conf}' | {prefix} tee {sparkDefaults} > /dev/null",
+		cmd := utils.Format("echo '{conf}' | {prefix} tee {sparkDefaults} > /dev/null",
 			map[string]string{
 				"prefix":        prefix,
 				"conf":          strings.ReplaceAll(text, "$SPARK_HOME", sparkHome),
