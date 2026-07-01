@@ -41,13 +41,7 @@ func installRustNix(rustupHome, cargoHome, toolchain string) {
 		}),
 	})
 	utils.RunCmd(command, "RUSTUP_HOME="+rustupHome, "CARGO_HOME="+cargoHome)
-	command = utils.Format("{prefix} rm -rf {registry}", map[string]string{
-		"registry": filepath.Join(cargoHome, "registry"),
-		"prefix": utils.GetCommandPrefix(false, map[string]uint32{
-			cargoHome: unix.W_OK | unix.R_OK,
-		}),
-	})
-	utils.RunCmd(command)
+	utils.RemoveAll(filepath.Join(cargoHome, "registry"))
 	installCargoBinstall()
 	installSccache()
 }

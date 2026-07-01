@@ -70,6 +70,7 @@ func Execute() {
 	shell.ConfigAtuinCmd(rootCmd)
 	shell.ConfigBashItCmd(rootCmd)
 	shell.ConfigFishCmd(rootCmd)
+	shell.ConfigGhosttyCmd(rootCmd)
 	shell.ConfigHyperCmd(rootCmd)
 	shell.ConfigNushellCmd(rootCmd)
 	shell.ConfigWavetermCmd(rootCmd)

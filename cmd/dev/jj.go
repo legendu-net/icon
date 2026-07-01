@@ -48,32 +48,16 @@ func installJj(global bool) {
 
 // uninstallJj removes the jj binary installed by installJj. It searches the
 // candidate installation directories (~/.local/bin and /usr/local/bin) and
-// removes the binary wherever it is found, using privilege escalation only
-// for the system location.
+// removes the binary wherever it is found. RemoveAll derives privilege
+// escalation from the target path's write permissions, so the system location
+// is handled with sudo only when necessary.
 func uninstallJj() {
-	for _, dir := range []struct {
-		binDir string
-		global bool
-	}{
-		{"~/.local/bin", false},
-		{"/usr/local/bin", true},
-	} {
-		path := dir.binDir + "/jj"
+	for _, binDir := range []string{"~/.local/bin", "/usr/local/bin"} {
+		path := binDir + "/jj"
 		if !utils.ExistsFile(path) {
 			continue
 		}
-		prefix := ""
-		if dir.global {
-			prefix = utils.GetCommandPrefix(
-				true,
-				map[string]uint32{},
-			)
-		}
-		command := utils.Format("{prefix} rm -f {path}", map[string]string{
-			"prefix": prefix,
-			"path":   path,
-		})
-		utils.RunCmd(command)
+		utils.RemoveAll(path)
 	}
 }
 

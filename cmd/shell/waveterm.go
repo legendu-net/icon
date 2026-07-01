@@ -63,14 +63,9 @@ func installWavetermAppImage() {
 		"amd64":  {"x86_64"},
 		"arm64":  {"arm64"},
 	}, []string{}, file)
-	appDir := "~/Applications"
-	command := utils.Format(`mkdir -p {appDir} \
-		&& cp {file} {appDir}/waveterm.AppImage \
-		&& chmod +x {appDir}/waveterm.AppImage`, map[string]string{
-		"appDir": appDir,
-		"file":   file,
-	})
-	utils.RunCmd(command)
+	dst := "~/Applications/waveterm.AppImage"
+	utils.CopyFile(file, dst)
+	utils.Chmod(dst, "+x")
 }
 
 // uninstallWavetermDeb removes the Wave terminal package on the Debian/Ubuntu series.
