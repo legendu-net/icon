@@ -3,6 +3,7 @@ package utils
 import (
 	"fmt"
 	"log"
+	"os"
 	"path/filepath"
 	"strings"
 	"time"
@@ -61,17 +62,37 @@ func CopyFile(sourceFile, destinationFile string) {
 }
 
 // RemoveAll removes the specified path and any children it contains.
+// It uses `rip` (rm-improved) when available, otherwise falls back to `rm -rf`.
 //
 // @param path The path to the file or directory to remove.
 func RemoveAll(path string) {
 	path = NormalizePath(path)
+	// Unlike `rm -rf`, `rip` errors out on a non-existent path, so skip removal
+	// when the path is definitively absent. Lstat (not Stat) is used so a broken
+	// symlink still counts as present and gets removed; a permission error is not
+	// treated as absent, leaving the (possibly sudo'd) removal below to handle it.
+	if _, err := os.Lstat(path); os.IsNotExist(err) {
+		return
+	}
 	prefix := GetCommandPrefix(false, map[string]uint32{
 		path: unix.W_OK | unix.R_OK,
 	})
-	cmd := Format("{prefix} rm -rf {path}", map[string]string{
-		"prefix": prefix,
-		"path":   path,
-	})
+	var cmd string
+	// Resolve `rip` to its absolute path. `rip` is commonly installed under the
+	// user's home (e.g. ~/.cargo/bin), which is not on sudo's secure_path, so the
+	// bare name would fail under a sudo'd removal; the absolute path always works.
+	if ripPath := LookPath("rip"); ripPath != "" {
+		cmd = Format("{prefix} {rip} {path}", map[string]string{
+			"prefix": prefix,
+			"rip":    ripPath,
+			"path":   path,
+		})
+	} else {
+		cmd = Format("{prefix} rm -rf {path}", map[string]string{
+			"prefix": prefix,
+			"path":   path,
+		})
+	}
 	RunCmd(cmd)
 }
 
@@ -137,6 +158,9 @@ func SymlinkIntoDir(path, dstDir string) {
 func CopyOrSymlink(src, dst string, doCopy bool) {
 	src = NormalizePath(src)
 	dst = NormalizePath(dst)
+	if !ExistsPath(src) {
+		log.Fatalf("ERROR - the source path %s does not exist.", src)
+	}
 	if doCopy {
 		if ExistsDir(src) {
 			CopyDirRegular(src, dst)

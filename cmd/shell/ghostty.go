@@ -1,7 +1,6 @@
 package shell
 
 import (
-	"log"
 	"os"
 	"path/filepath"
 
@@ -43,11 +42,8 @@ func ghostty(cmd *cobra.Command, _ []string) {
 	}
 	if utils.GetBoolFlag(cmd, "config") {
 		icon.FetchConfigData(false, "")
-		src := "~/.config/icon-data/ghostty/config.ghostty"
-		if !utils.ExistsFile(src) {
-			log.Fatalf("The Ghostty configuration file %s does not exist.", src)
-		}
-		dst := "~/.config/ghostty/config"
+		src := "~/.config/icon-data/ghostty"
+		dst := "~/.config/ghostty"
 		utils.BackupOrRemove(dst, utils.ShouldBackup(cmd))
 		utils.CopyOrSymlink(src, dst, utils.GetBoolFlag(cmd, "copy"))
 	}
