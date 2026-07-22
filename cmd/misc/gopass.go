@@ -2,6 +2,7 @@ package misc
 
 import (
 	"log"
+	"strconv"
 
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
@@ -9,12 +10,20 @@ import (
 	"legendu.net/icon/utils"
 )
 
-// gitConfig holds the gopass-specific git information used to set up the
-// gopass store. The user identity (name and email) is single-sourced from
+// gopassConfig holds the gopass-specific settings used to set up the gopass
+// store. The user identity (name and email) is single-sourced from
 // ~/.config/icon-data/user.yaml via utils.ReadUserConfig.
-type gitConfig struct {
-	GitURL string `yaml:"gitUrl"`
+// AgeAgentTimeout is the number of seconds the age agent caches an unlocked
+// identity. It is optional: any non-positive value (including the 0 of an
+// absent field) falls back to defaultAgeAgentTimeout.
+type gopassConfig struct {
+	GitURL          string `yaml:"gitUrl"`
+	AgeAgentTimeout int    `yaml:"ageAgentTimeout"`
 }
+
+// defaultAgeAgentTimeout is the age.agent-timeout (in seconds) applied when
+// ageAgentTimeout is not configured in ~/.config/icon-data/gopass/config.yaml.
+const defaultAgeAgentTimeout = 7200
 
 // runPackageCmd dispatches a package-manager command (install/uninstall) for
 // the current OS, filling in the sudo prefix and yes-flag for the given
@@ -49,16 +58,16 @@ func gopass(cmd *cobra.Command, _ []string) {
 	}
 	if utils.GetBoolFlag(cmd, "config") {
 		icon.FetchConfigData(false, "")
-		gitConfigFile := "~/.config/icon-data/gopass/git.yaml"
-		if !utils.ExistsFile(gitConfigFile) {
-			log.Fatalf("The gopass git configuration file %s does not exist.", gitConfigFile)
+		configFile := "~/.config/icon-data/gopass/config.yaml"
+		if !utils.ExistsFile(configFile) {
+			log.Fatalf("The gopass configuration file %s does not exist.", configFile)
 		}
-		var cfg gitConfig
-		if err := yaml.Unmarshal(utils.ReadFile(gitConfigFile), &cfg); err != nil {
-			log.Fatalf("Error parsing %s: %v", gitConfigFile, err)
+		var cfg gopassConfig
+		if err := yaml.Unmarshal(utils.ReadFile(configFile), &cfg); err != nil {
+			log.Fatalf("Error parsing %s: %v", configFile, err)
 		}
 		if cfg.GitURL == "" {
-			log.Fatalf("gitUrl is not configured in %s.", gitConfigFile)
+			log.Fatalf("gitUrl is not configured in %s.", configFile)
 		}
 		user := utils.ReadUserConfig()
 		store := "~/.local/share/gopass/stores/root"
@@ -74,8 +83,15 @@ func gopass(cmd *cobra.Command, _ []string) {
 				"userEmail": user.UserEmail,
 			},
 		))
+		ageAgentTimeout := cfg.AgeAgentTimeout
+		if ageAgentTimeout <= 0 {
+			ageAgentTimeout = defaultAgeAgentTimeout
+		}
 		utils.RunCmd("gopass config age.agent-enabled true")
-		utils.RunCmd("gopass config age.agent-timeout 3600")
+		utils.RunCmd(utils.Format(
+			"gopass config age.agent-timeout {ageAgentTimeout}",
+			map[string]string{"ageAgentTimeout": strconv.Itoa(ageAgentTimeout)},
+		))
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
 		runPackageCmd(cmd,
