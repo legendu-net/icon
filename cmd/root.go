@@ -27,6 +27,8 @@ var rootCmd = &cobra.Command{
 
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
+//
+//nolint:funlen // Execute is the single registry of all subcommands, so it grows with every new tool.
 func Execute() {
 	switch runtime.GOOS {
 	case "darwin", "linux":
@@ -47,6 +49,7 @@ func Execute() {
 	dev.ConfigDenoCmd(rootCmd)
 	filesystem.ConfigRipCmd(rootCmd)
 	filesystem.ConfigDropboxCmd(rootCmd)
+	filesystem.ConfigYaziCmd(rootCmd)
 	icon.ConfigCompletionCmd(rootCmd)
 	icon.ConfigDataCmd(rootCmd)
 	icon.ConfigUpdateCmd(rootCmd)

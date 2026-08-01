@@ -31,7 +31,11 @@ There are no Go unit tests in this repo; verification is done by building and ru
   adding a `Config<Tool>Cmd(rootCmd)` call here** — it is the single registry of all commands.
 - `cmd/` is organized by category packages: `ai`, `bigdata`, `dev`, `filesystem`, `icon` (the tool's
   own meta-commands: `data`, `update`, `version`, `completion`), `ide`, `jupyter`, `misc`, `network`,
-  `shell`, `virtualization`.
+  `shell`, `virtualization`. A category package normally imports only `cmd/icon` and `cmd/network`
+  (plus `utils`), but it may also import another category package when one tool has to install
+  another — `cmd/filesystem` imports `cmd/dev` for `dev.InstallJjTools`, because the Yazi plugin
+  `Adda0/jjui` needs `jj` and `jjui` at runtime. Such an edge makes the dependency between the two
+  packages directional, so keep it one-way to avoid an import cycle.
 - `utils/` is the shared library all commands build on. Prefer these over raw stdlib calls for
   consistency: `RunCmd`/`Format` (shell exec with `{placeholder}` templating), `GetCommandPrefix`
   (decides whether to prepend `sudo` based on path write-permissions), `Get*Flag`, OS detection
@@ -58,9 +62,46 @@ it into `Format` templates so privilege escalation only happens when the target 
 
 ## Configuration data
 
-The `icon data` command (`cmd/icon/data.go`) clones the separate **`legendu-net/icon-data`** repo
-into `~/.config/icon-data`. That external repo holds the dotfile/config templates many `--config`
-actions copy or symlink into place; some tools depend on it being fetched first.
+**The configuration of every app lives in the separate `legendu-net/icon-data` repo, not in this
+repo.** `icon data` (`cmd/icon/data.go`) clones it into `~/.config/icon-data`; `--config` actions
+call `icon.FetchConfigData(false, "")` first, which is a no-op when the clone already exists.
+
+**Never edit `~/.config/icon-data` — it is a pull target, not a working copy.** `icon <app> -c`
+reads from it, and `icon data` / `icon data --force` (re)pulls it, the latter renaming the existing
+copy to a timestamped backup and re-cloning, so anything written there is silently dropped out of
+use. Development on the configuration data happens in the sibling checkout **`../icon-data`**:
+extract or edit configuration there, commit and push it, and it reaches `~/.config/icon-data` on
+the next `icon data --force`.
+
+Layout: one directory per app, usually named after the subcommand — `~/.config/icon-data/<app>/…`
+(e.g. `zellij/config.kdl`, `waveterm/settings.json`, `yazi/keymap.toml`), though a few follow the
+app's own spelling instead (`neovim` → `nvim`, `bash_it` → `bash-it`). `user.yaml` holds the shared
+user identity (`utils.ReadUserConfig`), so never hard-code a name or email in a command.
+
+Track hand-written configuration only. A file an app generates and rewrites itself (e.g. Yazi's
+`package.toml`, a lock file maintained by `ya pkg`) stays machine-local: symlinking it would make
+the app write into `~/.config/icon-data`, and the write would be lost on the next
+`icon data --force` anyway.
+
+The standard `--config` body is:
+
+```go
+icon.FetchConfigData(false, "")
+src := "~/.config/icon-data/<app>/<file>"   // fail via log.Fatal if a required src is missing
+dst := "~/.config/<app>/<file>"
+utils.BackupOrRemove(dst, utils.ShouldBackup(cmd))   // honors --no-backup
+utils.CopyOrSymlink(src, dst, utils.GetBoolFlag(cmd, "copy"))   // honors --copy
+```
+
+Link the whole app directory (`cmd/shell/zellij.go`) when the app owns all of it, or entry by entry
+(`cmd/filesystem/yazi.go`) when the app writes machine-local state into the same directory — e.g.
+`~/.config/yazi/plugins`, which `ya pkg` manages and which therefore must not be symlinked into
+icon-data. Respect an app's own config-home environment variables (Yazi honors `YAZI_CONFIG_HOME`
+and `XDG_CONFIG_HOME`) instead of hard-coding `~/.config/<app>`.
+
+**Supporting a new app therefore takes changes in two repos:** the command here, and its
+configuration committed and pushed to `legendu-net/icon-data`, without which `--config` fails on
+any other machine.
 
 ## Release / CI flow
 
