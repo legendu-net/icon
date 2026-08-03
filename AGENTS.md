@@ -78,6 +78,11 @@ Layout: one directory per app, usually named after the subcommand — `~/.config
 app's own spelling instead (`neovim` → `nvim`, `bash_it` → `bash-it`). `user.yaml` holds the shared
 user identity (`utils.ReadUserConfig`), so never hard-code a name or email in a command.
 
+File names follow whatever the app accepts, which is not always the most common one: Ghostty reads
+both `config` and `config.ghostty` from its configuration directory, and icon-data tracks it as
+`ghostty/config.ghostty` so that editors pick up the `.ghostty` file type. Check an app's
+documentation before assuming a file in icon-data is misnamed.
+
 Track hand-written configuration only. A file an app generates and rewrites itself (e.g. Yazi's
 `package.toml`, a lock file maintained by `ya pkg`) stays machine-local: symlinking it would make
 the app write into `~/.config/icon-data`, and the write would be lost on the next
