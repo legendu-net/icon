@@ -28,14 +28,14 @@ type yaziDep struct {
 
 // yaziDeps are the optional dependencies recommended by Yazi. unzip and git are
 // not dependencies of Yazi itself but are required to extract its release
-// archive and to install its plugins respectively.
+// archive and to install its plugins respectively. fd is installed separately
+// by InstallFd, which also makes fdfind available as fd.
 var yaziDeps = []yaziDep{
 	{Commands: []string{"git"}, Apt: "git", Dnf: "git", Brew: "git"},
 	{Commands: []string{"ffmpeg"}, Apt: "ffmpeg", Dnf: "ffmpeg-free", Brew: "ffmpeg"},
 	{Commands: []string{"7z", "7zz"}, Apt: "7zip", Dnf: "7zip", Brew: "sevenzip"},
 	{Commands: []string{"jq"}, Apt: "jq", Dnf: "jq", Brew: "jq"},
 	{Commands: []string{"pdftoppm"}, Apt: "poppler-utils", Dnf: "poppler-utils", Brew: "poppler"},
-	{Commands: []string{"fd", "fdfind"}, Apt: "fd-find", Dnf: "fd-find", Brew: "fd"},
 	{Commands: []string{"rg"}, Apt: "ripgrep", Dnf: "ripgrep", Brew: "ripgrep"},
 	{Commands: []string{"fzf"}, Apt: "fzf", Dnf: "fzf", Brew: "fzf"},
 	{Commands: []string{"zoxide"}, Apt: "zoxide", Dnf: "zoxide", Brew: "zoxide"},
@@ -308,6 +308,7 @@ func uninstallYazi() {
 func yazi(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "install") {
 		installYaziDeps(cmd)
+		InstallFd(utils.GetBoolFlag(cmd, "yes"))
 		if utils.IsLinux() {
 			installYazi(utils.GetBoolFlag(cmd, "global"))
 		} else {

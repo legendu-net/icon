@@ -65,8 +65,8 @@ When the user asks to add support for installing and configuring a new app in `i
 4. **Register the command in `root.go`:**
 
    - Modify `cmd/root.go`.
-   - Inside the `Execute()` function, find the section where commands are registered (e.g., `dev.ConfigGolangCmd(rootCmd)`).
-   - Add the call to `<category>.Config<App>Cmd(rootCmd)` in the appropriate alphabetically sorted location for its package.
+   - Find the `commandConfigs` slice, which lists the functions registering all commands (e.g., `dev.ConfigGolangCmd`).
+   - Add `<category>.Config<App>Cmd,` in the appropriate alphabetically sorted location for its package.
 
 5. **Inform the user:**
 
