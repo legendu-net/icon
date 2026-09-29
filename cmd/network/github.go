@@ -109,7 +109,10 @@ func downloadGitHubReleaseArgs(cmd *cobra.Command, _ []string) {
 // @param args: The arguments to parse.
 // If None, the arguments from command-line are parsed.
 func DownloadGitHubRelease(repo, ver string, keywords map[string][]string, keywordsExclude []string, output string) {
-	keywords_ := utils.BuildKernelOSKeywords(keywords)
+	keywords_, err := utils.BuildKernelOSKeywords(keywords)
+	if err != nil {
+		log.Fatalf("ERROR - cannot download a release from the GitHub repository %s: %v!", repo, err)
+	}
 	log.Printf(`Download release from the GitHub repository %s satisfying the following conditions:
 	Version: %s
 	Contains: %s
@@ -136,8 +139,17 @@ func DownloadGitHubRelease(repo, ver string, keywords map[string][]string, keywo
 			log.Printf("Asset %s is not matched.", asset.Name)
 		}
 	}
+	if browserDownloadURL == "" {
+		log.Fatalf(
+			"ERROR - no asset of the release %s in the GitHub repository %s contains all of [%s] and none of [%s]!",
+			release.TagName,
+			repo,
+			strings.Join(keywords_, ", "),
+			strings.Join(keywordsExclude, ", "),
+		)
+	}
 	// download the asset
-	_, err := utils.DownloadFile(browserDownloadURL, output, false)
+	_, err = utils.DownloadFile(browserDownloadURL, output, false)
 	if err != nil {
 		log.Fatal(err)
 	}

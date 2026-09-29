@@ -53,7 +53,7 @@ func installWavetermRpm(cmd *cobra.Command) {
 
 // installWavetermAppImage downloads the Wave terminal AppImage from its GitHub
 // releases and installs it into ~/Applications. AppImage is used on image-based
-// Universal Blue distributions where layering deb/rpm packages is undesirable.
+// (rpm-ostree) Linux distributions where layering deb/rpm packages is undesirable.
 func installWavetermAppImage() {
 	tmpdir := utils.CreateTempDir("")
 	defer os.RemoveAll(tmpdir)
@@ -90,7 +90,7 @@ func uninstallWavetermRpm(cmd *cobra.Command) {
 func waveterm(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "install") {
 		if utils.IsLinux() {
-			if utils.IsUniversalBlue() {
+			if utils.IsAtomicLinux() {
 				installWavetermAppImage()
 			} else if utils.IsDebianUbuntuSeries() {
 				installWavetermDeb(cmd)
@@ -113,7 +113,7 @@ func waveterm(cmd *cobra.Command, _ []string) {
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
 		if utils.IsLinux() {
-			if utils.IsUniversalBlue() {
+			if utils.IsAtomicLinux() {
 				utils.RemoveAll("~/Applications/waveterm.AppImage")
 			} else if utils.IsDebianUbuntuSeries() {
 				uninstallWavetermDeb(cmd)

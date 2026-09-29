@@ -1,9 +1,11 @@
 package utils
 
 import (
+	"fmt"
 	"log"
 	"runtime"
 	"slices"
+	"strings"
 
 	"github.com/shirou/gopsutil/cpu"
 	"github.com/shirou/gopsutil/host"
@@ -115,10 +117,13 @@ func IsAtomicLinux() bool {
 }
 
 // BuildKernelOSKeywords constructs a list of keywords based on kernel architecture and operating system.
+// It returns an error if keywords are given for the amd64 or arm64 architectures
+// but not for the host's architecture.
 //
 // @param keywords A map where keys are keyword categories and values are lists of keywords.
 //
-// @return A slice of strings representing the combined list of keywords.
+// @return A slice of strings representing the combined list of keywords, and an error
+// if no build is available for the host's architecture.
 //
 // @example
 //
@@ -132,14 +137,29 @@ func IsAtomicLinux() bool {
 //		"FedoraSeries":       {"fedora_keyword"},
 //		"OtherLinux":         {"other_linux_keyword"},
 //	}
-//	result := BuildKernelOSKeywords(keywords)
+//	result, err := BuildKernelOSKeywords(keywords)
 //	// result might contain a combination of the above keywords based on the OS and architecture
 
-func BuildKernelOSKeywords(keywords map[string][]string) []string {
+func BuildKernelOSKeywords(keywords map[string][]string) ([]string, error) {
 	kwds := keywords["common"]
 	k, found := keywords[HostKernelArch()]
 	if found {
 		kwds = append(kwds, k...)
+	} else {
+		var archs []string
+		for _, arch := range []string{"amd64", "arm64"} {
+			if len(keywords[arch]) > 0 {
+				archs = append(archs, arch)
+			}
+		}
+		// Without an architecture keyword, a build for another architecture might be matched.
+		if len(archs) > 0 {
+			return nil, fmt.Errorf(
+				"no build is available for the CPU architecture %s (builds are available for: %s)",
+				HostInfo().KernelArch,
+				strings.Join(archs, ", "),
+			)
+		}
 	}
 	k, found = keywords[runtime.GOOS]
 	if found {
@@ -161,7 +181,7 @@ func BuildKernelOSKeywords(keywords map[string][]string) []string {
 			kwds = append(kwds, otherLinux...)
 		}
 	}
-	return kwds
+	return kwds, nil
 }
 
 func HostInfo() *host.InfoStat {

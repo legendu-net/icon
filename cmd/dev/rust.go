@@ -70,15 +70,20 @@ func installSccache() {
 func installCargoBinstall() {
 	tmpdir := utils.CreateTempDir("")
 	defer os.RemoveAll(tmpdir)
+	// cargo-binstall ships .tgz archives for Linux and .zip archives for macOS.
 	file := filepath.Join(tmpdir, "cargo-binstall.tgz")
+	extract := "tar -C /usr/local/bin/ -zxvf {file}"
+	if !utils.IsLinux() {
+		file = filepath.Join(tmpdir, "cargo-binstall.zip")
+		extract = "unzip -o {file} -d /usr/local/bin/"
+	}
 	network.DownloadGitHubRelease("cargo-bins/cargo-binstall", "", map[string][]string{
-		"common": {"tgz"},
-		"amd64":  {"x86_64"},
-		"arm64":  {"aarch64"},
-		Linux:    {"unknown", Linux, "gnu"},
-		Darwin:   {"apple", Darwin},
-	}, []string{"pre", "full"}, file)
-	command := utils.Format("{prefix} tar -C /usr/local/bin/ -zxvf {file}", map[string]string{
+		"amd64": {"x86_64"},
+		"arm64": {"aarch64"},
+		Linux:   {"unknown", Linux, "gnu", ".tgz"},
+		Darwin:  {"apple", Darwin, ".zip"},
+	}, []string{"pre", "full", ".sig"}, file)
+	command := utils.Format("{prefix} "+extract, map[string]string{
 		"prefix": utils.GetCommandPrefix(false, map[string]uint32{
 			"/usr/local/bin": unix.W_OK | unix.R_OK,
 		}),
