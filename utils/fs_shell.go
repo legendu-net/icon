@@ -74,8 +74,10 @@ func RemoveAll(path string) {
 	if _, err := os.Lstat(path); os.IsNotExist(err) {
 		return
 	}
+	// Removing a path modifies its parent directory, so the parent's permissions matter too.
 	prefix := GetCommandPrefix(false, map[string]uint32{
-		path: unix.W_OK | unix.R_OK,
+		path:                               unix.W_OK | unix.R_OK,
+		filepath.Dir(filepath.Clean(path)): unix.W_OK | unix.X_OK,
 	})
 	var cmd string
 	// Resolve `rip` to its absolute path. `rip` is commonly installed under the

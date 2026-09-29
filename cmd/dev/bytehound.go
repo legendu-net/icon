@@ -2,23 +2,30 @@ package dev
 
 import (
 	"log"
+	"os"
+	"path/filepath"
 
 	"github.com/spf13/cobra"
 	"legendu.net/icon/cmd/network"
 	"legendu.net/icon/utils"
 )
 
-// Install and configure Rust.
+// Install and configure Bytehound.
 func bytehound(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "install") {
 		if utils.IsLinux() {
+			tmpdir := utils.CreateTempDir("")
+			defer os.RemoveAll(tmpdir)
+			file := filepath.Join(tmpdir, "bytehound.tar.gz")
 			network.DownloadGitHubRelease("koute/bytehound", "", map[string][]string{
 				"common": {"bytehound", "tgz"},
 				"amd64":  {"x86_64"},
 				"linux":  {"linux", "gnu"},
-			}, []string{}, "/tmp/bytehound.tar.gz")
-			command := utils.Format(`mkdir -p ~/.local/bin && tar -zxvf /tmp/bytehound.tar.gz -C ~/.local/bin \
-				&& mkdir -p ~/.local/lib && mv ~/.local/bin/libbytehound.so ~/.local/lib`, map[string]string{})
+			}, []string{}, file)
+			command := utils.Format(`mkdir -p ~/.local/bin && tar -zxvf {file} -C ~/.local/bin \
+				&& mkdir -p ~/.local/lib && mv ~/.local/bin/libbytehound.so ~/.local/lib`, map[string]string{
+				"file": file,
+			})
 			utils.RunCmd(command)
 			log.Println("libbytehound.so has been installed to ~/.local/lib.")
 			log.Println("bytehound and bytehound-gather has been installed to ~/.local/bin.")

@@ -11,7 +11,16 @@ import (
 	"legendu.net/icon/utils"
 )
 
-// Install and configure Ganymede.
+// zellijConfigDir returns the configuration directory of Zellij,
+// which is overridden by the environment variable ZELLIJ_CONFIG_DIR.
+func zellijConfigDir() string {
+	if dir := os.Getenv("ZELLIJ_CONFIG_DIR"); dir != "" {
+		return dir
+	}
+	return "~/.config/zellij"
+}
+
+// Install and configure Zellij.
 func zellij(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "install") {
 		tmpdir := utils.CreateTempDir("")
@@ -31,10 +40,12 @@ func zellij(cmd *cobra.Command, _ []string) {
 			file,
 		)
 		dirBin := utils.GetStringFlag(cmd, "bin-dir")
-		command := utils.Format(`{prefix} tar -zxvf {file} -C {dirBin}`, map[string]string{
+		// --no-same-owner: the archive stores zellij as owned by the release builder's uid.
+		command := utils.Format(`{prefix} mkdir -p {dirBin} \
+				&& {prefix} tar --no-same-owner -zxvf {file} -C {dirBin}`, map[string]string{
 			"file":   file,
 			"dirBin": dirBin,
-			"prefix": utils.GetCommandPrefix(false, map[string]uint32{
+			"prefix": utils.GetCommandPrefix(utils.GetBoolFlag(cmd, "sudo"), map[string]uint32{
 				dirBin: unix.W_OK | unix.R_OK,
 			}),
 		})
@@ -43,11 +54,12 @@ func zellij(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "config") {
 		icon.FetchConfigData(false, "")
 		src := "~/.config/icon-data/zellij"
-		dst := "~/.config/zellij"
+		dst := zellijConfigDir()
 		utils.BackupOrRemove(dst, utils.ShouldBackup(cmd))
 		utils.CopyOrSymlink(src, dst, utils.GetBoolFlag(cmd, "copy"))
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
+		utils.RemoveAll(filepath.Join(utils.GetStringFlag(cmd, "bin-dir"), "zellij"))
 	}
 }
 
@@ -60,13 +72,12 @@ var zellijCmd = &cobra.Command{
 }
 
 func ConfigZellijCmd(rootCmd *cobra.Command) {
-	zellijCmd.Flags().BoolP("install", "i", false, "Install Ganymede.")
-	zellijCmd.Flags().Bool("uninstall", false, "Uninstall Ganymede.")
-	zellijCmd.Flags().BoolP("config", "c", false, "Configure Ganymede.")
+	zellijCmd.Flags().BoolP("install", "i", false, "Install Zellij.")
+	zellijCmd.Flags().Bool("uninstall", false, "Uninstall Zellij.")
+	zellijCmd.Flags().BoolP("config", "c", false, "Configure Zellij.")
 	zellijCmd.Flags().Bool("sudo", false, "Force using sudo.")
 	zellijCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
 	zellijCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
 	zellijCmd.Flags().String("bin-dir", "/usr/local/bin", "The directory for installing Zellij executable.")
-	utils.AddPythonFlags(zellijCmd)
 	rootCmd.AddCommand(zellijCmd)
 }

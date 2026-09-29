@@ -12,6 +12,9 @@ import (
 	"legendu.net/icon/utils"
 )
 
+// installGitUI installs gitui from its GitHub releases when --gitui is set.
+// It is used on the Debian/Ubuntu and Fedora series only;
+// macOS and Universal Blue install gitui with Homebrew instead.
 func installGitUI(cmd *cobra.Command) {
 	if utils.GetBoolFlag(cmd, "gitui") {
 		tmpdir := utils.CreateTempDir("")
@@ -20,8 +23,7 @@ func installGitUI(cmd *cobra.Command) {
 		network.DownloadGitHubRelease("extrawurst/gitui", "", map[string][]string{
 			"common": {"tar.gz"},
 			"linux":  {"linux"},
-			"darwin": {"mac"},
-			"amd64":  {"musl"},
+			"amd64":  {"x86_64"},
 			"arm64":  {"aarch64"},
 		}, []string{}, file)
 		command := utils.Format(`{prefix} tar -zxvf {file} -C /usr/local/bin/`, map[string]string{
