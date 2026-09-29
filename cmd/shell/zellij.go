@@ -20,8 +20,14 @@ func zellij(cmd *cobra.Command, _ []string) {
 		network.DownloadGitHubRelease(
 			"zellij-org/zellij",
 			"",
-			map[string][]string{"common": {"tar.gz"}},
-			[]string{"sha256sum"},
+			map[string][]string{
+				"common": {"tar.gz"},
+				"amd64":  {"x86_64"},
+				"arm64":  {"aarch64"},
+				"linux":  {"linux", "musl"},
+				"darwin": {"apple", "darwin"},
+			},
+			[]string{"sha256sum", "no-web"},
 			file,
 		)
 		dirBin := utils.GetStringFlag(cmd, "bin-dir")
