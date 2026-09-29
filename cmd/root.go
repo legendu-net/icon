@@ -25,6 +25,55 @@ var rootCmd = &cobra.Command{
 	TraverseChildren: true,
 }
 
+// commandConfigs are the functions registering all subcommands of icon.
+var commandConfigs = []func(*cobra.Command){
+	ai.ConfigPyTorchCmd,
+	bigdata.ConfigArrowDBCmd,
+	bigdata.ConfigSparkCmd,
+	dev.ConfigBytehoundCmd,
+	dev.ConfigGitCmd,
+	dev.ConfigGolangCmd,
+	dev.ConfigJjCmd,
+	dev.ConfigPerfCmd,
+	dev.ConfigPytypeCmd,
+	dev.ConfigRustCmd,
+	dev.ConfigDenoCmd,
+	filesystem.ConfigRipCmd,
+	filesystem.ConfigDropboxCmd,
+	filesystem.ConfigFdCmd,
+	filesystem.ConfigYaziCmd,
+	icon.ConfigCompletionCmd,
+	icon.ConfigDataCmd,
+	icon.ConfigUpdateCmd,
+	icon.ConfigVersionCmd,
+	ide.ConfigFirenvimCmd,
+	ide.ConfigNeovimCmd,
+	ide.ConfigVscodeCmd,
+	ide.ConfigHelixCmd,
+	jupyter.ConfigGanymedeCmd,
+	jupyter.ConfigIpythonCmd,
+	jupyter.ConfigJupyterBookCmd,
+	jupyter.ConfigJLabVimCmd,
+	dev.ConfigHomebrewCmd,
+	misc.ConfigGopassCmd,
+	misc.ConfigKeepassXCCmd,
+	misc.ConfigKeyboardCmd,
+	network.ConfigDownloadGitHubReleaseCmd,
+	network.ConfigSSHClientCmd,
+	network.ConfigSSHServerCmd,
+	shell.ConfigAlacrittyCmd,
+	shell.ConfigAtuinCmd,
+	shell.ConfigBashItCmd,
+	shell.ConfigFishCmd,
+	shell.ConfigGhosttyCmd,
+	shell.ConfigNushellCmd,
+	shell.ConfigTelevisionCmd,
+	shell.ConfigWavetermCmd,
+	shell.ConfigZellijCmd,
+	virtualization.ConfigKVMCmd,
+	virtualization.ConfigDockerCmd,
+}
+
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
@@ -34,49 +83,9 @@ func Execute() {
 		log.Fatal("The OS ", runtime.GOOS, " is not supported!")
 	}
 
-	ai.ConfigPyTorchCmd(rootCmd)
-	bigdata.ConfigArrowDBCmd(rootCmd)
-	bigdata.ConfigSparkCmd(rootCmd)
-	dev.ConfigBytehoundCmd(rootCmd)
-	dev.ConfigGitCmd(rootCmd)
-	dev.ConfigGolangCmd(rootCmd)
-	dev.ConfigJjCmd(rootCmd)
-	dev.ConfigPerfCmd(rootCmd)
-	dev.ConfigPytypeCmd(rootCmd)
-	dev.ConfigRustCmd(rootCmd)
-	dev.ConfigDenoCmd(rootCmd)
-	filesystem.ConfigRipCmd(rootCmd)
-	filesystem.ConfigDropboxCmd(rootCmd)
-	filesystem.ConfigYaziCmd(rootCmd)
-	icon.ConfigCompletionCmd(rootCmd)
-	icon.ConfigDataCmd(rootCmd)
-	icon.ConfigUpdateCmd(rootCmd)
-	icon.ConfigVersionCmd(rootCmd)
-	ide.ConfigFirenvimCmd(rootCmd)
-	ide.ConfigNeovimCmd(rootCmd)
-	ide.ConfigVscodeCmd(rootCmd)
-	ide.ConfigHelixCmd(rootCmd)
-	jupyter.ConfigGanymedeCmd(rootCmd)
-	jupyter.ConfigIpythonCmd(rootCmd)
-	jupyter.ConfigJupyterBookCmd(rootCmd)
-	jupyter.ConfigJLabVimCmd(rootCmd)
-	dev.ConfigHomebrewCmd(rootCmd)
-	misc.ConfigGopassCmd(rootCmd)
-	misc.ConfigKeepassXCCmd(rootCmd)
-	misc.ConfigKeyboardCmd(rootCmd)
-	network.ConfigDownloadGitHubReleaseCmd(rootCmd)
-	network.ConfigSSHClientCmd(rootCmd)
-	network.ConfigSSHServerCmd(rootCmd)
-	shell.ConfigAlacrittyCmd(rootCmd)
-	shell.ConfigAtuinCmd(rootCmd)
-	shell.ConfigBashItCmd(rootCmd)
-	shell.ConfigFishCmd(rootCmd)
-	shell.ConfigGhosttyCmd(rootCmd)
-	shell.ConfigNushellCmd(rootCmd)
-	shell.ConfigWavetermCmd(rootCmd)
-	shell.ConfigZellijCmd(rootCmd)
-	virtualization.ConfigKVMCmd(rootCmd)
-	virtualization.ConfigDockerCmd(rootCmd)
+	for _, config := range commandConfigs {
+		config(rootCmd)
+	}
 
 	err := rootCmd.Execute()
 	if err != nil {

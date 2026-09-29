@@ -27,15 +27,18 @@ There are no Go unit tests in this repo; verification is done by building and ru
 ## Architecture
 
 - `main.go` → `cmd.Execute()` in `cmd/root.go`. `Execute()` rejects non-darwin/linux OSes, then
-  registers every subcommand by calling each `Config<Tool>Cmd(rootCmd)`. **Adding a new tool means
-  adding a `Config<Tool>Cmd(rootCmd)` call here** — it is the single registry of all commands.
+  registers every subcommand by calling each `Config<Tool>Cmd` in the `commandConfigs` slice.
+  **Adding a new tool means adding its `Config<Tool>Cmd` to `commandConfigs`** — it is the single
+  registry of all commands. (A slice rather than one call per tool keeps `Execute()` under the
+  `funlen` statement limit.)
 - `cmd/` is organized by category packages: `ai`, `bigdata`, `dev`, `filesystem`, `icon` (the tool's
   own meta-commands: `data`, `update`, `version`, `completion`), `ide`, `jupyter`, `misc`, `network`,
   `shell`, `virtualization`. A category package normally imports only `cmd/icon` and `cmd/network`
   (plus `utils`), but it may also import another category package when one tool has to install
   another — `cmd/filesystem` imports `cmd/dev` for `dev.InstallJjTools`, because the Yazi plugin
-  `Adda0/jjui` needs `jj` and `jjui` at runtime. Such an edge makes the dependency between the two
-  packages directional, so keep it one-way to avoid an import cycle.
+  `Adda0/jjui` needs `jj` and `jjui` at runtime, and `cmd/shell` imports `cmd/filesystem` for
+  `filesystem.InstallFd`, because Television's files channel runs `fd`. Each such edge makes the
+  dependency between its two packages directional, so keep it one-way to avoid an import cycle.
 - `utils/` is the shared library all commands build on. Prefer these over raw stdlib calls for
   consistency: `RunCmd`/`Format` (shell exec with `{placeholder}` templating), `GetCommandPrefix`
   (decides whether to prepend `sudo` based on path write-permissions), `Get*Flag`, OS detection
