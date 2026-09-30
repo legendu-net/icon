@@ -1,6 +1,8 @@
 package shell
 
 import (
+	"log"
+
 	"github.com/spf13/cobra"
 	"legendu.net/icon/utils"
 )
@@ -9,6 +11,10 @@ import (
 func alacritty(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "install") {
 		if utils.IsLinux() {
+			if !utils.ExistsCommand("cargo") {
+				log.Fatal("The command cargo is required to install Alacritty but is not found. " +
+					"Install Rust via `icon rust -i` and make sure ~/.cargo/bin is on PATH.")
+			}
 			if utils.IsDebianUbuntuSeries() {
 				command := utils.Format(`{prefix} apt-get {yesStr} update \
 				&& {prefix} apt-get {yesStr} install \

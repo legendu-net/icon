@@ -164,6 +164,8 @@ func resolveJj() string {
 // Install and configure jj (Jujutsu) and jjui.
 func jj(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "install") {
+		// unzip is required to extract the release archive of jjui.
+		utils.InstallPackages(utils.GetBoolFlag(cmd, "yes"), utils.PkgUnzip)
 		InstallJjTools(utils.GetBoolFlag(cmd, "global"))
 	}
 	if utils.GetBoolFlag(cmd, "config") {

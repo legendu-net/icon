@@ -1,6 +1,7 @@
 package filesystem
 
 import (
+	"log"
 	"runtime"
 
 	"github.com/spf13/cobra"
@@ -12,6 +13,10 @@ func rip(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "install") {
 		switch runtime.GOOS {
 		case "linux":
+			if !utils.ExistsCommand("cargo") {
+				log.Fatal("The command cargo is required to install rip2 but is not found. " +
+					"Install Rust via `icon rust -i` and make sure ~/.cargo/bin is on PATH.")
+			}
 			utils.RunCmd("cargo install rip2")
 		case "darwin":
 			utils.BrewInstallSafe([]string{"rip2"})

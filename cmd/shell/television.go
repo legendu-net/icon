@@ -7,7 +7,6 @@ import (
 
 	"github.com/spf13/cobra"
 	"golang.org/x/sys/unix"
-	"legendu.net/icon/cmd/filesystem"
 	"legendu.net/icon/cmd/icon"
 	"legendu.net/icon/cmd/network"
 	"legendu.net/icon/utils"
@@ -81,7 +80,8 @@ func configTelevision(cmd *cobra.Command) {
 // Install and configure Television.
 func television(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "install") {
-		filesystem.InstallFd(utils.GetBoolFlag(cmd, "yes"))
+		// fd, rg and bat are required by the default channels of Television.
+		utils.InstallPackages(utils.GetBoolFlag(cmd, "yes"), utils.PkgFd, utils.PkgRipgrep, utils.PkgBat)
 		if utils.IsLinux() {
 			installTelevision(cmd, utils.GetStringFlag(cmd, "bin-dir"))
 		} else {

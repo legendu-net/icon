@@ -4,7 +4,6 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"slices"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -14,100 +13,24 @@ import (
 	"legendu.net/icon/utils"
 )
 
-// yaziDep is an auxiliary tool leveraged by Yazi for previewing, searching and
-// handling archives. Commands are the executables indicating that the
-// dependency is already available, in which case it is not installed again.
-// Apt, Dnf and Brew are the names of the package providing the dependency on
-// the corresponding package manager.
-type yaziDep struct {
-	Commands []string
-	Apt      string
-	Dnf      string
-	Brew     string
-}
-
-// yaziDeps are the optional dependencies recommended by Yazi. unzip and git are
+// yaziDeps are the optional dependencies recommended by Yazi, which it
+// leverages for previewing, searching and handling archives. unzip and git are
 // not dependencies of Yazi itself but are required to extract its release
-// archive and to install its plugins respectively. fd is installed separately
-// by InstallFd, which also makes fdfind available as fd.
-var yaziDeps = []yaziDep{
+// archive and to install its plugins respectively.
+var yaziDeps = []utils.Package{
 	{Commands: []string{"git"}, Apt: "git", Dnf: "git", Brew: "git"},
 	{Commands: []string{"ffmpeg"}, Apt: "ffmpeg", Dnf: "ffmpeg-free", Brew: "ffmpeg"},
 	{Commands: []string{"7z", "7zz"}, Apt: "7zip", Dnf: "7zip", Brew: "sevenzip"},
 	{Commands: []string{"jq"}, Apt: "jq", Dnf: "jq", Brew: "jq"},
 	{Commands: []string{"pdftoppm"}, Apt: "poppler-utils", Dnf: "poppler-utils", Brew: "poppler"},
-	{Commands: []string{"rg"}, Apt: "ripgrep", Dnf: "ripgrep", Brew: "ripgrep"},
+	utils.PkgFd,
+	utils.PkgRipgrep,
 	{Commands: []string{"fzf"}, Apt: "fzf", Dnf: "fzf", Brew: "fzf"},
 	{Commands: []string{"zoxide"}, Apt: "zoxide", Dnf: "zoxide", Brew: "zoxide"},
 	{Commands: []string{"magick", "convert"}, Apt: "imagemagick", Dnf: "ImageMagick", Brew: "imagemagick"},
 	{Commands: []string{"chafa"}, Apt: "chafa", Dnf: "chafa", Brew: "chafa"},
 	{Commands: []string{"file"}, Apt: "file", Dnf: "file", Brew: "file-formula"},
-	{Commands: []string{"unzip"}, Apt: "unzip", Dnf: "unzip", Brew: "unzip"},
-}
-
-// missingYaziDeps returns the packages (named by pkgName, which picks the
-// package name of the package manager in use) of the Yazi dependencies which
-// are not available on the current machine yet.
-func missingYaziDeps(pkgName func(yaziDep) string) []string {
-	pkgs := []string{}
-	for _, dep := range yaziDeps {
-		if slices.ContainsFunc(dep.Commands, utils.ExistsCommand) {
-			continue
-		}
-		if pkg := pkgName(dep); pkg != "" {
-			pkgs = append(pkgs, pkg)
-		}
-	}
-	return pkgs
-}
-
-// installMissingYaziDeps installs the missing Yazi dependencies using the
-// package manager command template, which is filled in with the command prefix,
-// the yes flag and the packages to install.
-func installMissingYaziDeps(cmd *cobra.Command, pkgName func(yaziDep) string, template string) {
-	pkgs := missingYaziDeps(pkgName)
-	if len(pkgs) == 0 {
-		return
-	}
-	command := utils.Format(template, map[string]string{
-		"prefix": utils.GetCommandPrefix(
-			true,
-			map[string]uint32{},
-		),
-		"yesStr": utils.BuildYesFlag(cmd),
-		"pkgs":   strings.Join(pkgs, " "),
-	})
-	utils.RunCmd(command)
-}
-
-// installYaziDeps installs the dependencies of Yazi which are missing on the
-// current machine using the native package manager.
-func installYaziDeps(cmd *cobra.Command) {
-	brewName := func(dep yaziDep) string { return dep.Brew }
-	if !utils.IsLinux() {
-		utils.BrewInstallSafe(missingYaziDeps(brewName))
-		return
-	}
-	switch {
-	case utils.IsAtomicLinux():
-		// Packages cannot be installed into an image-based (rpm-ostree) Linux
-		// distribution without layering them and rebooting,
-		// so Homebrew is used instead.
-		if utils.ExistsCommand("brew") {
-			utils.BrewInstallSafe(missingYaziDeps(brewName))
-		} else {
-			log.Print("WARNING: Homebrew is not available, so dependencies of Yazi are not installed.")
-		}
-	case utils.IsDebianUbuntuSeries():
-		installMissingYaziDeps(cmd, func(dep yaziDep) string { return dep.Apt },
-			`{prefix} apt-get {yesStr} update \
-					&& {prefix} apt-get {yesStr} install {pkgs}`)
-	case utils.IsFedoraSeries():
-		installMissingYaziDeps(cmd, func(dep yaziDep) string { return dep.Dnf },
-			"{prefix} dnf {yesStr} install {pkgs}")
-	default:
-		log.Print("WARNING: the Linux distribution is not supported, so dependencies of Yazi are not installed.")
-	}
+	utils.PkgUnzip,
 }
 
 // installYazi downloads the prebuilt Yazi binaries (yazi and ya) from its
@@ -307,8 +230,7 @@ func uninstallYazi() {
 // Install and configure Yazi.
 func yazi(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "install") {
-		installYaziDeps(cmd)
-		InstallFd(utils.GetBoolFlag(cmd, "yes"))
+		utils.InstallPackages(utils.GetBoolFlag(cmd, "yes"), yaziDeps...)
 		if utils.IsLinux() {
 			installYazi(utils.GetBoolFlag(cmd, "global"))
 		} else {
