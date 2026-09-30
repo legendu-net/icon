@@ -76,7 +76,7 @@ func installGoLangCiLint(prefix, ver string) {
 }
 
 func installGoPls(prefix string) {
-	cmd := utils.Format("{prefix} go install golang.org/x/tools/gopls@latest", map[string]string{
+	cmd := utils.Format("{prefix} env GOBIN=/usr/local/go/bin /usr/local/go/bin/go install golang.org/x/tools/gopls@latest", map[string]string{
 		"prefix": prefix,
 	})
 	utils.RunCmd(cmd)
@@ -92,7 +92,9 @@ func golang(cmd *cobra.Command, _ []string) {
 	if utils.GetBoolFlag(cmd, "install") {
 		installGoLang(prefix, utils.GetStringFlag(cmd, "go-version"))
 		installGoLangCiLint(prefix, utils.GetStringFlag(cmd, "golangci-lint-version"))
-		installGoPls(prefix)
+		if utils.GetBoolFlag(cmd, "gopls") {
+			installGoPls(prefix)
+		}
 	}
 	if utils.GetBoolFlag(cmd, "config") {
 		if utils.IsLinux() {
@@ -125,6 +127,7 @@ func ConfigGolangCmd(rootCmd *cobra.Command) {
 	golangCmd.Flags().BoolP("config", "c", false, "Configure Golang.")
 	golangCmd.Flags().String("go-version", "", "The version (e.g., 1.25.1) of Golang to install (default: the latest).")
 	golangCmd.Flags().String("golangci-lint-version", "", "The version (e.g., v2.5.0) of golangci-lint to install (default: the latest).")
+	golangCmd.Flags().Bool("gopls", false, "Install gopls (the Go language server) too.")
 	golangCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
 	golangCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
 	rootCmd.AddCommand(golangCmd)
