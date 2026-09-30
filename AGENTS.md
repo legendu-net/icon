@@ -36,14 +36,18 @@ There are no Go unit tests in this repo; verification is done by building and ru
   `shell`, `virtualization`. A category package normally imports only `cmd/icon` and `cmd/network`
   (plus `utils`), but it may also import another category package when one tool has to install
   another — `cmd/filesystem` imports `cmd/dev` for `dev.InstallJjTools`, because the Yazi plugin
-  `Adda0/jjui` needs `jj` and `jjui` at runtime, and `cmd/shell` imports `cmd/filesystem` for
-  `filesystem.InstallFd`, because Television's files channel runs `fd`. Each such edge makes the
-  dependency between its two packages directional, so keep it one-way to avoid an import cycle.
+  `Adda0/jjui` needs `jj` and `jjui` at runtime. Such an edge makes the dependency between the two
+  packages directional, so keep it one-way to avoid an import cycle.
 - `utils/` is the shared library all commands build on. Prefer these over raw stdlib calls for
   consistency: `RunCmd`/`Format` (shell exec with `{placeholder}` templating), `GetCommandPrefix`
   (decides whether to prepend `sudo` based on path write-permissions), `Get*Flag`, OS detection
   (`IsLinux`, `IsDebianSeries`, `IsFedoraSeries`, `IsAtomicLinux`, `HostKernelArch`, …), filesystem
   helpers (`fs.go`, `fs_shell.go`), and `DownloadFile`/HTTP helpers in `network.go`.
+  Dependencies installed via the native package manager go through `InstallPackages` /
+  `UninstallPackages` in `package.go`, which skip packages whose command already exists, install
+  the missing ones in a single apt/dnf/brew call, and symlink alternative command names (`fdfind`,
+  `batcat`) into `~/.local/bin`. Reuse the shared `Pkg*` definitions there (e.g. `PkgFd`,
+  `PkgUnzip`) for a dependency needed by multiple tools instead of hand-rolling install logic.
 
 ## Command conventions
 
