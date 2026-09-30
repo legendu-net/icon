@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"runtime"
+	"strings"
 
 	"github.com/spf13/cobra"
 	"golang.org/x/sys/unix"
@@ -33,11 +34,15 @@ func getGolangVersion() (string, error) {
 	return re.FindStringSubmatch(html)[1], nil
 }
 
-func installGoLang(prefix string) {
-	ver, err := getGolangVersion()
-	if err != nil {
-		log.Fatal(err)
+func installGoLang(prefix, ver string) {
+	if ver == "" {
+		var err error
+		ver, err = getGolangVersion()
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
+	ver = strings.TrimPrefix(strings.TrimPrefix(ver, "go"), "v")
 	url := utils.Format("https://go.dev/dl/go{ver}.{os}-{arch}.tar.gz", map[string]string{
 		"ver":  ver,
 		"os":   runtime.GOOS,
@@ -57,11 +62,15 @@ func installGoLang(prefix string) {
 	utils.RunCmd(cmd)
 }
 
-func installGoLangCiLint(prefix string) {
+func installGoLangCiLint(prefix, ver string) {
+	if ver != "" && !strings.HasPrefix(ver, "v") {
+		ver = "v" + ver
+	}
 	script := "https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh"
-	cmd := utils.Format(`curl -sSfL {script} | {prefix} sh -s -- -b /usr/local/go/bin`, map[string]string{
+	cmd := utils.Format(`curl -sSfL {script} | {prefix} sh -s -- -b /usr/local/go/bin {ver}`, map[string]string{
 		"script": script,
 		"prefix": prefix,
+		"ver":    ver,
 	})
 	utils.RunCmd(cmd)
 }
@@ -81,8 +90,8 @@ func golang(cmd *cobra.Command, _ []string) {
 		"/usr/local/bin": unix.W_OK | unix.R_OK,
 	})
 	if utils.GetBoolFlag(cmd, "install") {
-		installGoLang(prefix)
-		installGoLangCiLint(prefix)
+		installGoLang(prefix, utils.GetStringFlag(cmd, "go-version"))
+		installGoLangCiLint(prefix, utils.GetStringFlag(cmd, "golangci-lint-version"))
 		installGoPls(prefix)
 	}
 	if utils.GetBoolFlag(cmd, "config") {
@@ -114,6 +123,8 @@ func ConfigGolangCmd(rootCmd *cobra.Command) {
 	golangCmd.Flags().BoolP("install", "i", false, "Install Golang.")
 	golangCmd.Flags().BoolP("uninstall", "u", false, "Uninstall Golang.")
 	golangCmd.Flags().BoolP("config", "c", false, "Configure Golang.")
+	golangCmd.Flags().String("go-version", "", "The version (e.g., 1.25.1) of Golang to install (default: the latest).")
+	golangCmd.Flags().String("golangci-lint-version", "", "The version (e.g., v2.5.0) of golangci-lint to install (default: the latest).")
 	golangCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
 	golangCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
 	rootCmd.AddCommand(golangCmd)
