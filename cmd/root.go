@@ -42,6 +42,7 @@ var commandConfigs = []func(*cobra.Command){
 	filesystem.ConfigDropboxCmd,
 	filesystem.ConfigFdCmd,
 	filesystem.ConfigYaziCmd,
+	icon.ConfigCleanCmd,
 	icon.ConfigCompletionCmd,
 	icon.ConfigDataCmd,
 	icon.ConfigUpdateCmd,

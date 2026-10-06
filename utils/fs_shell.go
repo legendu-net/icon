@@ -5,6 +5,8 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"regexp"
+	"sort"
 	"strings"
 	"time"
 
@@ -188,14 +190,118 @@ func Rename(originalPath, newPath string) {
 	fmt.Printf("The path %s has been renamed to %s.\n", originalPath, newPath)
 }
 
+// DefaultBackupsToKeep is the number of most recent (physical) backups kept per path.
+const DefaultBackupsToKeep = 3
+
+// backupSuffix matches the "_<RFC3339 timestamp>" suffix that Backup appends to a path.
+var backupSuffix = regexp.MustCompile(
+	`_(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:Z|[+-]\d{2}:\d{2}))$`)
+
+// ParseBackupPath splits a backup path created by Backup into the original path
+// and the timestamp of the backup.
+//
+// @param path The path to parse.
+//
+// @return The original path, the timestamp and whether path is a backup path.
+func ParseBackupPath(path string) (string, time.Time, bool) {
+	path = filepath.Clean(path)
+	match := backupSuffix.FindStringSubmatchIndex(path)
+	if match == nil {
+		return "", time.Time{}, false
+	}
+	ts, err := time.Parse(time.RFC3339, path[match[2]:match[3]])
+	if err != nil || match[0] == 0 || path[match[0]-1] == filepath.Separator {
+		return "", time.Time{}, false
+	}
+	return path[:match[0]], ts, true
+}
+
+// ListBackups lists backups (created by Backup) of a path, newest first.
+//
+// @param original The path whose backups to list.
+func ListBackups(original string) []string {
+	original = filepath.Clean(NormalizePath(original))
+	entries, err := os.ReadDir(filepath.Dir(original))
+	if err != nil {
+		return nil
+	}
+	type backup struct {
+		path string
+		ts   time.Time
+	}
+	var backups []backup
+	for _, entry := range entries {
+		path := filepath.Join(filepath.Dir(original), entry.Name())
+		if orig, ts, ok := ParseBackupPath(path); ok && orig == original {
+			backups = append(backups, backup{path, ts})
+		}
+	}
+	sort.SliceStable(backups, func(i, j int) bool {
+		return backups[i].ts.After(backups[j].ts)
+	})
+	paths := make([]string, len(backups))
+	for i, b := range backups {
+		paths[i] = b.path
+	}
+	return paths
+}
+
+// PruneBackups removes old backups (created by Backup) of a path.
+// Backups which are symbolic links are always removed as they preserve nothing,
+// while the most recent keep physical backups are kept.
+//
+// @param original The path whose backups to prune.
+// @param keep     The number of most recent physical backups to keep.
+// @param dryRun   If true, only print backups to be removed without removing them.
+//
+// @return Backups which are removed (or would be removed if dryRun is true).
+func PruneBackups(original string, keep int, dryRun bool) []string {
+	var removed []string
+	for _, path := range ListBackups(original) {
+		info, err := os.Lstat(path)
+		if err != nil {
+			continue
+		}
+		if info.Mode()&os.ModeSymlink == 0 && keep > 0 {
+			keep--
+			continue
+		}
+		if dryRun {
+			fmt.Printf("Would remove the backup %s.\n", path)
+		} else {
+			RemoveAll(path)
+			fmt.Printf("The backup %s has been removed.\n", path)
+		}
+		removed = append(removed, path)
+	}
+	return removed
+}
+
+// Backup renames a path to a backup path.
+// If backup is empty, the backup path is the original path suffixed with "_<RFC3339 timestamp>",
+// and old backups of the path are pruned to keep the most recent DefaultBackupsToKeep ones.
+// A symbolic link is removed instead of being backed up, as it preserves nothing.
+//
+// @param original The path to back up.
+// @param backup   The backup path, or empty to use a timestamped one.
 func Backup(original, backup string) {
 	original = NormalizePath(original)
 	backup = NormalizePath(backup)
-	if ExistsPath(original) {
-		if backup == "" {
-			backup = filepath.Clean(original) + "_" + time.Now().Format(time.RFC3339)
+	if backup != "" {
+		if ExistsPath(original) {
+			Rename(original, backup)
 		}
+		return
+	}
+	if info, err := os.Lstat(original); err == nil && info.Mode()&os.ModeSymlink != 0 {
+		RemoveAll(original)
+		fmt.Printf("The symbolic link %s has been removed instead of being backed up.\n", original)
+		return
+	}
+	if ExistsPath(original) {
+		backup = filepath.Clean(original) + "_" + time.Now().Format(time.RFC3339)
 		Rename(original, backup)
+		PruneBackups(original, DefaultBackupsToKeep, false)
 	}
 }
 

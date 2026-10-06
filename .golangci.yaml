@@ -75,6 +75,12 @@ linters:
     goconst:
       min-len: 2
       min-occurrences: 3
+      # goconst 1.9 (golangci-lint 2.12) started counting strings inside composite literals
+      # (e.g., `Format` template maps and asset-name lookup tables), which are not meaningful
+      # as named constants. Listing exclude-types replaces its default, so keep `Call`.
+      exclude-types:
+        - Call
+        - CompositeLit
     gocritic:
       enabled-tags:
         - diagnostic
