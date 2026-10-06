@@ -202,8 +202,6 @@ func ConfigJjCmd(rootCmd *cobra.Command) {
 	jjCmd.Flags().BoolP("install", "i", false, "Install jj and jjui.")
 	jjCmd.Flags().Bool("uninstall", false, "Uninstall jj and jjui.")
 	jjCmd.Flags().BoolP("config", "c", false, "Configure jj.")
-	jjCmd.Flags().Bool("no-backup", false, "Do not backup existing configuration files.")
-	jjCmd.Flags().Bool("copy", false, "Make copies (instead of symbolic links) of configuration files.")
 	jjCmd.Flags().Bool("global", false, "Install jj and jjui into /usr/local/bin instead of ~/.local/bin.")
 	jjCmd.Flags().BoolP("yes", "y", false, "Automatically yes to prompt questions.")
 	rootCmd.AddCommand(jjCmd)
