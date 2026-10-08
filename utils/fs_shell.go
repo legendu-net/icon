@@ -73,7 +73,8 @@ func RemoveAll(path string) {
 	// when the path is definitively absent. Lstat (not Stat) is used so a broken
 	// symlink still counts as present and gets removed; a permission error is not
 	// treated as absent, leaving the (possibly sudo'd) removal below to handle it.
-	if _, err := os.Lstat(path); os.IsNotExist(err) {
+	info, err := os.Lstat(path)
+	if os.IsNotExist(err) {
 		return
 	}
 	// Removing a path modifies its parent directory, so the parent's permissions matter too.
@@ -85,7 +86,11 @@ func RemoveAll(path string) {
 	// Resolve `rip` to its absolute path. `rip` is commonly installed under the
 	// user's home (e.g. ~/.cargo/bin), which is not on sudo's secure_path, so the
 	// bare name would fail under a sudo'd removal; the absolute path always works.
-	if ripPath := LookPath("rip"); ripPath != "" {
+	// A symlink is removed with `rm` rather than buried: `rip` fails to bury a
+	// symlink ("Failed to bury file") when the graveyard is on another filesystem
+	// (e.g. a tmpfs /tmp), and the link itself holds nothing worth recovering.
+	isSymlink := err == nil && info.Mode()&os.ModeSymlink != 0
+	if ripPath := LookPath("rip"); ripPath != "" && !isSymlink {
 		cmd = Format("{prefix} {rip} {path}", map[string]string{
 			"prefix": prefix,
 			"rip":    ripPath,
