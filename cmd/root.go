@@ -56,6 +56,7 @@ var commandConfigs = []func(*cobra.Command){
 	jupyter.ConfigJupyterBookCmd,
 	jupyter.ConfigJLabVimCmd,
 	dev.ConfigHomebrewCmd,
+	misc.ConfigGogCmd,
 	misc.ConfigGopassCmd,
 	misc.ConfigKeepassXCCmd,
 	misc.ConfigKeyboardCmd,
