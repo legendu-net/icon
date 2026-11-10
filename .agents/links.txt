@@ -1,0 +1,2 @@
+skills_proj/icon/add-icon-app
+skills_proj/icon/extract-icon-config
