@@ -4,3 +4,5 @@ icon_linux_amd64
 .vscode/
 .claude/settings.local.json
 .claude_task/
+/.agents/skills/add-icon-app
+/.agents/skills/extract-icon-config

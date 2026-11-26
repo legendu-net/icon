@@ -184,6 +184,12 @@ func jj(cmd *cobra.Command, _ []string) {
 			`{jjBin} config set --user ui.diff-editor :builtin`,
 			map[string]string{"jjBin": jjBin},
 		))
+		pager := `'["sh", "-c", '\''if [ "$TERM" = "dumb" ] || [ "$PAGER" = "cat" ]; ` +
+			`then exec cat; else exec less -FRX; fi'\'']'`
+		utils.RunCmd(utils.Format(
+			`{jjBin} config set --user ui.pager {pager}`,
+			map[string]string{"jjBin": jjBin, "pager": pager},
+		))
 	}
 	if utils.GetBoolFlag(cmd, "uninstall") {
 		uninstallJj()
